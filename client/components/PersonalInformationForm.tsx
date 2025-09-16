@@ -236,7 +236,7 @@ export function PersonalInformationForm({
           </div>
 
           {/* Gender */}
-          <div className="flex w-full items-start gap-4 lg:gap-6">
+          <div className="flex w-full items-start gap-4 lg:gap-6 mt-6">
             <div className="flex w-full lg:w-[458px] h-auto lg:h-14 items-start gap-4 lg:gap-6 flex-shrink-0">
               <div className="flex w-full h-auto lg:h-14 flex-col items-start flex-1">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
