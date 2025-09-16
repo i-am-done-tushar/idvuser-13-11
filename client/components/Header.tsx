@@ -1,6 +1,6 @@
 export function Header() {
   return (
-    <header className="flex w-full h-11 px-4 items-center gap-2 flex-shrink-0 border-b border-border bg-background">
+    <header className="flex w-full h-11 px-2 sm:px-4 items-center gap-2 flex-shrink-0 border-b border-border bg-background">
       {/* Arcon Logo */}
       <div className="w-17 h-9 flex-shrink-0 relative">
         <svg 
