@@ -19,6 +19,8 @@ export function IdentityVerificationPage({ templateId }: IdentityVerificationPag
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [hasShownStep1Toast, setHasShownStep1Toast] = useState(false);
+  const [showConsentDialog, setShowConsentDialog] = useState(true);
+  const [hasConsented, setHasConsented] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
