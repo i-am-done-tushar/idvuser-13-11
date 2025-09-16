@@ -255,7 +255,7 @@ export function PersonalInformationForm({
         </div>
 
         {/* Residential Address Section */}
-        <div className="flex flex-col items-start gap-4 self-stretch">
+        <div className="flex flex-col items-start gap-4 self-stretch w-full">
           <div className="flex pb-1 flex-col items-start gap-1 self-stretch">
             <div className="text-text-primary font-roboto text-[16px] font-bold leading-[26px]">
               Residential Address <span className="font-normal text-[13px] text-text-muted">(as per ID)</span>
@@ -264,17 +264,17 @@ export function PersonalInformationForm({
               Enter your residential address exactly as shown on your government-issued ID.
             </div>
           </div>
-          
-          <div className="flex flex-col items-start self-stretch">
+
+          <div className="flex flex-col items-start self-stretch w-full">
             {/* Address Field */}
-            <div className="flex h-20 items-start gap-6 self-stretch">
-              <div className="flex flex-col items-start flex-1">
+            <div className="flex h-auto items-start gap-4 self-stretch w-full">
+              <div className="flex flex-col items-start flex-1 w-full">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                     Address
                   </div>
                 </div>
-                <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background">
+                <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background w-full">
                   <div className="flex items-center gap-2 flex-1">
                     <input
                       type="text"
@@ -289,15 +289,15 @@ export function PersonalInformationForm({
             </div>
 
             {/* City and Postal Code Row */}
-            <div className="inline-flex items-start gap-6 w-[928px] h-14">
+            <div className="inline-flex flex-col sm:flex-row items-start gap-4 sm:gap-6 w-full">
               {/* City */}
-              <div className="flex flex-col items-start flex-1">
+              <div className="flex flex-col items-start w-full sm:flex-1">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                     City
                   </div>
                 </div>
-                <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background">
+                <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background w-full">
                   <div className="flex items-center gap-2 flex-1">
                     <input
                       type="text"
@@ -311,13 +311,13 @@ export function PersonalInformationForm({
               </div>
 
               {/* Postal Code */}
-              <div className="flex flex-col items-start flex-1">
+              <div className="flex flex-col items-start w-full sm:flex-1">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                     Postal Code
                   </div>
                 </div>
-                <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background">
+                <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background w-full">
                   <div className="flex items-center gap-2 flex-1">
                     <input
                       type="text"
