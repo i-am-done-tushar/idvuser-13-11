@@ -154,12 +154,34 @@ export function IdentityVerificationPage({ templateId }: IdentityVerificationPag
       </div>
 
       {/* Main Content */}
-      <div className="flex w-full flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <StepSidebar sections={activeSections} currentStep={currentStep} />
+      <div className="flex w-full flex-1 overflow-hidden flex-col lg:flex-row">
+        {/* Sidebar - hidden on mobile, visible on desktop */}
+        <div className="hidden lg:block">
+          <StepSidebar sections={activeSections} currentStep={currentStep} />
+        </div>
+
+        {/* Mobile Steps Indicator */}
+        <div className="lg:hidden px-4 py-2 bg-background border-b border-border">
+          <div className="flex items-center justify-between">
+            <div className="text-text-primary font-roboto text-sm font-medium">
+              Step {currentStep} of {activeSections.length}: {activeSections[currentStep - 1]?.name}
+            </div>
+            <div className="flex gap-1">
+              {activeSections.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full ${
+                    index + 1 === currentStep ? 'bg-primary' :
+                    index + 1 < currentStep ? 'bg-primary/50' : 'bg-step-inactive-border'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Content Area */}
-        <div className="flex w-full flex-1 p-4 flex-col items-center gap-6 bg-background overflow-auto">
+        <div className="flex w-full flex-1 p-2 sm:p-4 lg:p-6 flex-col items-center gap-4 lg:gap-6 bg-background overflow-auto">
           <div className="flex w-full max-w-[998px] flex-col items-center gap-6">
             <div className="flex flex-col items-center gap-6 self-stretch">
               {/* Personal Information Section */}
