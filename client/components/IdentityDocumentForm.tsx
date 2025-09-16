@@ -214,7 +214,10 @@ export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
             </button>
 
             {/* File Upload */}
-            <div className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-t-lg h-[156px] bg-white">
+            <button
+              onClick={() => setShowUploadDialog(true)}
+              className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-t-lg h-[156px] bg-white hover:bg-gray-50 transition-colors"
+            >
               <div className="flex w-[271px] flex-col justify-center items-center gap-2">
                 <div className="flex w-[52px] h-[52px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
                   <svg width="24" height="24" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -228,7 +231,7 @@ export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lobortis massa vitae
                 </div>
               </div>
-            </div>
+            </button>
           </div>
 
           {/* QR Code Upload */}
