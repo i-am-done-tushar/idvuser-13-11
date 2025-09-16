@@ -20,52 +20,93 @@ export function StepSidebar({ sections, currentStep }: StepSidebarProps) {
   }));
 
   return (
-    <aside className="w-80 p-4 flex flex-col gap-6 bg-background h-full relative">
-      {steps.map((step, idx) => (
-        <div key={step.number} className="flex items-start gap-4">
-          {/* Left column: circle + connector */}
-          <div className="flex flex-col items-center w-10">
-            <div
-              className={`flex items-center justify-center rounded-full transition-all duration-150 ${
-                step.isActive
-                  ? 'w-10 h-10 bg-primary text-white shadow-md ring-4 ring-primary/20'
-                  : step.isCompleted
-                  ? 'w-8 h-8 bg-primary text-white'
-                  : 'w-8 h-8 bg-white border border-input-border text-text-secondary'
-              }`}
-            >
-              <span className={`text-[13px] font-roboto ${step.isActive ? 'font-semibold' : 'font-normal'}`}>
-                {step.number}
-              </span>
-            </div>
-
-            {/* connector segment between this and the next step; hidden after step 3 */}
-            {idx < steps.length - 1 && step.number !== 3 && (
-              <div
-                className={`mt-2 w-[2px] rounded ${
-                  step.isCompleted ? 'bg-primary' : 'bg-step-inactive-border'
-                } h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72`}
-                aria-hidden
-              />
-            )}
-          </div>
-
-          {/* Right column: card */}
-          <div className={`flex-1 rounded-md overflow-hidden ${step.isActive ? 'bg-step-active-bg shadow-sm border border-primary/20' : 'bg-white'}`}>
-            <div className={`p-3 ${step.isActive ? '' : 'p-0'}`}>
-              <div className={`px-3 py-2 ${step.isActive ? '' : 'px-0 py-0'}`}>
-                <div className={`text-text-primary font-roboto ${step.isActive ? 'text-[15px] font-semibold' : 'text-[15px] font-bold'}`}>
-                  {step.title}
+    <aside className="w-80 bg-white h-full">
+      <div className="flex flex-col gap-1 p-2">
+        {steps.map((step, idx) => (
+          <div key={step.number} className="relative">
+            {/* Step content container */}
+            <div className="flex items-start gap-3">
+              {/* Circle with connecting line */}
+              <div className="flex flex-col items-center relative z-10">
+                {/* Step circle */}
+                <div className="relative">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="flex-shrink-0"
+                  >
+                    <circle
+                      cx="14"
+                      cy="14"
+                      r="13.25"
+                      fill={step.isActive || step.isCompleted ? "#0073EA" : "white"}
+                      stroke={step.isActive || step.isCompleted ? "#0073EA" : "#D0D4E4"}
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span
+                      className={`font-roboto text-[13px] font-normal leading-none ${
+                        step.isActive || step.isCompleted ? "text-white" : "text-[#42526E]"
+                      }`}
+                    >
+                      {step.number}
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-1 text-text-primary font-roboto text-[13px] font-medium">Step {step.number}</div>
-                <div className="mt-2 text-text-secondary font-figtree text-[13px] leading-5">
-                  {step.description}
+
+                {/* Connecting line */}
+                {idx < steps.length - 1 && (
+                  <div className="mt-2 mb-2">
+                    <div
+                      className={`w-0 h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32 border-l-2 ${
+                        step.isCompleted ? "border-[#0073EA]" : "border-[#D0D4E4]"
+                      }`}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Step card */}
+              <div
+                className={`flex-1 rounded-lg p-3 ${
+                  step.isActive
+                    ? "bg-[#E6F1FD]"
+                    : "bg-white"
+                } ${idx < steps.length - 1 ? "mb-1" : ""}`}
+              >
+                <div className="flex flex-col gap-1">
+                  {/* Title */}
+                  <h3
+                    className={`font-roboto text-[15px] font-bold leading-6 ${
+                      step.isActive ? "text-[#323238]" : "text-[#323238]"
+                    }`}
+                  >
+                    {step.title}
+                  </h3>
+                  
+                  {/* Step number */}
+                  <div className="font-roboto text-[13px] font-medium text-[#323238] leading-normal">
+                    Step {step.number}
+                  </div>
+                  
+                  {/* Description */}
+                  <p
+                    className={`font-figtree text-[13px] font-normal leading-5 mt-1 ${
+                      step.isActive ? "text-[#172B4D]" : "text-[#42526E]"
+                    }`}
+                  >
+                    {step.description}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </aside>
   );
 }
