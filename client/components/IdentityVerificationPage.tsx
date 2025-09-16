@@ -117,6 +117,15 @@ export function IdentityVerificationPage({ templateId }: IdentityVerificationPag
     }, 1000);
   };
 
+  const handleConsentClose = () => {
+    setShowConsentDialog(false);
+  };
+
+  const handleConsentAgree = () => {
+    setHasConsented(true);
+    setShowConsentDialog(false);
+  };
+
   const isFormValid = () => {
     return (
       formData.firstName &&
