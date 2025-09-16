@@ -44,7 +44,7 @@ export function StepSidebar({ sections, currentStep }: StepSidebarProps) {
               <div
                 className={`mt-2 w-[2px] rounded ${
                   step.isCompleted ? 'bg-primary' : 'bg-step-inactive-border'
-                } h-28 md:h-36 lg:h-44`}
+                } h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72`}
                 aria-hidden
               />
             )}
