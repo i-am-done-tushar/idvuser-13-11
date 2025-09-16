@@ -383,8 +383,12 @@ export function PersonalInformationForm({
                       placeholder="e.g 123 MG Road, Shastri Nagar, Near City Park"
                       value={formData.address}
                       onChange={(e) => updateField('address', e.target.value)}
-                      className="text-text-muted font-roboto text-[13px] font-normal leading-5 w-full bg-transparent border-none outline-none placeholder:text-text-muted"
+                      onBlur={() => validateField('address')}
+                      className={`text-text-muted font-roboto text-[13px] font-normal leading-5 w-full bg-transparent border-none outline-none placeholder:text-text-muted ${errors.address ? 'ring-1 ring-destructive/60' : ''}`}
                     />
+                    {errors.address && (
+                      <div className="text-destructive text-[12px] ml-2">{errors.address}</div>
+                    )}
                   </div>
                 </div>
               </div>
