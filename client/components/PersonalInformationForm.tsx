@@ -218,15 +218,15 @@ export function PersonalInformationForm({
             </div>
 
             {/* Gender Selection */}
-            <div className="flex w-[928px] items-start gap-6">
-              <div className="flex w-[458px] h-14 items-start gap-6 flex-shrink-0">
-                <div className="flex h-14 flex-col items-start flex-1">
+            <div className="flex w-full items-start gap-4 lg:gap-6">
+              <div className="flex w-full lg:w-[458px] h-auto lg:h-14 items-start gap-4 lg:gap-6 flex-shrink-0">
+                <div className="flex w-full h-auto lg:h-14 flex-col items-start flex-1">
                   <div className="flex pb-2 items-start gap-2 self-stretch">
                     <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                       Gender
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
+                  <div className="flex flex-wrap items-start gap-2 sm:gap-3">
                     {['Male', 'Female', 'Non-Binary', 'Prefer Not To Say'].map((option) => (
                       <div key={option} className="flex h-[38px] py-2 pr-2 items-center gap-2 rounded-full">
                         <div className="w-4 h-4 rounded-full border-[0.667px] border-step-inactive-border bg-background relative">
