@@ -173,9 +173,19 @@ export function IdentityVerificationPage({ templateId }: IdentityVerificationPag
     .sort((a, b) => a.orderIndex - b.orderIndex);
 
   return (
-    <div className="w-full h-screen bg-page-background flex flex-col">
-      {/* Header */}
-      <Header />
+    <>
+      {/* Consent Dialog */}
+      <ConsentDialog
+        isOpen={showConsentDialog && !hasConsented}
+        onClose={handleConsentClose}
+        onAgree={handleConsentAgree}
+      />
+
+      <div className={`w-full h-screen bg-page-background flex flex-col ${
+        showConsentDialog && !hasConsented ? 'opacity-50 pointer-events-none' : ''
+      }`}>
+        {/* Header */}
+        <Header />
 
       {/* Title Bar */}
       <div className="flex w-full h-12 items-start flex-shrink-0 bg-background">
@@ -409,6 +419,7 @@ export function IdentityVerificationPage({ templateId }: IdentityVerificationPag
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
