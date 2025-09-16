@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { useState } from 'react';
 import { CameraDialog } from './CameraDialog';
 import { UploadDialog } from './UploadDialog';
 
