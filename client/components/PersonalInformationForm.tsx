@@ -173,12 +173,16 @@ export function PersonalInformationForm({
               <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background">
                 <div className="flex items-center gap-2 flex-1">
                   <input
-                    type="text"
+                    type="date"
                     placeholder="DD/MM/YYYY"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => updateField('dateOfBirth', e.target.value)}
-                    className="text-text-muted font-roboto text-[13px] font-normal leading-5 w-full bg-transparent border-none outline-none placeholder:text-text-muted"
+                    value={formatDOBToInput(formData.dateOfBirth)}
+                    onChange={(e) => updateField('dateOfBirth', parseInputDateToDOB(e.target.value))}
+                    onBlur={() => validateField('dateOfBirth')}
+                    className={`text-text-muted font-roboto text-[13px] font-normal leading-5 w-full bg-transparent border-none outline-none placeholder:text-text-muted ${errors.dateOfBirth ? 'ring-1 ring-destructive/60' : ''}`}
                   />
+                  {errors.dateOfBirth && (
+                    <div className="text-destructive text-[12px] ml-2">{errors.dateOfBirth}</div>
+                  )}
                 </div>
                 <div className="flex w-[18px] items-center gap-[7.2px]">
                   <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
