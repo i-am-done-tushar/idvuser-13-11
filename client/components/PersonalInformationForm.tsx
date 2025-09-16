@@ -307,7 +307,7 @@ export function PersonalInformationForm({
             </div>
 
             {/* City and Postal Code Row */}
-            <div className="inline-flex flex-col sm:flex-row items-start gap-4 sm:gap-6 w-full">
+            <div className="inline-flex flex-col sm:flex-row items-start gap-4 sm:gap-6 w-full mt-6">
               {/* City */}
               <div className="flex flex-col items-start w-full sm:flex-1">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
