@@ -42,7 +42,7 @@ export function StepSidebar({ sections, currentStep }: StepSidebarProps) {
             {/* connector segment between this and the next step; hidden after step 3 */}
             {idx < steps.length - 1 && step.number !== 3 && (
               <div
-                className={`mt-2 w-[2px] flex-1 rounded ${
+                className={`mt-2 w-[2px] h-12 rounded ${
                   step.isCompleted ? 'bg-primary' : 'bg-step-inactive-border'
                 }`}
                 aria-hidden
