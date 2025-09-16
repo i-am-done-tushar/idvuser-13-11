@@ -273,8 +273,12 @@ export function PersonalInformationForm({
                         placeholder="Enter Your Mobile Number"
                         value={formData.phoneNumber}
                         onChange={(e) => updateField('phoneNumber', e.target.value)}
-                        className="text-text-muted font-roboto text-[13px] font-normal leading-5 w-full bg-transparent border-none outline-none placeholder:text-text-muted"
+                        onBlur={() => validateField('phoneNumber')}
+                        className={`text-text-muted font-roboto text-[13px] font-normal leading-5 w-full bg-transparent border-none outline-none placeholder:text-text-muted ${errors.phoneNumber ? 'ring-1 ring-destructive/60' : ''}`}
                       />
+                      {errors.phoneNumber && (
+                        <div className="text-destructive text-[12px] ml-2">{errors.phoneNumber}</div>
+                      )}
                     </div>
                     <button
                       onClick={onSendPhoneOTP}
