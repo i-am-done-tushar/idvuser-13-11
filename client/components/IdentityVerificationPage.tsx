@@ -129,14 +129,14 @@ export function IdentityVerificationPage({ templateId }: IdentityVerificationPag
 
   const isFormValid = () => {
     return (
-      formData.firstName &&
-      formData.lastName &&
-      formData.dateOfBirth &&
-      formData.email &&
-      formData.phoneNumber &&
-      formData.address &&
-      formData.city &&
-      formData.postalCode &&
+      isValidName(formData.firstName) &&
+      isValidName(formData.lastName) &&
+      isValidDOB(formData.dateOfBirth) &&
+      isValidEmail(formData.email) &&
+      isValidPhone(formData.phoneNumber) &&
+      isValidAddress(formData.address) &&
+      !!formData.city &&
+      isValidPostalCode(formData.postalCode) &&
       isEmailVerified &&
       isPhoneVerified
     );
