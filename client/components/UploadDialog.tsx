@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef } from "react";
 
 interface UploadDialogProps {
   isOpen: boolean;
@@ -14,7 +14,9 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
 
   if (!isOpen) return null;
 
-  const handleFrontFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFrontFileSelect = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       setFrontFile(file);
@@ -48,8 +50,20 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
             onClick={onClose}
             className="flex w-8 h-8 justify-center items-center gap-2.5 rounded-full bg-white hover:bg-gray-50"
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15 5L5 15M5 5L15 15" stroke="#676879" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 5L5 15M5 5L15 15"
+                stroke="#676879"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>
@@ -66,21 +80,35 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
               <div className="flex w-[364px] h-[272px] flex-col items-center gap-7 flex-shrink-0">
                 <div className="flex h-[272px] flex-col items-start flex-shrink-0 self-stretch">
                   <div className="flex justify-center items-center gap-2 flex-1 self-stretch">
-                    <div 
+                    <div
                       className="flex flex-col justify-end items-center gap-2 flex-1 self-stretch rounded-t-lg border-2 border-dashed border-[#C3C6D4] bg-white cursor-pointer hover:bg-gray-50"
                       onClick={() => frontInputRef.current?.click()}
                     >
                       <div className="flex w-[326px] h-[262px] flex-col justify-center items-center gap-2">
                         <div className="flex w-12 h-12 p-2 justify-center items-center flex-shrink-0 rounded-full bg-[#F6F7FB]">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7.76471 11.5294C6.88944 11.5294 6.4518 11.5294 6.09274 11.6256C5.11837 11.8867 4.35729 12.6478 4.09621 13.6221C4 13.9812 4 14.4188 4 15.2941V16.4235C4 18.0049 4 18.7955 4.30775 19.3995C4.57845 19.9308 5.01039 20.3627 5.54168 20.6334C6.14566 20.9412 6.93632 20.9412 8.51765 20.9412H16.4235C18.0049 20.9412 18.7955 20.9412 19.3995 20.6334C19.9308 20.3627 20.3627 19.9308 20.6334 19.3995C20.9412 18.7955 20.9412 18.0049 20.9412 16.4235V15.2941C20.9412 14.4188 20.9412 13.9812 20.845 13.6221C20.5839 12.6478 19.8228 11.8867 18.8485 11.6256C18.4894 11.5294 18.0518 11.5294 17.1765 11.5294M16.2353 7.76471L12.4706 4M12.4706 4L8.70588 7.76471M12.4706 4V15.2941" stroke="#676879" strokeWidth="1.41176" strokeLinecap="round" strokeLinejoin="round"/>
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7.76471 11.5294C6.88944 11.5294 6.4518 11.5294 6.09274 11.6256C5.11837 11.8867 4.35729 12.6478 4.09621 13.6221C4 13.9812 4 14.4188 4 15.2941V16.4235C4 18.0049 4 18.7955 4.30775 19.3995C4.57845 19.9308 5.01039 20.3627 5.54168 20.6334C6.14566 20.9412 6.93632 20.9412 8.51765 20.9412H16.4235C18.0049 20.9412 18.7955 20.9412 19.3995 20.6334C19.9308 20.3627 20.3627 19.9308 20.6334 19.3995C20.9412 18.7955 20.9412 18.0049 20.9412 16.4235V15.2941C20.9412 14.4188 20.9412 13.9812 20.845 13.6221C20.5839 12.6478 19.8228 11.8867 18.8485 11.6256C18.4894 11.5294 18.0518 11.5294 17.1765 11.5294M16.2353 7.76471L12.4706 4M12.4706 4L8.70588 7.76471M12.4706 4V15.2941"
+                              stroke="#676879"
+                              strokeWidth="1.41176"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         </div>
                         <div className="self-stretch text-[#172B4D] text-center font-roboto text-lg font-medium">
                           Front side of your document
                         </div>
                         <div className="text-center font-roboto text-[13px] font-medium">
-                          <span className="text-[#172B4D]">Drag & Drop File Here or </span>
+                          <span className="text-[#172B4D]">
+                            Drag & Drop File Here or{" "}
+                          </span>
                           <span className="text-[#0073EA]">Choose File</span>
                         </div>
                       </div>
@@ -112,21 +140,35 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
               <div className="flex w-[364px] h-[272px] flex-col items-center gap-7 flex-shrink-0">
                 <div className="flex h-[272px] flex-col items-start flex-shrink-0 self-stretch">
                   <div className="flex justify-center items-center gap-2 flex-1 self-stretch">
-                    <div 
+                    <div
                       className="flex flex-col justify-end items-center gap-2 flex-1 self-stretch rounded-t-lg border-2 border-dashed border-[#C3C6D4] bg-white cursor-pointer hover:bg-gray-50"
                       onClick={() => backInputRef.current?.click()}
                     >
                       <div className="flex w-[326px] h-[262px] flex-col justify-center items-center gap-2">
                         <div className="flex w-12 h-12 p-2 justify-center items-center flex-shrink-0 rounded-full bg-[#F6F7FB]">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7.76471 11.5294C6.88944 11.5294 6.4518 11.5294 6.09274 11.6256C5.11837 11.8867 4.35729 12.6478 4.09621 13.6221C4 13.9812 4 14.4188 4 15.2941V16.4235C4 18.0049 4 18.7955 4.30775 19.3995C4.57845 19.9308 5.01039 20.3627 5.54168 20.6334C6.14566 20.9412 6.93632 20.9412 8.51765 20.9412H16.4235C18.0049 20.9412 18.7955 20.9412 19.3995 20.6334C19.9308 20.3627 20.3627 19.9308 20.6334 19.3995C20.9412 18.7955 20.9412 18.0049 20.9412 16.4235V15.2941C20.9412 14.4188 20.9412 13.9812 20.845 13.6221C20.5839 12.6478 19.8228 11.8867 18.8485 11.6256C18.4894 11.5294 18.0518 11.5294 17.1765 11.5294M16.2353 7.76471L12.4706 4M12.4706 4L8.70588 7.76471M12.4706 4V15.2941" stroke="#676879" strokeWidth="1.41176" strokeLinecap="round" strokeLinejoin="round"/>
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7.76471 11.5294C6.88944 11.5294 6.4518 11.5294 6.09274 11.6256C5.11837 11.8867 4.35729 12.6478 4.09621 13.6221C4 13.9812 4 14.4188 4 15.2941V16.4235C4 18.0049 4 18.7955 4.30775 19.3995C4.57845 19.9308 5.01039 20.3627 5.54168 20.6334C6.14566 20.9412 6.93632 20.9412 8.51765 20.9412H16.4235C18.0049 20.9412 18.7955 20.9412 19.3995 20.6334C19.9308 20.3627 20.3627 19.9308 20.6334 19.3995C20.9412 18.7955 20.9412 18.0049 20.9412 16.4235V15.2941C20.9412 14.4188 20.9412 13.9812 20.845 13.6221C20.5839 12.6478 19.8228 11.8867 18.8485 11.6256C18.4894 11.5294 18.0518 11.5294 17.1765 11.5294M16.2353 7.76471L12.4706 4M12.4706 4L8.70588 7.76471M12.4706 4V15.2941"
+                              stroke="#676879"
+                              strokeWidth="1.41176"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         </div>
                         <div className="self-stretch text-[#172B4D] text-center font-roboto text-lg font-medium">
                           Back side of your document
                         </div>
                         <div className="text-center font-roboto text-[13px] font-medium">
-                          <span className="text-[#172B4D]">Drag & Drop File Here or </span>
+                          <span className="text-[#172B4D]">
+                            Drag & Drop File Here or{" "}
+                          </span>
                           <span className="text-[#0073EA]">Choose File</span>
                         </div>
                       </div>
@@ -161,12 +203,14 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
             onClick={handleSubmit}
             disabled={!frontFile || !backFile}
             className={`flex h-[38px] px-4 py-[11px] justify-center items-center gap-2 rounded ${
-              frontFile && backFile 
-                ? 'bg-[#0073EA] hover:bg-[#0073EA]/90' 
-                : 'bg-[#0073EA]/50 cursor-not-allowed'
+              frontFile && backFile
+                ? "bg-[#0073EA] hover:bg-[#0073EA]/90"
+                : "bg-[#0073EA]/50 cursor-not-allowed"
             }`}
           >
-            <span className="text-white font-roboto text-[13px] font-medium">Submit</span>
+            <span className="text-white font-roboto text-[13px] font-medium">
+              Submit
+            </span>
           </button>
         </div>
       </div>

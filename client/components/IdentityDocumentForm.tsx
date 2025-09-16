@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { CameraDialog } from './CameraDialog';
-import { UploadDialog } from './UploadDialog';
+import { CameraDialog } from "./CameraDialog";
+import { UploadDialog } from "./UploadDialog";
 
 interface IdentityDocumentFormProps {
   // You can add form data props as needed
@@ -198,16 +198,35 @@ export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
             >
               <div className="flex w-[271px] flex-col justify-center items-center gap-2">
                 <div className="flex w-[52px] h-[52px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
-                  <svg width="24" height="24" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.99805 8.87722C1.99805 8.5269 1.99805 8.35174 2.01267 8.20421C2.15365 6.78127 3.27932 5.6556 4.70226 5.51462C4.84979 5.5 5.03441 5.5 5.40363 5.5C5.5459 5.5 5.61704 5.5 5.67744 5.49634C6.44866 5.44963 7.124 4.96288 7.41219 4.246C7.43476 4.18986 7.45586 4.12657 7.49805 4C7.54024 3.87343 7.56134 3.81014 7.58391 3.754C7.8721 3.03712 8.54744 2.55037 9.31866 2.50366C9.37906 2.5 9.44577 2.5 9.57919 2.5H14.4169C14.5503 2.5 14.617 2.5 14.6774 2.50366C15.4486 2.55037 16.124 3.03712 16.4121 3.754C16.4347 3.81014 16.4558 3.87343 16.498 4C16.5402 4.12657 16.5613 4.18986 16.5839 4.246C16.872 4.96288 17.5474 5.44963 18.3186 5.49634C18.379 5.5 18.4501 5.5 18.5924 5.5C18.9616 5.5 19.1463 5.5 19.2938 5.51462C20.7167 5.6556 21.8424 6.78127 21.9834 8.20421C21.998 8.35174 21.998 8.5269 21.998 8.87722V16.7C21.998 18.3802 21.998 19.2202 21.671 19.862C21.3834 20.4265 20.9245 20.8854 20.36 21.173C19.7182 21.5 18.8782 21.5 17.198 21.5H6.79805C5.11789 21.5 4.27781 21.5 3.63608 21.173C3.07159 20.8854 2.61265 20.4265 2.32503 19.862C1.99805 19.2202 1.99805 18.3802 1.99805 16.7V8.87722Z" stroke="#676879" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M11.998 17C14.2071 17 15.998 15.2091 15.998 13C15.998 10.7909 14.2071 9 11.998 9C9.78891 9 7.99805 10.7909 7.99805 13C7.99805 15.2091 9.78891 17 11.998 17Z" stroke="#676879" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M1.99805 8.87722C1.99805 8.5269 1.99805 8.35174 2.01267 8.20421C2.15365 6.78127 3.27932 5.6556 4.70226 5.51462C4.84979 5.5 5.03441 5.5 5.40363 5.5C5.5459 5.5 5.61704 5.5 5.67744 5.49634C6.44866 5.44963 7.124 4.96288 7.41219 4.246C7.43476 4.18986 7.45586 4.12657 7.49805 4C7.54024 3.87343 7.56134 3.81014 7.58391 3.754C7.8721 3.03712 8.54744 2.55037 9.31866 2.50366C9.37906 2.5 9.44577 2.5 9.57919 2.5H14.4169C14.5503 2.5 14.617 2.5 14.6774 2.50366C15.4486 2.55037 16.124 3.03712 16.4121 3.754C16.4347 3.81014 16.4558 3.87343 16.498 4C16.5402 4.12657 16.5613 4.18986 16.5839 4.246C16.872 4.96288 17.5474 5.44963 18.3186 5.49634C18.379 5.5 18.4501 5.5 18.5924 5.5C18.9616 5.5 19.1463 5.5 19.2938 5.51462C20.7167 5.6556 21.8424 6.78127 21.9834 8.20421C21.998 8.35174 21.998 8.5269 21.998 8.87722V16.7C21.998 18.3802 21.998 19.2202 21.671 19.862C21.3834 20.4265 20.9245 20.8854 20.36 21.173C19.7182 21.5 18.8782 21.5 17.198 21.5H6.79805C5.11789 21.5 4.27781 21.5 3.63608 21.173C3.07159 20.8854 2.61265 20.4265 2.32503 19.862C1.99805 19.2202 1.99805 18.3802 1.99805 16.7V8.87722Z"
+                      stroke="#676879"
+                      strokeWidth="1.35"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M11.998 17C14.2071 17 15.998 15.2091 15.998 13C15.998 10.7909 14.2071 9 11.998 9C9.78891 9 7.99805 10.7909 7.99805 13C7.99805 15.2091 9.78891 17 11.998 17Z"
+                      stroke="#676879"
+                      strokeWidth="1.35"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
                 <div className="text-[#323238] text-center font-figtree text-[13px] font-medium">
                   Camera
                 </div>
                 <div className="w-[257px] text-[#676879] text-center font-roboto text-[13px] font-normal leading-5">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lobortis massa vitae
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Mauris lobortis massa vitae
                 </div>
               </div>
             </button>
@@ -219,15 +238,28 @@ export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
             >
               <div className="flex w-[271px] flex-col justify-center items-center gap-2">
                 <div className="flex w-[52px] h-[52px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
-                  <svg width="24" height="24" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7.76471 12.0294C6.88944 12.0294 6.4518 12.0294 6.09274 12.1256C5.11837 12.3867 4.35729 13.1478 4.09621 14.1221C4 14.4812 4 14.9188 4 15.7941V16.9235C4 18.5049 4 19.2955 4.30775 19.8995C4.57845 20.4308 5.01039 20.8627 5.54168 21.1334C6.14566 21.4412 6.93632 21.4412 8.51765 21.4412H16.4235C18.0049 21.4412 18.7955 21.4412 19.3995 21.1334C19.9308 20.8627 20.3627 20.4308 20.6334 19.8995C20.9412 19.2955 20.9412 18.5049 20.9412 16.9235V15.7941C20.9412 14.9188 20.9412 14.4812 20.845 14.1221C20.5839 13.1478 19.8228 12.3867 18.8485 12.1256C18.4894 12.0294 18.0518 12.0294 17.1765 12.0294M16.2353 8.26471L12.4706 4.5M12.4706 4.5L8.70588 8.26471M12.4706 4.5V15.7941" stroke="#676879" strokeWidth="1.41176" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M7.76471 12.0294C6.88944 12.0294 6.4518 12.0294 6.09274 12.1256C5.11837 12.3867 4.35729 13.1478 4.09621 14.1221C4 14.4812 4 14.9188 4 15.7941V16.9235C4 18.5049 4 19.2955 4.30775 19.8995C4.57845 20.4308 5.01039 20.8627 5.54168 21.1334C6.14566 21.4412 6.93632 21.4412 8.51765 21.4412H16.4235C18.0049 21.4412 18.7955 21.4412 19.3995 21.1334C19.9308 20.8627 20.3627 20.4308 20.6334 19.8995C20.9412 19.2955 20.9412 18.5049 20.9412 16.9235V15.7941C20.9412 14.9188 20.9412 14.4812 20.845 14.1221C20.5839 13.1478 19.8228 12.3867 18.8485 12.1256C18.4894 12.0294 18.0518 12.0294 17.1765 12.0294M16.2353 8.26471L12.4706 4.5M12.4706 4.5L8.70588 8.26471M12.4706 4.5V15.7941"
+                      stroke="#676879"
+                      strokeWidth="1.41176"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
                 <div className="text-[#323238] text-center font-figtree text-[13px] font-medium">
                   Upload Files
                 </div>
                 <div className="w-[257px] text-[#676879] text-center font-roboto text-[13px] font-normal leading-5">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lobortis massa vitae
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Mauris lobortis massa vitae
                 </div>
               </div>
             </button>
@@ -246,16 +278,31 @@ export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
               <div className="flex flex-col justify-center items-center gap-2">
                 <div className="w-[214px] flex flex-col items-center gap-3">
                   <div className="self-stretch text-[#676879] text-center font-roboto text-[13px] font-normal leading-5">
-                    Continue on another device by scanning the QR code or opening{' '}
-                    <span className="text-[#0073EA]">https://id.xyz/verify</span>
+                    Continue on another device by scanning the QR code or
+                    opening{" "}
+                    <span className="text-[#0073EA]">
+                      https://id.xyz/verify
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="w-full flex justify-end items-center mt-2">
               <div className="flex items-center gap-2">
-                <svg width="20" height="20" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10.0003 13.8332V10.4998M10.0003 7.1665H10.0087M18.3337 10.4998C18.3337 15.1022 14.6027 18.8332 10.0003 18.8332C5.39795 18.8332 1.66699 15.1022 1.66699 10.4998C1.66699 5.89746 5.39795 2.1665 10.0003 2.1665C14.6027 2.1665 18.3337 5.89746 18.3337 10.4998Z" stroke="#0073EA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 21"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10.0003 13.8332V10.4998M10.0003 7.1665H10.0087M18.3337 10.4998C18.3337 15.1022 14.6027 18.8332 10.0003 18.8332C5.39795 18.8332 1.66699 15.1022 1.66699 10.4998C1.66699 5.89746 5.39795 2.1665 10.0003 2.1665C14.6027 2.1665 18.3337 5.89746 18.3337 10.4998Z"
+                    stroke="#0073EA"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 <div className="text-[#0073EA] font-roboto text-[12px] font-normal leading-5">
                   How does this work?
