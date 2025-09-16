@@ -19,8 +19,50 @@ export function PersonalInformationForm({
   onSendEmailOTP,
   onSendPhoneOTP,
 }: PersonalInformationFormProps) {
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+
   const updateField = (field: keyof FormData, value: string) => {
+    // Clear error for this field when user changes value
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
     setFormData({ ...formData, [field]: value });
+  };
+
+  const validateField = (field: keyof FormData) => {
+    const value = (formData[field] || '').toString();
+    let error: string | undefined = undefined;
+
+    switch (field) {
+      case 'firstName':
+      case 'lastName':
+        if (!isValidName(value)) error = 'Please enter a valid name (at least 2 letters).';
+        break;
+      case 'dateOfBirth':
+        if (!isValidDOB(value)) error = 'Enter a valid DOB (DD/MM/YYYY). You must be at least 18.';
+        break;
+      case 'email':
+        if (!isValidEmail(value)) error = 'Enter a valid email address.';
+        break;
+      case 'phoneNumber':
+        if (!isValidPhone(value)) error = 'Enter a valid 10-digit phone number.';
+        break;
+      case 'address':
+        if (!isValidAddress(value)) error = 'Enter your address (at least 5 characters).';
+        break;
+      case 'city':
+        if (!value || value.trim().length < 2) error = 'Enter your city.';
+        break;
+      case 'postalCode':
+        if (!isValidPostalCode(value)) error = 'Enter a valid postal code.';
+        break;
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: error }));
+    return !error;
+  };
+
+  const validateAll = () => {
+    const fields: (keyof FormData)[] = ['firstName','lastName','dateOfBirth','email','phoneNumber','address','city','postalCode'];
+    return fields.every((f) => validateField(f));
   };
 
   return (
