@@ -10,13 +10,15 @@ interface IdentityVerificationPageProps {
 }
 
 export function IdentityVerificationPage({ templateId }: IdentityVerificationPageProps) {
+  const { toast } = useToast();
   const [template, setTemplate] = useState<TemplateResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
-  
+  const [hasShownStep1Toast, setHasShownStep1Toast] = useState(false);
+
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
