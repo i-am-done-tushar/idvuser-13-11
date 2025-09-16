@@ -5,7 +5,7 @@ interface IdentityDocumentFormProps {
 }
 
 export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
-  const [country, setCountry] = useState("India");
+  const [country, setCountry] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
 
   const documentTypes = [
