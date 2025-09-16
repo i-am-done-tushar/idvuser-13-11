@@ -156,7 +156,7 @@ export function IdentityVerificationPage({ templateId }: IdentityVerificationPag
       {/* Main Content */}
       <div className="flex w-full flex-1 overflow-hidden flex-col lg:flex-row">
         {/* Sidebar - hidden on mobile, visible on desktop */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block border-r border-border">
           <StepSidebar sections={activeSections} currentStep={currentStep} />
         </div>
 
