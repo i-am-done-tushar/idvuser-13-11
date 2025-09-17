@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HowItWorksDialog } from "./HowItWorksDialog";
 
 interface CameraSelfieStepProps {
   // Add props as needed for camera functionality
@@ -6,6 +7,7 @@ interface CameraSelfieStepProps {
 
 export function CameraSelfieStep({}: CameraSelfieStepProps) {
   const [cameraError, setCameraError] = useState(true); // For demo purposes, showing error state
+  const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
 
   return (
     <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
@@ -183,7 +185,10 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
                       </clipPath>
                     </defs>
                   </svg>
-                  <button className="text-primary font-roboto text-xs font-normal leading-5 hover:underline">
+                  <button
+                    onClick={() => setShowHowItWorksDialog(true)}
+                    className="text-primary font-roboto text-xs font-normal leading-5 hover:underline"
+                  >
                     How does this work?
                   </button>
                 </div>
@@ -192,6 +197,11 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
           </div>
         </div>
       </div>
+
+      <HowItWorksDialog
+        isOpen={showHowItWorksDialog}
+        onClose={() => setShowHowItWorksDialog(false)}
+      />
     </div>
   );
 }

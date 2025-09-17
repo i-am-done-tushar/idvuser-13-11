@@ -455,7 +455,7 @@ export function IdentityVerificationPage({
                         </div>
                       </div>
                     </div>
-                    {currentStep === 2 ? (
+                    {currentStep >= 2 ? (
                       <div className="flex py-4 px-[34px] flex-col items-start self-stretch border-t border-[#DEDEDD] bg-white">
                         <IdentityDocumentForm
                           onComplete={handleIdentityDocumentComplete}
