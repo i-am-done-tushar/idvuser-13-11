@@ -7,6 +7,7 @@ interface CameraSelfieStepProps {
 
 export function CameraSelfieStep({}: CameraSelfieStepProps) {
   const [cameraError, setCameraError] = useState(true); // For demo purposes, showing error state
+  const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
 
   return (
     <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
