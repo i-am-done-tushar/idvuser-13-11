@@ -4,10 +4,10 @@ import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 
 interface IdentityDocumentFormProps {
-  // You can add form data props as needed
+  onComplete?: () => void;
 }
 
-export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
+export function IdentityDocumentForm({ onComplete }: IdentityDocumentFormProps) {
   const [country, setCountry] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
   const [showCameraDialog, setShowCameraDialog] = useState(false);
@@ -319,7 +319,10 @@ export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
         onClose={() => setShowCameraDialog(false)}
         onSubmit={() => {
           setShowCameraDialog(false);
-          // Handle camera submission
+          // Simulate document submission completion
+          setTimeout(() => {
+            onComplete?.();
+          }, 1000);
         }}
       />
 
@@ -328,7 +331,10 @@ export function IdentityDocumentForm({}: IdentityDocumentFormProps) {
         onClose={() => setShowUploadDialog(false)}
         onSubmit={() => {
           setShowUploadDialog(false);
-          // Handle upload submission
+          // Simulate document submission completion
+          setTimeout(() => {
+            onComplete?.();
+          }, 1000);
         }}
       />
     </div>
