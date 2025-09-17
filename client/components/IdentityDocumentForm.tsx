@@ -7,7 +7,9 @@ interface IdentityDocumentFormProps {
   onComplete?: () => void;
 }
 
-export function IdentityDocumentForm({ onComplete }: IdentityDocumentFormProps) {
+export function IdentityDocumentForm({
+  onComplete,
+}: IdentityDocumentFormProps) {
   const [country, setCountry] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
   const [showCameraDialog, setShowCameraDialog] = useState(false);

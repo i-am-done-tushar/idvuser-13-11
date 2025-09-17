@@ -143,10 +143,12 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
                           <div className="flex w-full flex-col items-start">
                             <div className="w-full text-center font-roboto text-[13px] font-normal leading-5">
                               <span className="text-text-muted">
-                                Continue on another device by scanning the QR code or opening
+                                Continue on another device by scanning the QR
+                                code or opening
                               </span>
                               <span className="text-primary">
-                                {" "}https://id.xyz/verify
+                                {" "}
+                                https://id.xyz/verify
                               </span>
                             </div>
                           </div>

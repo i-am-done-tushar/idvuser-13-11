@@ -31,7 +31,8 @@ export function IdentityVerificationPage({
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [hasShownStep1Toast, setHasShownStep1Toast] = useState(false);
-  const [isIdentityDocumentCompleted, setIsIdentityDocumentCompleted] = useState(false);
+  const [isIdentityDocumentCompleted, setIsIdentityDocumentCompleted] =
+    useState(false);
   const [hasShownStep2Toast, setHasShownStep2Toast] = useState(false);
   const [showConsentDialog, setShowConsentDialog] = useState(true);
   const [hasConsented, setHasConsented] = useState(false);
@@ -132,7 +133,11 @@ export function IdentityVerificationPage({
 
   // Monitor for Step 2 completion
   useEffect(() => {
-    if (currentStep === 2 && isIdentityDocumentCompleted && !hasShownStep2Toast) {
+    if (
+      currentStep === 2 &&
+      isIdentityDocumentCompleted &&
+      !hasShownStep2Toast
+    ) {
       // Show success toast
       toast({
         title: (
@@ -172,12 +177,7 @@ export function IdentityVerificationPage({
         setCurrentStep(3);
       }, 1500);
     }
-  }, [
-    currentStep,
-    isIdentityDocumentCompleted,
-    hasShownStep2Toast,
-    toast,
-  ]);
+  }, [currentStep, isIdentityDocumentCompleted, hasShownStep2Toast, toast]);
 
   const handleSendEmailOTP = () => {
     // Mock email verification
@@ -457,7 +457,9 @@ export function IdentityVerificationPage({
                     </div>
                     {currentStep === 2 ? (
                       <div className="flex py-4 px-[34px] flex-col items-start self-stretch border-t border-[#DEDEDD] bg-white">
-                        <IdentityDocumentForm onComplete={handleIdentityDocumentComplete} />
+                        <IdentityDocumentForm
+                          onComplete={handleIdentityDocumentComplete}
+                        />
                       </div>
                     ) : (
                       <div className="flex w-full h-[308px] py-4 px-4 flex-col justify-center items-center border-t border-border bg-background">
