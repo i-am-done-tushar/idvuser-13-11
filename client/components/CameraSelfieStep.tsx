@@ -48,17 +48,17 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
         </div>
 
         {/* Main Content Section */}
-        <div className="flex p-4 flex-col justify-center items-center self-stretch border-t border-border bg-background">
-          <div className="flex w-full max-w-[956px] p-2 items-center gap-6 lg:gap-6">
+        <div className="flex p-2 sm:p-4 flex-col justify-center items-center self-stretch border-t border-border bg-background">
+          <div className="flex w-full max-w-[956px] p-2 flex-col lg:flex-row items-center gap-4 lg:gap-6">
             {/* Left Section - Camera Capture */}
-            <div className="flex h-[428px] flex-col justify-center items-start flex-1">
-              <div className="flex h-[380px] pt-4 flex-col items-center gap-2 flex-shrink-0 self-stretch rounded-t-lg border-t-[1.5px] border-r-[1.5px] border-l-[1.5px] border-dashed border-step-inactive-border bg-background">
+            <div className="flex w-full lg:flex-1 flex-col justify-center items-center">
+              <div className="flex w-full max-w-[440px] min-h-[300px] lg:min-h-[380px] pt-4 flex-col items-center gap-2 rounded-t-lg border-t-[1.5px] border-r-[1.5px] border-l-[1.5px] border-dashed border-step-inactive-border bg-background">
                 <div className="flex flex-col justify-center items-center gap-7 flex-1 self-stretch rounded-t border-[1.5px] border-dashed border-step-inactive-border bg-background">
-                  <div className="flex flex-col justify-center items-center gap-2 flex-1 self-stretch rounded-lg bg-background">
-                    <div className="flex w-full max-w-[412px] flex-col items-center gap-2">
+                  <div className="flex flex-col justify-center items-center gap-2 flex-1 self-stretch rounded-lg bg-background px-4">
+                    <div className="flex w-full max-w-[350px] flex-col items-center gap-2">
                       <div className="w-[126px] h-[52px] relative">
                         <svg
-                          className="w-8 h-8 flex-shrink-0 absolute left-[49px] top-0"
+                          className="w-8 h-8 flex-shrink-0 absolute left-1/2 top-0 transform -translate-x-1/2"
                           viewBox="0 0 32 32"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +71,7 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
                             strokeLinejoin="round"
                           />
                         </svg>
-                        <div className="w-[126px] text-text-primary text-center font-roboto text-[13px] font-medium leading-5 absolute left-0 top-8 h-5">
+                        <div className="w-full text-text-primary text-center font-roboto text-[13px] font-medium leading-5 absolute left-0 top-8 h-5">
                           Camera not detected.
                         </div>
                       </div>
@@ -83,10 +83,10 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
                   </div>
                 </div>
               </div>
-              
+
               {/* Retry Button Section */}
-              <div className="flex w-full max-w-[440px] p-2 pr-4 flex-col items-end gap-2 rounded-b border-step-inactive-border bg-[#F6F7FB]">
-                <button className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary">
+              <div className="flex w-full max-w-[440px] p-2 pr-4 flex-col items-end gap-2 rounded-b bg-[#F6F7FB]">
+                <button className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary hover:bg-primary/90 transition-colors">
                   <svg
                     className="w-[18px] h-[18px] transform -rotate-90"
                     viewBox="0 0 18 18"
@@ -108,8 +108,15 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
               </div>
             </div>
 
-            {/* Center Divider */}
-            <div className="flex h-24 flex-col justify-center items-center gap-1">
+            {/* Center Divider - Horizontal on mobile, Vertical on desktop */}
+            <div className="flex lg:hidden w-full h-4 flex-row justify-center items-center gap-2">
+              <div className="flex-1 h-0 border-t border-border"></div>
+              <div className="text-text-muted font-roboto text-[13px] font-normal px-2">
+                or
+              </div>
+              <div className="flex-1 h-0 border-t border-border"></div>
+            </div>
+            <div className="hidden lg:flex h-24 flex-col justify-center items-center gap-1">
               <div className="w-0 h-[34px] border-l border-border"></div>
               <div className="text-text-muted font-roboto text-[13px] font-normal">
                 or
@@ -118,23 +125,23 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
             </div>
 
             {/* Right Section - QR Code */}
-            <div className="flex h-[428px] flex-col justify-center items-start flex-1">
-              <div className="flex h-[380px] flex-col items-center gap-2 flex-shrink-0 self-stretch">
+            <div className="flex w-full lg:flex-1 flex-col justify-center items-center">
+              <div className="flex w-full max-w-[440px] min-h-[300px] lg:min-h-[380px] flex-col items-center gap-2">
                 <div className="flex pt-4 flex-col justify-between items-center flex-1 self-stretch rounded-t-lg border-[1.5px] border-dashed border-step-inactive-border">
-                  <div className="flex flex-col justify-center items-center gap-2 flex-1">
-                    <div className="flex justify-center items-center gap-4">
+                  <div className="flex flex-col justify-center items-center gap-2 flex-1 px-4">
+                    <div className="flex flex-col lg:flex-row justify-center items-center gap-4">
                       {/* QR Code Image */}
                       <img
-                        className="w-32 h-[131.879px] aspect-[128/131.88]"
+                        className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 flex-shrink-0"
                         src="https://api.builder.io/api/v1/image/assets/TEMP/7e3be353453f139a4c9f40e2de6ea62b3ab16235?width=256"
                         alt="QR Code"
                       />
-                      
+
                       {/* QR Instructions */}
                       <div className="flex flex-col justify-center items-center gap-2">
-                        <div className="flex w-[214px] flex-col items-center gap-3">
-                          <div className="flex w-[214px] flex-col items-start">
-                            <div className="self-stretch text-center font-roboto text-[13px] font-normal leading-5">
+                        <div className="flex w-full max-w-[214px] flex-col items-center gap-3">
+                          <div className="flex w-full flex-col items-start">
+                            <div className="w-full text-center font-roboto text-[13px] font-normal leading-5">
                               <span className="text-text-muted">
                                 Continue on another device by scanning the QR code or opening
                               </span>
@@ -149,10 +156,10 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
                   </div>
                 </div>
               </div>
-              
+
               {/* How does this work section */}
-              <div className="flex w-full max-w-[440px] h-12 p-4 items-center gap-2 flex-shrink-0 rounded-b bg-[#F6F7FB]">
-                <div className="flex w-[135px] justify-end items-center gap-1 flex-shrink-0">
+              <div className="flex w-full max-w-[440px] h-12 p-4 items-center gap-2 rounded-b bg-[#F6F7FB]">
+                <div className="flex w-full justify-end items-center gap-1">
                   <svg
                     className="w-5 h-5 flex-shrink-0"
                     viewBox="0 0 20 20"
@@ -174,7 +181,7 @@ export function CameraSelfieStep({}: CameraSelfieStepProps) {
                       </clipPath>
                     </defs>
                   </svg>
-                  <button className="text-primary font-roboto text-xs font-normal leading-5">
+                  <button className="text-primary font-roboto text-xs font-normal leading-5 hover:underline">
                     How does this work?
                   </button>
                 </div>
