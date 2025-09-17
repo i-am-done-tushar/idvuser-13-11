@@ -14,32 +14,13 @@ interface HowItWorksDialogProps {
 
 export function HowItWorksDialog({ isOpen, onClose }: HowItWorksDialogProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="max-w-[800px] p-0 gap-0 bg-white border border-border rounded-lg">
         {/* Header */}
         <DialogHeader className="flex flex-row justify-between items-center p-6 border-b border-border">
           <DialogTitle className="text-[#172B4D] font-figtree text-xl font-bold leading-[30px]">
             How does this work?
           </DialogTitle>
-          <button
-            onClick={onClose}
-            className="flex w-8 h-8 justify-center items-center rounded-full bg-white hover:bg-gray-50 transition-colors"
-          >
-            <svg
-              className="w-5 h-5"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15 5L5 15M5 5L15 15"
-                stroke="#676879"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
         </DialogHeader>
 
         {/* Main Content */}
