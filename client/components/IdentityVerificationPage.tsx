@@ -686,7 +686,7 @@ export function IdentityVerificationPage({
 
                   {/* Capture Selfie Section */}
                   {currentStep === 3 ? (
-                    <CameraSelfieStep />
+                    <CameraSelfieStep onComplete={() => setIsSelfieCompleted(true)} />
                   ) : (
                     <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
                       <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-border">
