@@ -216,6 +216,13 @@ export function IdentityVerificationPage({
     setIsIdentityDocumentCompleted(true);
   };
 
+  const handleSubmit = () => {
+    if (isFormValid()) {
+      // Navigate to verification progress page
+      navigate("/verification-progress");
+    }
+  };
+
   const toggleSection = (sectionIndex: number) => {
     setExpandedSections(prev =>
       prev.includes(sectionIndex)
