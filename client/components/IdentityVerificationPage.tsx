@@ -79,9 +79,26 @@ export function IdentityVerificationPage({
     fetchTemplate();
   }, [templateId]);
 
+  // Step 1 specific validation (personal info + email/phone)
+  const isStep1Complete = () => {
+    return (
+      isValidName(formData.firstName) &&
+      isValidName(formData.lastName) &&
+      isValidDOB(formData.dateOfBirth) &&
+      isValidEmail(formData.email) &&
+      !!formData.countryCode &&
+      isValidPhoneForCountry(formData.countryCode, formData.phoneNumber) &&
+      isValidAddress(formData.address) &&
+      !!formData.city &&
+      isValidPostalCode(formData.postalCode) &&
+      isEmailVerified &&
+      isPhoneVerified
+    );
+  };
+
   // Monitor for Step 1 completion
   useEffect(() => {
-    const formIsValid = isFormValid();
+    const formIsValid = isStep1Complete();
 
     if (currentStep === 1 && formIsValid && !hasShownStep1Toast) {
       // Show success toast
