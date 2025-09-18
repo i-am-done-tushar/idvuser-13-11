@@ -221,7 +221,7 @@ export function PersonalInformationForm({
               </div>
             </div>
 
-            <div className="flex w-full sm:w-[452px] flex-col items-start">
+            <div className="flex w-full sm:flex-1 flex-col items-start">
               <div className="flex pb-2 items-start gap-2 self-stretch">
                 <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                   Date Of Birth
