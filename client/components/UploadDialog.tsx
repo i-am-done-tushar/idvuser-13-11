@@ -21,9 +21,9 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
   if (!isOpen) return null;
 
   const validateFile = (file: File) => {
-    const typeOk = ALLOWED_TYPES.includes(file.type as any) || ALLOWED_EXT.some((ext) =>
-      file.name.toLowerCase().endsWith(ext)
-    );
+    const typeOk =
+      ALLOWED_TYPES.includes(file.type as any) ||
+      ALLOWED_EXT.some((ext) => file.name.toLowerCase().endsWith(ext));
     const sizeOk = file.size <= MAX_SIZE;
     return { typeOk, sizeOk };
   };

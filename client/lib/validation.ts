@@ -53,7 +53,8 @@ export function parseDOB(dob: string): Date | null {
   const month = parseInt(m[2], 10) - 1;
   const year = parseInt(m[3], 10);
   const d = new Date(year, month, day);
-  if (d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) return null;
+  if (d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day)
+    return null;
   return d;
 }
 
@@ -77,7 +78,7 @@ function getAge(birth: Date, now = new Date()) {
 
 export function isValidPostalCode(code: string) {
   if (!code) return false;
-  const digits = code.replace(/\s+/g, '');
+  const digits = code.replace(/\s+/g, "");
   // Accept 5 or 6 digit postal codes
   return /^\d{5,6}$/.test(digits);
 }

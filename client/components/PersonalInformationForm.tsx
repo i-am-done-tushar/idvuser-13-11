@@ -45,8 +45,7 @@ export function PersonalInformationForm({
     switch (field) {
       case "firstName":
       case "lastName":
-        if (!isValidName(value))
-          error = "Enter at least 2 valid letters.";
+        if (!isValidName(value)) error = "Enter at least 2 valid letters.";
         break;
       case "dateOfBirth":
         if (!isValidDOB(value))
@@ -135,7 +134,7 @@ export function PersonalInformationForm({
                     onChange={(e) =>
                       updateField(
                         "firstName",
-                        e.target.value.replace(/[^\p{L}]/gu, "")
+                        e.target.value.replace(/[^\p{L}]/gu, ""),
                       )
                     }
                     onBlur={() => validateField("firstName")}
@@ -177,7 +176,7 @@ export function PersonalInformationForm({
                     onChange={(e) =>
                       updateField(
                         "lastName",
-                        e.target.value.replace(/[^\p{L}]/gu, "")
+                        e.target.value.replace(/[^\p{L}]/gu, ""),
                       )
                     }
                     onBlur={() => validateField("lastName")}
@@ -286,7 +285,9 @@ export function PersonalInformationForm({
                         type="email"
                         placeholder="Enter Your Email Address"
                         value={formData.email}
-                        onChange={(e) => updateField("email", e.target.value.trim())}
+                        onChange={(e) =>
+                          updateField("email", e.target.value.trim())
+                        }
                         onBlur={() => validateField("email")}
                         aria-invalid={!!errors.email}
                         aria-describedby={
@@ -297,9 +298,13 @@ export function PersonalInformationForm({
                     </div>
                     <button
                       onClick={onSendEmailOTP}
-                      disabled={!isValidEmail(formData.email) || isEmailVerified}
-                      aria-disabled={!isValidEmail(formData.email) || isEmailVerified}
-                      className={`flex h-7 py-[9px] px-3 justify-center items-center gap-2 rounded bg-background ${(!isValidEmail(formData.email) || isEmailVerified) ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={
+                        !isValidEmail(formData.email) || isEmailVerified
+                      }
+                      aria-disabled={
+                        !isValidEmail(formData.email) || isEmailVerified
+                      }
+                      className={`flex h-7 py-[9px] px-3 justify-center items-center gap-2 rounded bg-background ${!isValidEmail(formData.email) || isEmailVerified ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       <span className="text-primary font-figtree text-[12px] font-normal">
                         {isEmailVerified ? "Verified" : "Send OTP"}
@@ -314,10 +319,12 @@ export function PersonalInformationForm({
                     >
                       {errors.email}
                     </div>
-                  ) : !isEmailVerified && (
-                    <div className="text-text-muted text-[12px] mt-1">
-                      Email verification is required to continue.
-                    </div>
+                  ) : (
+                    !isEmailVerified && (
+                      <div className="text-text-muted text-[12px] mt-1">
+                        Email verification is required to continue.
+                      </div>
+                    )
                   )}
                 </div>
               </div>
@@ -332,20 +339,27 @@ export function PersonalInformationForm({
 
                 <div className={`flex flex-col items-start gap-1 self-stretch`}>
                   <div
-                    className={`flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border ${(errors.phoneNumber || errors.countryCode) ? "border-destructive" : "border-input-border"} bg-background`}
+                    className={`flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border ${errors.phoneNumber || errors.countryCode ? "border-destructive" : "border-input-border"} bg-background`}
                   >
                     <div className="flex items-center gap-2 flex-1">
                       <select
                         value={formData.countryCode}
-                        onChange={(e) => updateField("countryCode", e.target.value)}
+                        onChange={(e) =>
+                          updateField("countryCode", e.target.value)
+                        }
                         onBlur={() => validateField("countryCode")}
                         aria-invalid={!!errors.countryCode}
-                        aria-describedby={errors.countryCode ? "err-countryCode" : undefined}
+                        aria-describedby={
+                          errors.countryCode ? "err-countryCode" : undefined
+                        }
                         className="text-text-muted font-roboto text-[13px] font-normal leading-5 bg-transparent outline-none border-r border-input-border pr-2 mr-2"
                       >
                         <option value="">Select</option>
                         {COUNTRY_PHONE_RULES.map((c) => (
-                          <option key={c.dial} value={c.dial}>{`${c.dial} (${c.name})`}</option>
+                          <option
+                            key={c.dial}
+                            value={c.dial}
+                          >{`${c.dial} (${c.name})`}</option>
                         ))}
                       </select>
                       <input
@@ -365,9 +379,19 @@ export function PersonalInformationForm({
                     </div>
                     <button
                       onClick={onSendPhoneOTP}
-                      disabled={!isValidPhoneForCountry(formData.countryCode, formData.phoneNumber) || isPhoneVerified}
-                      aria-disabled={!isValidPhoneForCountry(formData.countryCode, formData.phoneNumber) || isPhoneVerified}
-                      className={`flex h-7 py-[9px] px-3 justify-center items-center gap-2 rounded bg-background ${(!isValidPhoneForCountry(formData.countryCode, formData.phoneNumber) || isPhoneVerified) ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={
+                        !isValidPhoneForCountry(
+                          formData.countryCode,
+                          formData.phoneNumber,
+                        ) || isPhoneVerified
+                      }
+                      aria-disabled={
+                        !isValidPhoneForCountry(
+                          formData.countryCode,
+                          formData.phoneNumber,
+                        ) || isPhoneVerified
+                      }
+                      className={`flex h-7 py-[9px] px-3 justify-center items-center gap-2 rounded bg-background ${!isValidPhoneForCountry(formData.countryCode, formData.phoneNumber) || isPhoneVerified ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       <span className="text-primary font-figtree text-[12px] font-normal">
                         {isPhoneVerified ? "Verified" : "Send OTP"}
@@ -375,11 +399,19 @@ export function PersonalInformationForm({
                     </button>
                   </div>
                   {errors.countryCode ? (
-                    <div id="err-countryCode" role="alert" className="text-destructive text-[12px] mt-1">
+                    <div
+                      id="err-countryCode"
+                      role="alert"
+                      className="text-destructive text-[12px] mt-1"
+                    >
                       {errors.countryCode}
                     </div>
                   ) : errors.phoneNumber ? (
-                    <div id="err-phoneNumber" role="alert" className="text-destructive text-[12px] mt-1">
+                    <div
+                      id="err-phoneNumber"
+                      role="alert"
+                      className="text-destructive text-[12px] mt-1"
+                    >
                       {errors.phoneNumber}
                     </div>
                   ) : !isPhoneVerified ? (
