@@ -1,8 +1,8 @@
 export function isValidName(name: string) {
   if (!name) return false;
   const trimmed = name.trim();
-  if (trimmed.length < 2) return false;
-  return /^[A-Za-z\s'\-\.]+$/.test(trimmed);
+  // Only alphabetic letters, at least 2 characters. Uses Unicode property escapes to allow international letters.
+  return /^\p{L}{2,}$/u.test(trimmed);
 }
 
 export function isValidEmail(email: string) {
