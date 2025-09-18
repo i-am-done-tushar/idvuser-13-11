@@ -11,23 +11,57 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
   const [backFile, setBackFile] = useState<File | null>(null);
   const frontInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
+  const [frontError, setFrontError] = useState<string>("");
+  const [backError, setBackError] = useState<string>("");
+
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"] as const;
+  const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".pdf"] as const;
 
   if (!isOpen) return null;
+
+  const validateFile = (file: File) => {
+    const typeOk = ALLOWED_TYPES.includes(file.type as any) || ALLOWED_EXT.some((ext) =>
+      file.name.toLowerCase().endsWith(ext)
+    );
+    const sizeOk = file.size <= MAX_SIZE;
+    return { typeOk, sizeOk };
+  };
 
   const handleFrontFileSelect = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFrontFile(file);
+    const file = event.target.files?.[0] || null;
+    if (!file) {
+      setFrontFile(null);
+      setFrontError("");
+      return;
     }
+    const { typeOk, sizeOk } = validateFile(file);
+    if (!typeOk || !sizeOk) {
+      setFrontFile(null);
+      setFrontError("Invalid file. Allowed: JPG, JPEG, PNG, PDF. Max 5MB.");
+      return;
+    }
+    setFrontError("");
+    setFrontFile(file);
   };
 
   const handleBackFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setBackFile(file);
+    const file = event.target.files?.[0] || null;
+    if (!file) {
+      setBackFile(null);
+      setBackError("");
+      return;
     }
+    const { typeOk, sizeOk } = validateFile(file);
+    if (!typeOk || !sizeOk) {
+      setBackFile(null);
+      setBackError("Invalid file. Allowed: JPG, JPEG, PNG, PDF. Max 5MB.");
+      return;
+    }
+    setBackError("");
+    setBackFile(file);
   };
 
   const handleSubmit = () => {
@@ -115,7 +149,7 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
                       <input
                         ref={frontInputRef}
                         type="file"
-                        accept="image/jpeg,image/jpg,image/png"
+                        accept="image/jpeg,image/png,application/pdf"
                         onChange={handleFrontFileSelect}
                         className="hidden"
                       />
@@ -126,10 +160,10 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
               <div className="flex h-12 px-4 justify-center items-end gap-2 flex-shrink-0 self-stretch rounded-b bg-[#F6F7FB]">
                 <div className="flex justify-between items-center flex-1 self-stretch">
                   <div className="text-[#676879] font-roboto text-xs font-normal leading-5">
-                    Supported Formats: JPG, JPEG, PNG
+                    Supported Formats: JPG, JPEG, PNG, PDF
                   </div>
                   <div className="text-[#676879] font-roboto text-xs font-normal leading-5">
-                    Maximum Size: 10MB
+                    Maximum Size: 5MB
                   </div>
                 </div>
               </div>
@@ -175,7 +209,7 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
                       <input
                         ref={backInputRef}
                         type="file"
-                        accept="image/jpeg,image/jpg,image/png"
+                        accept="image/jpeg,image/png,application/pdf"
                         onChange={handleBackFileSelect}
                         className="hidden"
                       />
@@ -186,10 +220,10 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
               <div className="flex h-12 px-4 justify-center items-end gap-2 flex-shrink-0 self-stretch rounded-b bg-[#F6F7FB]">
                 <div className="flex justify-between items-center flex-1 self-stretch">
                   <div className="text-[#676879] font-roboto text-xs font-normal leading-5">
-                    Supported Formats: JPG, JPEG, PNG
+                    Supported Formats: JPG, JPEG, PNG, PDF
                   </div>
                   <div className="text-[#676879] font-roboto text-xs font-normal leading-5">
-                    Maximum Size: 10MB
+                    Maximum Size: 5MB
                   </div>
                 </div>
               </div>
@@ -198,12 +232,17 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex h-[68px] justify-end items-center gap-2 self-stretch border-t border-[#D0D4E4] bg-white px-6">
+        <div className="flex h-[68px] justify-between items-center gap-2 self-stretch border-t border-[#D0D4E4] bg-white px-6">
+          {(frontError || backError) && (
+            <div className="text-destructive text-xs">
+              {frontError || backError}
+            </div>
+          )}
           <button
             onClick={handleSubmit}
-            disabled={!frontFile || !backFile}
+            disabled={!frontFile || !backFile || !!frontError || !!backError}
             className={`flex h-[38px] px-4 py-[11px] justify-center items-center gap-2 rounded ${
-              frontFile && backFile
+              frontFile && backFile && !frontError && !backError
                 ? "bg-[#0073EA] hover:bg-[#0073EA]/90"
                 : "bg-[#0073EA]/50 cursor-not-allowed"
             }`}
