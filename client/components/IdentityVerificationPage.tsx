@@ -348,6 +348,7 @@ export function IdentityVerificationPage({
               </div>
               <div className="flex items-center gap-3">
                 <button
+                  onClick={handleSubmit}
                   className={`flex h-8 py-[9px] px-3 justify-center items-center gap-0.5 rounded ${
                     isFormValid() ? "bg-primary" : "bg-primary opacity-50"
                   }`}
