@@ -6,9 +6,10 @@ export function isValidName(name: string) {
 }
 
 export function isValidEmail(email: string) {
-  if (!email) return false;
+  const trimmed = (email ?? "").trim();
+  if (!trimmed) return false;
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
+  return re.test(trimmed);
 }
 
 export function isValidPhone(phone: string) {
