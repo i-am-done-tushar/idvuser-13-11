@@ -65,7 +65,7 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
   };
 
   const handleSubmit = () => {
-    if (frontFile && backFile) {
+    if (frontFile && backFile && !frontError && !backError) {
       onSubmit();
     }
   };
