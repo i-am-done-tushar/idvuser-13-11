@@ -2,12 +2,13 @@ import { useState } from "react";
 import { HowItWorksDialog } from "./HowItWorksDialog";
 
 interface CameraSelfieStepProps {
-  // Add props as needed for camera functionality
+  onComplete?: () => void;
 }
 
-export function CameraSelfieStep({}: CameraSelfieStepProps) {
+export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
   const [cameraError, setCameraError] = useState(true); // For demo purposes, showing error state
   const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
+  const [selfieCaptured, setSelfieCaptured] = useState(false);
 
   return (
     <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
