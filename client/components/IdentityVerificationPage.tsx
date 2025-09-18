@@ -665,60 +665,8 @@ export function IdentityVerificationPage({
                           />
                         </div>
                       ) : (
-                        <div className="flex w-full h-[308px] py-4 px-4 flex-col justify-center items-center border-t border-border bg-background">
-                          <div className="flex w-[269px] flex-col items-center gap-2 text-center">
-                            <svg
-                              className="w-[270px] h-[124px]"
-                              viewBox="0 0 270 124"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M85.3279 22.1817L78.0773 24.5986C77.434 24.813 77 25.4151 77 26.0933V64.3453C77 65.2155 77.7054 65.9209 78.5755 65.9209H191.227C192.097 65.9209 192.802 65.2155 192.802 64.3453V35.9856C194.546 23.1968 184.36 21.4894 177.822 22.3318C176.954 22.4437 176.115 21.8651 175.923 21.0114C169.802 -6.20549 153.204 2.6679 143.786 12.3146C142.867 13.2569 141.155 12.8031 140.472 11.6773C137.614 6.96655 131.053 8.36187 126.478 10.4315C125.425 10.908 124.154 10.2315 123.989 9.08721C122.429 -1.75121 117.469 0.119079 114.308 3.27733C113.684 3.9011 112.684 3.9987 111.958 3.49708C106.479 -0.288224 104.073 3.4716 103.285 7.11776C103.063 8.14607 101.996 8.83505 100.98 8.56145C89.6105 5.49927 86.5757 14.5459 86.4423 20.6214C86.4268 21.3237 85.9943 21.9596 85.3279 22.1817Z"
-                                fill="url(#paint0_linear_doc)"
-                              />
-                              <rect
-                                x="123.5"
-                                y="46.3867"
-                                width="24.8794"
-                                height="12.8687"
-                                fill="url(#paint1_linear_doc)"
-                              />
-                              <defs>
-                                <linearGradient
-                                  id="paint0_linear_doc"
-                                  x1="135"
-                                  y1="0.825195"
-                                  x2="135.295"
-                                  y2="33.9116"
-                                  gradientUnits="userSpaceOnUse"
-                                >
-                                  <stop stopColor="#F1F1F1" />
-                                  <stop
-                                    offset="1"
-                                    stopColor="#F8F8F8"
-                                    stopOpacity="0.2"
-                                  />
-                                </linearGradient>
-                                <linearGradient
-                                  id="paint1_linear_doc"
-                                  x1="135.94"
-                                  y1="46.3867"
-                                  x2="135.94"
-                                  y2="59.2554"
-                                  gradientUnits="userSpaceOnUse"
-                                >
-                                  <stop stopColor="#BCD3FF" />
-                                  <stop offset="1" stopColor="#EAF1FF" />
-                                </linearGradient>
-                              </defs>
-                            </svg>
-                            <div className="text-text-secondary font-roboto text-[13px] font-medium">
-                              You'll be able to complete this step after
-                              <br />
-                              submitting your personal information.
-                            </div>
-                          </div>
+                        <div className="flex w-full h-[308px] border-t border-border bg-background">
+                          <LockedStepComponent message="You'll be able to complete this step after submitting your personal information." />
                         </div>
                       )}
                     </div>
