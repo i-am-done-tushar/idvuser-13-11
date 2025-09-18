@@ -245,7 +245,7 @@ export function IdentityVerificationPage({
       isValidPostalCode(formData.postalCode) &&
       isEmailVerified &&
       isPhoneVerified &&
-      isIdentityDocumentCompleted
+      isSelfieCompleted
     );
   };
 
