@@ -116,7 +116,7 @@ export function PersonalInformationForm({
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 self-stretch">
             {/* First Name */}
-            <div className="flex flex-col items-start flex-1">
+            <div className="flex flex-col items-start flex-1 w-full">
               <div className="flex pb-2 items-start gap-2 self-stretch">
                 <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                   First Name
@@ -158,7 +158,7 @@ export function PersonalInformationForm({
             </div>
 
             {/* Last Name */}
-            <div className="flex flex-col items-start flex-1">
+            <div className="flex flex-col items-start flex-1 w-full">
               <div className="flex pb-2 items-start gap-2 self-stretch">
                 <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                   Last Name
@@ -202,7 +202,7 @@ export function PersonalInformationForm({
 
           {/* Middle Name and DOB */}
           <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 self-stretch mt-6">
-            <div className="flex flex-col items-start flex-1">
+            <div className="flex flex-col items-start flex-1 w-full">
               <div className="flex pb-2 items-start gap-2 self-stretch">
                 <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
                   Middle Name
@@ -266,7 +266,7 @@ export function PersonalInformationForm({
           {/* Email & Phone */}
           <div className="flex flex-col items-start gap-6 self-stretch mt-6">
             <div className="flex flex-col lg:flex-row items-start gap-4 lg:gap-6 self-stretch">
-              <div className="flex flex-col items-start flex-1">
+              <div className="flex flex-col items-start flex-1 w-full">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 font-roboto text-[13px] font-normal leading-[18px]">
                     <span className="text-text-primary">Email </span>
@@ -329,7 +329,7 @@ export function PersonalInformationForm({
                 </div>
               </div>
 
-              <div className="flex flex-col items-start flex-1">
+              <div className="flex flex-col items-start flex-1 w-full">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 font-roboto text-[13px] font-normal leading-[18px]">
                     <span className="text-text-primary">Phone Number </span>
