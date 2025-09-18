@@ -38,6 +38,7 @@ export function IdentityVerificationPage({
   const [isIdentityDocumentCompleted, setIsIdentityDocumentCompleted] =
     useState(false);
   const [hasShownStep2Toast, setHasShownStep2Toast] = useState(false);
+  const [isSelfieCompleted, setIsSelfieCompleted] = useState(false);
   const [showConsentDialog, setShowConsentDialog] = useState(true);
   const [hasConsented, setHasConsented] = useState(false);
   const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
