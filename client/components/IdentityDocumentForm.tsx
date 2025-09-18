@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 
@@ -14,6 +13,7 @@ export function IdentityDocumentForm({
   const [selectedDocument, setSelectedDocument] = useState("");
   const [showCameraDialog, setShowCameraDialog] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [uploadedDocuments, setUploadedDocuments] = useState<string[]>([]);
 
   const documentTypes = [
     {
@@ -150,30 +150,61 @@ export function IdentityDocumentForm({
           {/* Document Options Grid */}
           <div className="flex flex-col items-start gap-8 self-stretch">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-              {documentTypes.map((doc) => (
-                <button
-                  key={doc.id}
-                  onClick={() => setSelectedDocument(doc.id)}
-                  className={`flex p-4 pb-3 flex-col items-start gap-3 rounded border transition-all ${
-                    selectedDocument === doc.id
-                      ? "border-[#0073EA] bg-[#F0F8FF]"
-                      : "border-[#C3C6D4] bg-white hover:border-[#0073EA]/50"
-                  }`}
-                >
-                  {/* Icon */}
-                  <div
-                    className="flex w-8 h-8 p-2 justify-center items-center gap-2 aspect-square rounded"
-                    style={{ backgroundColor: doc.color }}
+              {documentTypes.map((doc) => {
+                const isSelected = selectedDocument === doc.id;
+                const isUploaded = uploadedDocuments.includes(doc.id);
+                return (
+                  <button
+                    key={doc.id}
+                    onClick={() => {
+                      if (selectedDocument === doc.id) {
+                        // toggle off
+                        setSelectedDocument("");
+                        setShowCameraDialog(false);
+                        setShowUploadDialog(false);
+                      } else {
+                        setSelectedDocument(doc.id);
+                      }
+                    }}
+                    className={`relative flex p-4 pb-3 flex-col items-start gap-3 rounded border transition-all ${
+                      isUploaded
+                        ? "border-[#00B499] bg-[#EBFFF5]"
+                        : isSelected
+                          ? "border-[#0073EA] bg-[#F0F8FF]"
+                          : "border-[#C3C6D4] bg-white hover:border-[#0073EA]/50"
+                    }`}
                   >
-                    {doc.icon}
-                  </div>
+                    {/* Icon */}
+                    <div
+                      className="flex w-8 h-8 p-2 justify-center items-center gap-2 aspect-square rounded"
+                      style={{ backgroundColor: doc.color }}
+                    >
+                      {doc.icon}
+                    </div>
 
-                  {/* Document Name */}
-                  <div className="text-[#172B4D] font-roboto text-[14px] font-medium leading-[22px]">
-                    {doc.name}
-                  </div>
-                </button>
-              ))}
+                    {/* Document Name */}
+                    <div className="text-[#172B4D] font-roboto text-[14px] font-medium leading-[22px]">
+                      {doc.name}
+                    </div>
+
+                    {isUploaded && (
+                      <div className="absolute top-2 right-2 flex items-center gap-1 bg-white rounded-full p-1 border border-[#E6F1FD]">
+                        <svg
+                          className="w-4 h-4"
+                          viewBox="0 0 18 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236Z"
+                            fill="#039855"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -321,10 +352,18 @@ export function IdentityDocumentForm({
         onClose={() => setShowCameraDialog(false)}
         onSubmit={() => {
           setShowCameraDialog(false);
-          // Simulate document submission completion
-          setTimeout(() => {
-            onComplete?.();
-          }, 1000);
+          // mark selectedDocument as uploaded
+          if (selectedDocument) {
+            const next = uploadedDocuments.includes(selectedDocument)
+              ? uploadedDocuments
+              : [...uploadedDocuments, selectedDocument];
+            setUploadedDocuments(next);
+            setSelectedDocument("");
+            // call onComplete only when all required documents are uploaded
+            const requiredIds = documentTypes.map((d) => d.id);
+            const allUploaded = requiredIds.every((id) => next.includes(id));
+            if (allUploaded) onComplete?.();
+          }
         }}
       />
 
@@ -333,10 +372,16 @@ export function IdentityDocumentForm({
         onClose={() => setShowUploadDialog(false)}
         onSubmit={() => {
           setShowUploadDialog(false);
-          // Simulate document submission completion
-          setTimeout(() => {
-            onComplete?.();
-          }, 1000);
+          if (selectedDocument) {
+            const next = uploadedDocuments.includes(selectedDocument)
+              ? uploadedDocuments
+              : [...uploadedDocuments, selectedDocument];
+            setUploadedDocuments(next);
+            setSelectedDocument("");
+            const requiredIds = documentTypes.map((d) => d.id);
+            const allUploaded = requiredIds.every((id) => next.includes(id));
+            if (allUploaded) onComplete?.();
+          }
         }}
       />
     </div>

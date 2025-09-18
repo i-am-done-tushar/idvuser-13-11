@@ -3,7 +3,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -20,16 +19,122 @@ export function HowItWorksDialog({ isOpen, onClose }: HowItWorksDialogProps) {
         if (!open) onClose();
       }}
     >
-      <DialogContent className="max-w-[800px] p-0 gap-0 bg-white border border-border rounded-lg">
+      <DialogContent className="max-w-[320px] sm:max-w-[400px] lg:max-w-[800px] p-0 gap-0 bg-white border border-border rounded-lg">
         {/* Header */}
-        <DialogHeader className="flex flex-row justify-between items-center p-6 border-b border-border">
-          <DialogTitle className="text-[#172B4D] font-figtree text-xl font-bold leading-[30px]">
+        <DialogHeader className="flex flex-row justify-between items-center p-4 sm:p-6 border-b border-border">
+          <DialogTitle className="text-[#172B4D] font-figtree text-lg sm:text-xl font-bold leading-[30px]">
             How does this work?
           </DialogTitle>
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center w-6 h-6"
+          >
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 24 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6.33203L6 18.332M6 6.33203L18 18.332"
+                stroke="#676879"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </DialogHeader>
 
-        {/* Main Content */}
-        <div className="flex flex-col items-center gap-6 p-6 bg-white">
+        {/* Mobile Step Indicators */}
+        <div className="lg:hidden flex flex-col p-4 gap-4 bg-white">
+          <div className="text-[#172B4D] text-center font-roboto text-lg font-medium">
+            Continue Securely On Another Device
+          </div>
+
+          {/* Step 1 */}
+          <div className="flex flex-col items-start gap-4 p-4 bg-[#E6F1FD] rounded">
+            <div className="flex items-center gap-3 self-stretch">
+              <div className="flex w-6 h-6 justify-center items-center rounded-full bg-[#0073EA]">
+                <span className="text-white font-roboto text-[13px] font-medium">1</span>
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="text-[#323238] font-roboto text-[15px] font-bold">
+                  Personal Information
+                </div>
+                <div className="text-[#323238] font-roboto text-[13px] font-normal">
+                  Step 1
+                </div>
+              </div>
+            </div>
+            <div className="text-[#172B4D] font-figtree text-[13px] font-normal leading-5">
+              Please provide your basic personal information to begin the identity verification process.
+            </div>
+          </div>
+
+          {/* Step 2 */}
+          <div className="flex flex-col items-start gap-4 p-4 bg-white rounded border border-border">
+            <div className="flex items-center gap-3 self-stretch">
+              <div className="flex w-6 h-6 justify-center items-center rounded-full border border-border bg-white">
+                <span className="text-[#42526E] font-roboto text-[13px] font-medium">2</span>
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="text-[#323238] font-roboto text-[15px] font-bold">
+                  Identity Document
+                </div>
+                <div className="text-[#323238] font-roboto text-[13px] font-normal">
+                  Step 2
+                </div>
+              </div>
+            </div>
+            <div className="text-[#42526E] font-figtree text-[13px] font-normal leading-5">
+              Choose a valid government-issued ID (like a passport, driver's license, or national ID) and upload a clear photo of it.
+            </div>
+          </div>
+
+          {/* Step 3 */}
+          <div className="flex flex-col items-start gap-4 p-4 bg-white rounded border border-border">
+            <div className="flex items-center gap-3 self-stretch">
+              <div className="flex w-6 h-6 justify-center items-center rounded-full border border-border bg-white">
+                <span className="text-[#42526E] font-roboto text-[13px] font-medium">3</span>
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="text-[#323238] font-roboto text-[15px] font-bold">
+                  Capture Selfie
+                </div>
+                <div className="text-[#323238] font-roboto text-[13px] font-normal">
+                  Step 3
+                </div>
+              </div>
+            </div>
+            <div className="text-[#42526E] font-figtree text-[13px] font-normal leading-5">
+              Take a live selfie to confirm you are the person in the ID document. Make sure you're in a well-lit area and your face is clearly visible.
+            </div>
+          </div>
+
+          {/* Success message for mobile */}
+          <div className="flex items-center justify-center p-4 bg-[#BBDBC9] rounded gap-2">
+            <svg
+              className="w-[18px] h-[18px]"
+              viewBox="0 0 18 19"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M1.52363 9.33203C1.5234 9.23168 1.50369 9.13141 1.46449 9.03691L0.923408 7.72684C0.809093 7.45094 0.750045 7.15477 0.75 6.85612C0.749952 6.55732 0.808785 6.26142 0.92313 5.98535C1.03747 5.70928 1.2051 5.45845 1.41642 5.24719C1.62769 5.03599 1.87849 4.86847 2.1545 4.7542L3.46245 4.21241C3.65187 4.13409 3.80295 3.98368 3.88181 3.79447L4.42373 2.48614C4.65456 1.92882 5.09734 1.48603 5.65465 1.25517C6.21196 1.02432 6.83815 1.02432 7.39546 1.25517L8.70278 1.79671C8.89252 1.87503 9.10575 1.87493 9.29535 1.79626L9.29685 1.79565L10.6053 1.25597C11.1624 1.02543 11.7887 1.02535 12.3458 1.2561C12.903 1.48691 13.3457 1.92958 13.5766 2.48674L14.1055 3.76367C14.1102 3.77375 14.1147 3.78397 14.119 3.79434C14.1974 3.98396 14.3478 4.13471 14.5372 4.21351L15.8459 4.75561C16.4032 4.98646 16.8461 5.42926 17.0769 5.98657C17.3077 6.54388 17.3077 7.17007 17.0769 7.72739L16.5351 9.03541C16.4957 9.13036 16.4761 9.23161 16.4761 9.33226C16.4761 9.43291 16.4957 9.53371 16.5351 9.62866L17.0769 10.9367C17.3077 11.494 17.3077 12.1202 17.0769 12.6775C16.8461 13.2348 16.4032 13.6776 15.8459 13.9085L14.5372 14.4506C14.3478 14.5294 14.1974 14.6801 14.119 14.8697C14.1147 14.8801 14.1102 14.8903 14.1055 14.9004L13.5766 16.1773C13.3457 16.7345 12.903 17.1772 12.3458 17.408C11.7887 17.6387 11.1624 17.6387 10.6053 17.4081L9.29685 16.8684L9.29535 16.8678C9.10575 16.7891 8.89252 16.7891 8.70278 16.8674L7.39546 17.4089C6.83815 17.6398 6.21196 17.6398 5.65465 17.4089C5.09734 17.178 4.65456 16.7352 4.42373 16.178L3.88181 14.8696C3.80295 14.6804 3.65187 14.53 3.46245 14.4517L2.1545 13.9099C1.87849 13.7956 1.62769 13.6281 1.41642 13.4169C1.2051 13.2056 1.03747 12.9548 0.92313 12.6787C0.808785 12.4026 0.749952 12.1067 0.75 11.8079C0.750045 11.5093 0.809093 11.2131 0.923408 10.9372L1.46449 9.62716C1.50369 9.53266 1.5234 9.43238 1.52363 9.33203ZM12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736Z"
+                fill="#258750"
+              />
+            </svg>
+            <div className="text-[#172B4D] font-roboto text-[12px] font-normal leading-[22px]">
+              Complete the previous steps to enable selfie capture.
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Content */}
+        <div className="hidden lg:flex flex-col items-center gap-6 p-6 bg-white">
           <div className="text-[#172B4D] text-center font-roboto text-lg font-medium">
             Continue Securely On Another Device
           </div>
@@ -50,54 +155,40 @@ export function HowItWorksDialog({ isOpen, onClose }: HowItWorksDialogProps) {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <g clipPath="url(#clip0_qr)">
-                    <path
-                      d="M34.5 11H23.5V23"
-                      stroke="#323238"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M46.5 69L57.5 69L57.5 58"
-                      stroke="#323238"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M46.5 11H57.5V23"
-                      stroke="#323238"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M34.5 69L23.5 69L23.5 58"
-                      stroke="#323238"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M35.0417 39.5002H41.5V45.9585M29.8879 39.5002H29.875M36.3463 45.9585H36.3333M41.5129 51.1252H41.5M53.1379 39.5002H53.125M29.875 45.9585H31.8125M46.0208 39.5002H48.6042M29.875 51.1252H36.3333M41.5 26.5835V34.3335M48.7333 51.1252H51.0583C51.7818 51.1252 52.1435 51.1252 52.4197 50.9844C52.6628 50.8605 52.8603 50.663 52.9842 50.4199C53.125 50.1436 53.125 49.782 53.125 49.0585V46.7335C53.125 46.01 53.125 45.6484 52.9842 45.3721C52.8603 45.129 52.6628 44.9315 52.4197 44.8076C52.1435 44.6668 51.7818 44.6668 51.0583 44.6668H48.7333C48.0099 44.6668 47.6482 44.6668 47.3719 44.8076C47.1288 44.9315 46.9313 45.129 46.8075 45.3721C46.6667 45.6484 46.6667 46.01 46.6667 46.7335V49.0585C46.6667 49.782 46.6667 50.1436 46.8075 50.4199C46.9313 50.663 47.1288 50.8605 47.3719 50.9844C47.6482 51.1252 48.0099 51.1252 48.7333 51.1252ZM48.7333 34.3335H51.0583C51.7818 34.3335 52.1435 34.3335 52.4197 34.1927C52.6628 34.0689 52.8603 33.8713 52.9842 33.6282C53.125 33.3519 53.125 32.9902 53.125 32.2668V29.9418C53.125 29.2184 53.125 28.8567 52.9842 28.5804C52.8603 28.3374 52.6628 28.1398 52.4197 28.0159C52.1435 27.8752 51.7818 27.8752 51.0583 27.8752H48.7333C48.0099 27.8752 47.6482 27.8752 47.3719 28.0159C47.1288 28.1398 46.9313 28.3374 46.8075 28.5804C46.6667 28.8567 46.6667 29.2184 46.6667 29.9418V32.2668C46.6667 32.9902 46.6667 33.3519 46.8075 33.6282C46.9313 33.8713 47.1288 34.0689 47.3719 34.1927C47.6482 34.3335 48.0099 34.3335 48.7333 34.3335ZM31.9417 34.3335H34.2667C34.9901 34.3335 35.3518 34.3335 35.6281 34.1927C35.8711 34.0689 36.0687 33.8713 36.1926 33.6282C36.3333 33.3519 36.3333 32.9902 36.3333 32.2668V29.9418C36.3333 29.2184 36.3333 28.8567 36.1926 28.5804C36.0687 28.3374 35.8711 28.1398 35.6281 28.0159C35.3518 27.8752 34.9901 27.8752 34.2667 27.8752H31.9417C31.2183 27.8752 30.8566 27.8752 30.5803 28.0159C30.3372 28.1398 30.1396 28.3374 30.0158 28.5804C29.875 28.8567 29.875 29.2184 29.875 29.9418V32.2668C29.875 32.9902 29.875 33.3519 30.0158 33.6282C30.1396 33.8713 30.3372 34.0689 30.5803 34.1927C30.8566 34.3335 31.2183 34.3335 31.9417 34.3335Z"
-                      stroke="#323238"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <rect
-                      x="16.5"
-                      y="1.5"
-                      width="46"
-                      height="68"
-                      stroke="#0073EA"
-                      strokeWidth="2"
-                      rx="2"
-                      fill="none"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_qr">
-                      <rect width="85" height="125" fill="white" />
-                    </clipPath>
-                  </defs>
+                  <path
+                    d="M34.5 11H23.5V23"
+                    stroke="#323238"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M46.5 69L57.5 69L57.5 58"
+                    stroke="#323238"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M46.5 11H57.5V23"
+                    stroke="#323238"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M34.5 69L23.5 69L23.5 58"
+                    stroke="#323238"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <rect
+                    x="16.5"
+                    y="1.5"
+                    width="46"
+                    height="68"
+                    stroke="#0073EA"
+                    strokeWidth="2"
+                    rx="2"
+                    fill="none"
+                  />
                 </svg>
               </div>
 
@@ -145,7 +236,6 @@ export function HowItWorksDialog({ isOpen, onClose }: HowItWorksDialogProps) {
 
             {/* Step 2 */}
             <div className="flex flex-col items-center gap-4 min-w-[187px]">
-              {/* Step 2 Illustration */}
               <div className="relative w-[183px] h-[183px]">
                 <div className="absolute inset-0 rounded-full border border-dashed border-[#C3C6D4] bg-white"></div>
                 <div className="absolute inset-[7px] rounded-full bg-gradient-to-br from-[rgba(0,115,234,0.1)] to-[rgba(255,255,255,0.1)]"></div>
@@ -278,7 +368,6 @@ export function HowItWorksDialog({ isOpen, onClose }: HowItWorksDialogProps) {
 
             {/* Step 3 */}
             <div className="flex flex-col items-center gap-4 min-w-[183px]">
-              {/* Step 3 Illustration */}
               <div className="relative w-[183px] h-[183px]">
                 <div className="absolute inset-0 rounded-full border border-dashed border-[#C3C6D4] bg-white"></div>
                 <div className="absolute inset-[7px] rounded-full bg-gradient-to-br from-[rgba(0,115,234,0.1)] to-[rgba(255,255,255,0.1)]"></div>
@@ -374,14 +463,14 @@ export function HowItWorksDialog({ isOpen, onClose }: HowItWorksDialogProps) {
         </div>
 
         {/* Footer */}
-        <DialogFooter className="flex justify-end items-center p-6 border-t border-border bg-white">
+        <div className="flex justify-end items-center p-4 sm:p-6 border-t border-border bg-white">
           <Button
             onClick={onClose}
             className="h-[38px] px-4 bg-[#0073EA] text-white font-roboto text-[13px] font-medium rounded hover:bg-[#0073EA]/90 transition-colors"
           >
             Got it
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
