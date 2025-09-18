@@ -122,7 +122,9 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
                   }}
                   disabled={cameraError}
                   className={`flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded ${
-                    cameraError ? "bg-primary opacity-50" : "bg-success hover:bg-success/90"
+                    cameraError
+                      ? "bg-primary opacity-50"
+                      : "bg-success hover:bg-success/90"
                   }`}
                 >
                   <span className="text-white font-roboto text-[13px] font-medium">

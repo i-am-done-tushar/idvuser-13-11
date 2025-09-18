@@ -170,8 +170,8 @@ export function IdentityDocumentForm({
                       isUploaded
                         ? "border-[#00B499] bg-[#EBFFF5]"
                         : isSelected
-                        ? "border-[#0073EA] bg-[#F0F8FF]"
-                        : "border-[#C3C6D4] bg-white hover:border-[#0073EA]/50"
+                          ? "border-[#0073EA] bg-[#F0F8FF]"
+                          : "border-[#C3C6D4] bg-white hover:border-[#0073EA]/50"
                     }`}
                   >
                     {/* Icon */}
@@ -189,8 +189,16 @@ export function IdentityDocumentForm({
 
                     {isUploaded && (
                       <div className="absolute top-2 right-2 flex items-center gap-1 bg-white rounded-full p-1 border border-[#E6F1FD]">
-                        <svg className="w-4 h-4" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236Z" fill="#039855"/>
+                        <svg
+                          className="w-4 h-4"
+                          viewBox="0 0 18 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236Z"
+                            fill="#039855"
+                          />
                         </svg>
                       </div>
                     )}

@@ -283,10 +283,10 @@ export function IdentityVerificationPage({
   };
 
   const toggleSection = (sectionIndex: number) => {
-    setExpandedSections(prev =>
+    setExpandedSections((prev) =>
       prev.includes(sectionIndex)
-        ? prev.filter(i => i !== sectionIndex)
-        : [...prev, sectionIndex]
+        ? prev.filter((i) => i !== sectionIndex)
+        : [...prev, sectionIndex],
     );
   };
 
@@ -445,7 +445,9 @@ export function IdentityVerificationPage({
                         >
                           <svg
                             className={`w-[18px] h-[18px] transform transition-transform ${
-                              expandedSections.includes(1) ? 'rotate-0' : 'rotate-180'
+                              expandedSections.includes(1)
+                                ? "rotate-0"
+                                : "rotate-180"
                             }`}
                             viewBox="0 0 18 19"
                             fill="none"
@@ -466,7 +468,8 @@ export function IdentityVerificationPage({
                       </div>
                       <div className="flex pl-6 justify-center items-center gap-2.5 self-stretch">
                         <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                          Please provide your basic personal information to begin the identity verification process.
+                          Please provide your basic personal information to
+                          begin the identity verification process.
                         </div>
                       </div>
                     </div>
@@ -496,7 +499,9 @@ export function IdentityVerificationPage({
                         >
                           <svg
                             className={`w-[18px] h-[18px] transform transition-transform ${
-                              expandedSections.includes(2) ? 'rotate-0' : 'rotate-180'
+                              expandedSections.includes(2)
+                                ? "rotate-0"
+                                : "rotate-180"
                             }`}
                             viewBox="0 0 18 19"
                             fill="none"
@@ -517,7 +522,9 @@ export function IdentityVerificationPage({
                       </div>
                       <div className="flex pl-6 justify-center items-center gap-2.5 self-stretch">
                         <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                          Choose a valid government-issued ID (like a passport, driver's license, or national ID) and upload a clear photo of it.
+                          Choose a valid government-issued ID (like a passport,
+                          driver's license, or national ID) and upload a clear
+                          photo of it.
                         </div>
                       </div>
                     </div>
@@ -542,7 +549,9 @@ export function IdentityVerificationPage({
                         >
                           <svg
                             className={`w-[18px] h-[18px] transform transition-transform ${
-                              expandedSections.includes(3) ? 'rotate-0' : 'rotate-180'
+                              expandedSections.includes(3)
+                                ? "rotate-0"
+                                : "rotate-180"
                             }`}
                             viewBox="0 0 18 19"
                             fill="none"
@@ -563,7 +572,9 @@ export function IdentityVerificationPage({
                       </div>
                       <div className="flex pl-6 justify-center items-center gap-2.5 self-stretch">
                         <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                          Take a live selfie to confirm you are the person in the ID document. Make sure you're in a well-lit area and your face is clearly visible.
+                          Take a live selfie to confirm you are the person in
+                          the ID document. Make sure you're in a well-lit area
+                          and your face is clearly visible.
                         </div>
                       </div>
                     </div>
@@ -590,14 +601,15 @@ export function IdentityVerificationPage({
                             <text
                               fill="#42526E"
                               xmlSpace="preserve"
-                              style={{ whiteSpace: 'pre' }}
+                              style={{ whiteSpace: "pre" }}
                               fontFamily="Roboto"
                               fontSize="13"
                               fontWeight="500"
                               letterSpacing="0em"
                             >
                               <tspan x="6.16797" y="96.9507">
-                                Complete the previous steps to enable selfie{' '}
+                                Complete the previous steps to enable
+                                selfie{" "}
                               </tspan>
                               <tspan x="111.133" y="116.951">
                                 capture.
@@ -613,7 +625,11 @@ export function IdentityVerificationPage({
                                 gradientUnits="userSpaceOnUse"
                               >
                                 <stop stopColor="#F1F1F1" />
-                                <stop offset="1" stopColor="#F8F8F8" stopOpacity="0.2" />
+                                <stop
+                                  offset="1"
+                                  stopColor="#F8F8F8"
+                                  stopOpacity="0.2"
+                                />
                               </linearGradient>
                               <linearGradient
                                 id="paint1_linear_2641_20612"
@@ -722,9 +738,9 @@ export function IdentityVerificationPage({
                         </div>
                         <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
                           <div className="flex-1 text-[#172B4D] font-roboto text-[13px] font-normal leading-5">
-                            Choose a valid government-issued ID (like a passport,
-                            driver's license, or national ID) and upload a clear
-                            photo of it.
+                            Choose a valid government-issued ID (like a
+                            passport, driver's license, or national ID) and
+                            upload a clear photo of it.
                           </div>
                         </div>
                       </div>
@@ -744,7 +760,9 @@ export function IdentityVerificationPage({
 
                   {/* Capture Selfie Section */}
                   {currentStep === 3 ? (
-                    <CameraSelfieStep onComplete={() => setIsSelfieCompleted(true)} />
+                    <CameraSelfieStep
+                      onComplete={() => setIsSelfieCompleted(true)}
+                    />
                   ) : (
                     <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
                       <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-border">
@@ -777,9 +795,9 @@ export function IdentityVerificationPage({
                           </div>
                           <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
                             <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                              Take a live selfie to confirm you are the person in
-                              the ID document. Make sure you're in a well-lit area
-                              and your face is clearly visible.
+                              Take a live selfie to confirm you are the person
+                              in the ID document. Make sure you're in a well-lit
+                              area and your face is clearly visible.
                             </div>
                           </div>
                         </div>

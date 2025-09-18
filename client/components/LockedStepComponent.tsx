@@ -86,7 +86,7 @@ export function LockedStepComponent({ message }: LockedStepComponentProps) {
             </linearGradient>
           </defs>
         </svg>
-        
+
         {/* Message Text */}
         <div className="max-w-xs sm:max-w-sm md:max-w-md text-[#42526E] font-roboto text-[13px] font-medium leading-5 px-4">
           {message}
