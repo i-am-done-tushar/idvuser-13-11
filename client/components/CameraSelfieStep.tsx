@@ -88,8 +88,14 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
               </div>
 
               {/* Retry Button Section */}
-              <div className="flex w-full max-w-[440px] p-2 pr-4 flex-col items-end gap-2 rounded-b bg-[#F6F7FB]">
-                <button className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary hover:bg-primary/90 transition-colors">
+              <div className="flex w-full max-w-[440px] p-2 pr-4 flex-row items-center gap-2 rounded-b bg-[#F6F7FB] justify-end">
+                <button
+                  onClick={() => {
+                    // Simulate retry
+                    setCameraError(false);
+                  }}
+                  className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary hover:bg-primary/90 transition-colors"
+                >
                   <svg
                     className="w-[18px] h-[18px] transform -rotate-90"
                     viewBox="0 0 18 18"
@@ -106,6 +112,21 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
                   </svg>
                   <span className="text-white font-roboto text-[13px] font-medium">
                     Retry
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelfieCaptured(true);
+                    onComplete?.();
+                  }}
+                  disabled={cameraError}
+                  className={`flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded ${
+                    cameraError ? "bg-primary opacity-50" : "bg-success hover:bg-success/90"
+                  }`}
+                >
+                  <span className="text-white font-roboto text-[13px] font-medium">
+                    {selfieCaptured ? "Captured" : "Capture Selfie"}
                   </span>
                 </button>
               </div>
