@@ -20,14 +20,14 @@ export function AuthLoginPage() {
           {/* Gradient blurs */}
           <div className="absolute w-[342px] h-[342px] rounded-full bg-[#BCD2E8] blur-[115px] left-[239px] top-[301px]" />
           <div className="absolute w-[465px] h-[397px] rounded-full bg-[#E0EFFE] blur-[80px] left-0 top-0" />
-          
+
           {/* Cards */}
           <div className="absolute w-[252px] h-[318px] rounded-3xl border border-black/10 bg-gradient-to-br from-[#E0EFFE] via-[#F3CFFF] to-[#F3CFFF] backdrop-blur-[7.5px] transform rotate-[6.554deg] left-[275px] top-[140px]" />
           <div className="absolute w-[252px] h-[318px] rounded-3xl border border-black/10 bg-white backdrop-blur-[7.5px] left-[276px] top-[150px]" />
-          
+
           {/* Identity verification visual elements */}
           <div className="absolute w-[185px] h-[130px] rounded-2xl bg-[#E0EFFE] left-[309px] top-[205px]" />
-          
+
           {/* Check circle icon */}
           <svg
             className="absolute w-6 h-6 left-[488px] top-[166px]"
@@ -65,7 +65,8 @@ export function AuthLoginPage() {
             Proof of identity, made simple.
           </h2>
           <p className="text-[#676879] font-roboto text-[13px] font-normal leading-5">
-            Easily verify your identity in seconds with our secure and seamless process.
+            Easily verify your identity in seconds with our secure and seamless
+            process.
           </p>
         </div>
       </div>
@@ -154,7 +155,8 @@ export function AuthLoginPage() {
             Proof of identity, made simple.
           </h2>
           <p className="text-[#676879] font-roboto text-[13px] font-normal leading-5">
-            Easily verify your identity in seconds with our secure and seamless process.
+            Easily verify your identity in seconds with our secure and seamless
+            process.
           </p>
         </div>
       </div>

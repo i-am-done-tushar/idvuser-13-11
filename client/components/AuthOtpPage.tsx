@@ -7,7 +7,7 @@ export function AuthOtpPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const emailOrPhone = location.state?.emailOrPhone || "amritemail.com";
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export function AuthOtpPage() {
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return; // Only allow single character
-    
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -36,14 +36,14 @@ export function AuthOtpPage() {
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+    const pastedData = e.clipboardData.getData("text").slice(0, 6);
     const newOtp = [...otp];
-    
+
     for (let i = 0; i < pastedData.length && i < 6; i++) {
       newOtp[i] = pastedData[i];
     }
     setOtp(newOtp);
-    
+
     // Focus the next empty input or the last one
     const nextIndex = Math.min(pastedData.length, 5);
     inputRefs.current[nextIndex]?.focus();
@@ -52,7 +52,7 @@ export function AuthOtpPage() {
   const handleResend = async () => {
     setIsResending(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsResending(false);
   };
 
@@ -64,7 +64,7 @@ export function AuthOtpPage() {
     }
   };
 
-  const isComplete = otp.every(digit => digit !== "");
+  const isComplete = otp.every((digit) => digit !== "");
 
   return (
     <div className="flex w-full min-h-screen bg-white">
@@ -75,14 +75,14 @@ export function AuthOtpPage() {
           {/* Gradient blurs */}
           <div className="absolute w-[342px] h-[342px] rounded-full bg-[#BCD2E8] blur-[115px] left-[239px] top-[301px]" />
           <div className="absolute w-[465px] h-[397px] rounded-full bg-[#E0EFFE] blur-[80px] left-0 top-0" />
-          
+
           {/* Cards */}
           <div className="absolute w-[252px] h-[318px] rounded-3xl border border-black/10 bg-gradient-to-br from-[#E0EFFE] via-[#F3CFFF] to-[#F3CFFF] backdrop-blur-[7.5px] transform rotate-[6.554deg] left-[275px] top-[140px]" />
           <div className="absolute w-[252px] h-[318px] rounded-3xl border border-black/10 bg-white backdrop-blur-[7.5px] left-[276px] top-[150px]" />
-          
+
           {/* Identity verification visual elements */}
           <div className="absolute w-[185px] h-[130px] rounded-2xl bg-[#E0EFFE] left-[309px] top-[205px]" />
-          
+
           {/* Check circle icon */}
           <svg
             className="absolute w-6 h-6 left-[488px] top-[166px]"
@@ -120,7 +120,8 @@ export function AuthOtpPage() {
             Proof of identity, made simple.
           </h2>
           <p className="text-[#676879] font-roboto text-[13px] font-normal leading-5">
-            Easily verify your identity in seconds with our secure and seamless process.
+            Easily verify your identity in seconds with our secure and seamless
+            process.
           </p>
         </div>
       </div>
@@ -194,10 +195,14 @@ export function AuthOtpPage() {
                   disabled={isResending}
                   className="text-[#676879] font-roboto text-sm font-normal hover:text-primary transition-colors"
                 >
-                  {isResending ? "Sending..." : (
+                  {isResending ? (
+                    "Sending..."
+                  ) : (
                     <>
                       Didn't get a code?{" "}
-                      <span className="text-primary underline">Click to Resend</span>
+                      <span className="text-primary underline">
+                        Click to Resend
+                      </span>
                     </>
                   )}
                 </button>
@@ -225,7 +230,8 @@ export function AuthOtpPage() {
             Proof of identity, made simple.
           </h2>
           <p className="text-[#676879] font-roboto text-[13px] font-normal leading-5">
-            Easily verify your identity in seconds with our secure and seamless process.
+            Easily verify your identity in seconds with our secure and seamless
+            process.
           </p>
         </div>
       </div>

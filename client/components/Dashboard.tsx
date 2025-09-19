@@ -10,7 +10,7 @@ export function Dashboard() {
             </h1>
           </div>
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => (window.location.href = "/")}
             className="text-text-secondary hover:text-text-primary font-roboto text-sm transition-colors"
           >
             Back to Identity Verification
@@ -35,30 +35,43 @@ export function Dashboard() {
                 />
               </svg>
             </div>
-            
+
             <div className="space-y-3">
               <h2 className="text-text-primary font-roboto text-2xl font-bold">
                 Welcome to your Dashboard
               </h2>
               <p className="text-text-secondary font-roboto text-base max-w-md">
-                Your identity has been successfully verified. You now have access to your account dashboard.
+                Your identity has been successfully verified. You now have
+                access to your account dashboard.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto mt-12">
               <div className="p-6 bg-white rounded-lg border border-border">
-                <h3 className="font-roboto font-semibold text-text-primary mb-2">Profile</h3>
-                <p className="text-text-secondary text-sm">Manage your personal information</p>
+                <h3 className="font-roboto font-semibold text-text-primary mb-2">
+                  Profile
+                </h3>
+                <p className="text-text-secondary text-sm">
+                  Manage your personal information
+                </p>
               </div>
-              
+
               <div className="p-6 bg-white rounded-lg border border-border">
-                <h3 className="font-roboto font-semibold text-text-primary mb-2">Security</h3>
-                <p className="text-text-secondary text-sm">View and update security settings</p>
+                <h3 className="font-roboto font-semibold text-text-primary mb-2">
+                  Security
+                </h3>
+                <p className="text-text-secondary text-sm">
+                  View and update security settings
+                </p>
               </div>
-              
+
               <div className="p-6 bg-white rounded-lg border border-border">
-                <h3 className="font-roboto font-semibold text-text-primary mb-2">Activity</h3>
-                <p className="text-text-secondary text-sm">Check your recent activity logs</p>
+                <h3 className="font-roboto font-semibold text-text-primary mb-2">
+                  Activity
+                </h3>
+                <p className="text-text-secondary text-sm">
+                  Check your recent activity logs
+                </p>
               </div>
             </div>
           </div>
