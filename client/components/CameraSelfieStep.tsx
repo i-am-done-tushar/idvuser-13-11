@@ -57,6 +57,31 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
     onComplete?.();
   };
 
+  // Retry initializing camera without reloading the page
+  const handleRetry = async () => {
+    setSelfieCaptured(false);
+    setCameraError(false);
+
+    // Stop existing tracks if any
+    if (videoRef.current?.srcObject) {
+      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+      tracks.forEach((t) => t.stop());
+      // Clear the srcObject so video element can be reattached to new stream
+      try { (videoRef.current as HTMLVideoElement).srcObject = null; } catch {}
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setCameraError(false);
+    } catch (err) {
+      console.error("Error accessing camera on retry:", err);
+      setCameraError(true);
+    }
+  };
+
   return (
     <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
       <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-border">
@@ -125,7 +150,7 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
               {/* Retry & Capture Buttons */}
               <div className="flex w-full max-w-[440px] p-2 pr-4 flex-row items-center gap-2 rounded-b bg-[#F6F7FB] justify-end">
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={handleRetry}
                   className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary hover:bg-primary/90 transition-colors"
                 >
                   <span className="text-white font-roboto text-[13px] font-medium">
