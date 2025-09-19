@@ -1,4 +1,18 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 export function VerificationProgressPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to success page after 2 seconds
+    const timer = setTimeout(() => {
+      navigate("/verification-success");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <div className="flex w-full min-h-screen flex-col bg-page-background">
       {/* Header */}
