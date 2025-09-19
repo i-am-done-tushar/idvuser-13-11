@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 export function AuthLoginPage() {
   const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [mode, setMode] = useState<"email" | "phone">("email");
+  const [emailError, setEmailError] = useState("");
   const navigate = useNavigate();
 
   const handleSendOTP = () => {
@@ -118,24 +120,80 @@ export function AuthLoginPage() {
 
               {/* Form */}
               <div className="space-y-6">
+                {/* Mode toggle */}
+                <div className="flex items-center gap-2 bg-[#F6F7FB] rounded p-1 w-full">
+                  <button
+                    type="button"
+                    onClick={() => { setMode("email"); setEmailError(""); setEmailOrPhone(""); }}
+                    className={`flex-1 h-10 rounded text-sm font-medium ${mode === "email" ? "bg-white shadow text-[#172B4D]" : "text-[#676879]"}`}
+                  >
+                    Email
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setMode("phone"); setEmailError(""); setEmailOrPhone(""); }}
+                    className={`flex-1 h-10 rounded text-sm font-medium ${mode === "phone" ? "bg-white shadow text-[#172B4D]" : "text-[#676879]"}`}
+                  >
+                    Mobile
+                  </button>
+                </div>
+
                 {/* Input Field */}
                 <div className="space-y-2">
                   <label className="block text-[#323238] font-roboto text-[13px] font-medium">
-                    Mobile Number Or Email Address
+                    {mode === "email" ? "Email Address" : "Mobile Number"}
                   </label>
                   <input
                     type="text"
                     value={emailOrPhone}
-                    onChange={(e) => setEmailOrPhone(e.target.value)}
-                    placeholder="Enter mobile number or email address"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // Trim leading/trailing spaces automatically
+                      const trimmed = val.trimStart();
+                      // We keep trailing spaces while typing but remove starting spaces immediately
+                      setEmailOrPhone(trimmed);
+                      if (mode === "email") setEmailError("");
+                    }}
+                    onBlur={() => {
+                      // Trim trailing spaces on blur and validate if email mode
+                      const trimmed = emailOrPhone.trim();
+                      setEmailOrPhone(trimmed);
+                      if (mode === "email") {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(trimmed)) {
+                          setEmailError("Please enter a valid email address.");
+                        } else {
+                          setEmailError("");
+                        }
+                      }
+                    }}
+                    placeholder={mode === "email" ? "example@domain.com" : "Enter mobile number"
+                    }
                     className="w-full h-[54px] px-3 py-4 border border-[#C3C6D4] rounded bg-white text-[#676879] font-roboto text-base placeholder:text-[#676879] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
+                  {emailError && (
+                    <p className="text-sm text-destructive mt-1">{emailError}</p>
+                  )}
                 </div>
 
                 {/* Send OTP Button */}
                 <button
-                  onClick={handleSendOTP}
-                  disabled={!emailOrPhone.trim()}
+                  onClick={() => {
+                    // Ensure trimming and validation before sending
+                    const trimmed = emailOrPhone.trim();
+                    setEmailOrPhone(trimmed);
+                    if (mode === "email") {
+                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                      if (!trimmed || !emailRegex.test(trimmed)) {
+                        setEmailError("Please enter a valid email address.");
+                        return;
+                      }
+                    }
+                    // For phone mode we simply require non-empty input
+                    if (!trimmed) return;
+                    navigate("/auth/otp", { state: { emailOrPhone: trimmed } });
+                  }}
+                  disabled={mode === "email" ? !emailOrPhone.trim() || !!emailError : !emailOrPhone.trim()}
                   className={`w-full h-12 px-4 py-3 rounded font-roboto text-base font-bold transition-colors ${
                     emailOrPhone.trim()
                       ? "bg-primary hover:bg-primary/90 text-white"
