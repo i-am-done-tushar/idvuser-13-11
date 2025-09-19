@@ -10,6 +10,9 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { VerificationProgressPage } from "./components/VerificationProgressPage";
 import { VerificationSuccessPage } from "./components/VerificationSuccessPage";
+import { AuthLoginPage } from "./components/AuthLoginPage";
+import { AuthOtpPage } from "./components/AuthOtpPage";
+import { Dashboard } from "./components/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +32,9 @@ const App = () => (
             path="/verification-success"
             element={<VerificationSuccessPage />}
           />
+          <Route path="/auth/login" element={<AuthLoginPage />} />
+          <Route path="/auth/otp" element={<AuthOtpPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
