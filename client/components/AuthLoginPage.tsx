@@ -1,16 +1,77 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+type Country = { code: string; name: string; length?: number; min?: number; max?: number };
+
+const COUNTRIES: Country[] = [
+  { code: "+91", name: "India", length: 10 },
+  { code: "+1", name: "United States", length: 10 },
+  { code: "+44", name: "United Kingdom", length: 10 },
+  { code: "+61", name: "Australia", length: 9 },
+  { code: "+49", name: "Germany", length: 10 },
+  { code: "+33", name: "France", length: 9 },
+  { code: "+55", name: "Brazil", length: 11 },
+];
+
 export function AuthLoginPage() {
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [mode, setMode] = useState<"email" | "phone">("email");
   const [emailError, setEmailError] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [countryError, setCountryError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
 
   const handleSendOTP = () => {
-    if (emailOrPhone.trim()) {
-      navigate("/auth/otp", { state: { emailOrPhone } });
+    const trimmed = emailOrPhone.trim();
+
+    if (mode === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!trimmed || !emailRegex.test(trimmed)) {
+        setEmailError("Please enter a valid email address.");
+        return;
+      }
+      navigate("/auth/otp", { state: { emailOrPhone: trimmed } });
+      return;
     }
+
+    // phone mode validations
+    if (!selectedCountry) {
+      setCountryError("Please select a country code.");
+      return;
+    }
+    setCountryError("");
+
+    if (!trimmed) {
+      setPhoneError("Please enter a valid phone number.");
+      return;
+    }
+
+    const country = COUNTRIES.find((c) => c.code === selectedCountry);
+    const digits = trimmed.replace(/\D/g, "");
+
+    if (!digits) {
+      setPhoneError("Please enter a valid phone number.");
+      return;
+    }
+
+    // length validation
+    if (country && country.length !== undefined) {
+      if (digits.length !== country.length) {
+        setPhoneError("Please enter a valid phone number.");
+        return;
+      }
+    } else {
+      // fallback: accept 7-15 digits
+      if (digits.length < 7 || digits.length > 15) {
+        setPhoneError("Please enter a valid phone number.");
+        return;
+      }
+    }
+
+    setPhoneError("");
+    // send with country code prefixed
+    navigate("/auth/otp", { state: { emailOrPhone: `${selectedCountry}${digits}` } });
   };
 
   return (
