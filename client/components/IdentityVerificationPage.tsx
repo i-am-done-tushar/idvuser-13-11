@@ -8,6 +8,7 @@ import { CameraSelfieStep } from "./CameraSelfieStep";
 import { ConsentDialog } from "./ConsentDialog";
 import { HowItWorksDialog } from "./HowItWorksDialog";
 import { LockedStepComponent } from "./LockedStepComponent";
+import { OTPVerificationDialog } from "./OTPVerificationDialog";
 import { TemplateResponse, FormData } from "@shared/templates";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -43,6 +44,12 @@ export function IdentityVerificationPage({
   const [hasConsented, setHasConsented] = useState(false);
   const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
   const [expandedSections, setExpandedSections] = useState<number[]>([1]);
+  const [showOTPDialog, setShowOTPDialog] = useState(false);
+  const [otpType, setOtpType] = useState<"email" | "phone">("email");
+  const [pendingVerification, setPendingVerification] = useState<{
+    type: "email" | "phone";
+    recipient: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -208,17 +215,46 @@ export function IdentityVerificationPage({
   }, [currentStep, isIdentityDocumentCompleted, hasShownStep2Toast, toast]);
 
   const handleSendEmailOTP = () => {
-    // Mock email verification
-    setTimeout(() => {
-      setIsEmailVerified(true);
-    }, 1000);
+    setPendingVerification({
+      type: "email",
+      recipient: formData.email,
+    });
+    setOtpType("email");
+    setShowOTPDialog(true);
   };
 
   const handleSendPhoneOTP = () => {
-    // Mock phone verification
-    setTimeout(() => {
+    const fullPhone = `${formData.countryCode} ${formData.phoneNumber}`;
+    setPendingVerification({
+      type: "phone",
+      recipient: fullPhone,
+    });
+    setOtpType("phone");
+    setShowOTPDialog(true);
+  };
+
+  const handleOTPVerify = async (otp: string) => {
+    // Simulate OTP verification
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    if (pendingVerification?.type === "email") {
+      setIsEmailVerified(true);
+    } else if (pendingVerification?.type === "phone") {
       setIsPhoneVerified(true);
-    }, 1000);
+    }
+
+    setShowOTPDialog(false);
+    setPendingVerification(null);
+  };
+
+  const handleOTPResend = () => {
+    // Simulate resending OTP
+    console.log(`Resending ${otpType} OTP to ${pendingVerification?.recipient}`);
+  };
+
+  const handleOTPClose = () => {
+    setShowOTPDialog(false);
+    setPendingVerification(null);
   };
 
   const handleConsentClose = () => {
@@ -353,6 +389,17 @@ export function IdentityVerificationPage({
       <HowItWorksDialog
         isOpen={showHowItWorksDialog}
         onClose={() => setShowHowItWorksDialog(false)}
+      />
+
+      {/* OTP Verification Dialog */}
+      <OTPVerificationDialog
+        isOpen={showOTPDialog}
+        onClose={handleOTPClose}
+        onVerify={handleOTPVerify}
+        onResend={handleOTPResend}
+        type={otpType}
+        recipientEmail={otpType === "email" ? formData.email : undefined}
+        recipientPhone={otpType === "phone" ? `${formData.countryCode} ${formData.phoneNumber}` : undefined}
       />
 
       <div
