@@ -89,6 +89,16 @@ export function VerificationSuccessPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Dashboard Button */}
+              <button
+                onClick={() => window.location.href = '/auth/login'}
+                className="flex h-12 px-6 py-3 justify-center items-center gap-2 rounded bg-primary hover:bg-primary/90 transition-colors"
+              >
+                <span className="text-white font-roboto text-base font-medium">
+                  Go to Dashboard
+                </span>
+              </button>
             </div>
           </div>
         </div>
