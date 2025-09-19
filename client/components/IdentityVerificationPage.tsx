@@ -235,7 +235,7 @@ export function IdentityVerificationPage({
 
   const handleOTPVerify = async (otp: string) => {
     // Simulate OTP verification
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (pendingVerification?.type === "email") {
       setIsEmailVerified(true);
@@ -249,7 +249,9 @@ export function IdentityVerificationPage({
 
   const handleOTPResend = () => {
     // Simulate resending OTP
-    console.log(`Resending ${otpType} OTP to ${pendingVerification?.recipient}`);
+    console.log(
+      `Resending ${otpType} OTP to ${pendingVerification?.recipient}`,
+    );
   };
 
   const handleOTPClose = () => {
@@ -399,7 +401,11 @@ export function IdentityVerificationPage({
         onResend={handleOTPResend}
         type={otpType}
         recipientEmail={otpType === "email" ? formData.email : undefined}
-        recipientPhone={otpType === "phone" ? `${formData.countryCode} ${formData.phoneNumber}` : undefined}
+        recipientPhone={
+          otpType === "phone"
+            ? `${formData.countryCode} ${formData.phoneNumber}`
+            : undefined
+        }
       />
 
       <div

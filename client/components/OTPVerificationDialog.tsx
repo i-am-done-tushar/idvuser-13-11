@@ -19,7 +19,14 @@ export function OTPVerificationDialog({
   type,
   onResend,
 }: OTPVerificationDialogProps) {
-  const [otpValues, setOtpValues] = useState<string[]>(["", "", "", "", "", ""]);
+  const [otpValues, setOtpValues] = useState<string[]>([
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ]);
   const [isVerifying, setIsVerifying] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -65,17 +72,18 @@ export function OTPVerificationDialog({
     e.preventDefault();
     const pastedText = e.clipboardData.getData("text");
     const digits = pastedText.replace(/\D/g, "").slice(0, 6);
-    
+
     if (digits.length > 0) {
       const newValues = [...otpValues];
       for (let i = 0; i < 6; i++) {
         newValues[i] = digits[i] || "";
       }
       setOtpValues(newValues);
-      
+
       // Focus next empty input or last filled input
-      const nextEmptyIndex = newValues.findIndex(val => val === "");
-      const focusIndex = nextEmptyIndex === -1 ? 5 : Math.min(nextEmptyIndex, 5);
+      const nextEmptyIndex = newValues.findIndex((val) => val === "");
+      const focusIndex =
+        nextEmptyIndex === -1 ? 5 : Math.min(nextEmptyIndex, 5);
       inputRefs.current[focusIndex]?.focus();
     }
   };
@@ -83,7 +91,7 @@ export function OTPVerificationDialog({
   const handleVerify = async () => {
     const otp = otpValues.join("");
     if (otp.length !== 6) return;
-    
+
     setIsVerifying(true);
     try {
       await onVerify(otp);
@@ -92,7 +100,7 @@ export function OTPVerificationDialog({
     }
   };
 
-  const isOTPComplete = otpValues.every(val => val !== "");
+  const isOTPComplete = otpValues.every((val) => val !== "");
   const recipient = type === "email" ? recipientEmail : recipientPhone;
 
   if (!isOpen) return null;
@@ -100,11 +108,11 @@ export function OTPVerificationDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/20 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Dialog */}
       <div className="relative w-full max-w-[408px] mx-4 bg-white rounded-lg shadow-xl">
         <div className="flex flex-col p-6 pb-6 gap-2">
