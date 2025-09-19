@@ -2,6 +2,13 @@ import { useState } from "react";
 import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+}
+
 interface IdentityDocumentFormProps {
   onComplete?: () => void;
 }
@@ -14,6 +21,7 @@ export function IdentityDocumentForm({
   const [showCameraDialog, setShowCameraDialog] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   const documentTypes = [
     {
