@@ -521,8 +521,10 @@ export function IdentityDocumentForm({
             setUploadedFiles((prev) => [...prev, newFile]);
 
             setSelectedDocument("");
-            // call onComplete when at least one document has been uploaded
-            if (next.length > 0) onComplete?.();
+            // call onComplete only when all required documents are uploaded
+            const requiredIds = documentTypes.map((d) => d.id);
+            const allUploaded = requiredIds.every((id) => next.includes(id));
+            if (allUploaded) onComplete?.();
           }
         }}
       />
@@ -548,8 +550,10 @@ export function IdentityDocumentForm({
             setUploadedFiles((prev) => [...prev, newFile]);
 
             setSelectedDocument("");
-            // call onComplete when at least one document has been uploaded
-            if (next.length > 0) onComplete?.();
+            // call onComplete only when all required documents are uploaded
+            const requiredIds = documentTypes.map((d) => d.id);
+            const allUploaded = requiredIds.every((id) => next.includes(id));
+            if (allUploaded) onComplete?.();
           }
         }}
       />
