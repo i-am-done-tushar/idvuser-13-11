@@ -251,6 +251,13 @@ export function IdentityVerificationPage({
     );
   };
 
+  // Ensure the currently active step is expanded on mobile when currentStep changes
+  useEffect(() => {
+    setExpandedSections((prev) =>
+      prev.includes(currentStep) ? prev : [currentStep],
+    );
+  }, [currentStep]);
+
   const isFormValid = () => {
     return (
       isValidName(formData.firstName) &&
