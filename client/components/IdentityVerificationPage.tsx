@@ -606,69 +606,7 @@ export function IdentityVerificationPage({
                     {currentStep === 3 && expandedSections.includes(3) && (
                       <div className="flex p-3 flex-col justify-center items-center self-stretch border-t border-border bg-background">
                         <div className="flex w-full flex-col items-center gap-2">
-                          <svg
-                            className="w-[270px] h-[123px]"
-                            viewBox="0 0 270 123"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M85.3279 21.5137L78.0773 23.9306C77.434 24.1451 77 24.7471 77 25.4253V63.6774C77 64.5475 77.7054 65.2529 78.5755 65.2529H191.227C192.097 65.2529 192.802 64.5475 192.802 63.6774V35.3176C194.546 22.5289 184.36 20.8214 177.822 21.6638C176.954 21.7757 176.115 21.1972 175.923 20.3434C169.802 -6.87346 153.204 1.99993 143.786 11.6466C142.867 12.5889 141.155 12.1352 140.472 11.0094C137.614 6.29858 131.053 7.6939 126.478 9.7635C125.425 10.24 124.154 9.56356 123.989 8.41924C122.429 -2.41918 117.469 -0.54889 114.308 2.60936C113.684 3.23313 112.684 3.33073 111.958 2.82911C106.479 -0.956193 104.073 2.80364 103.285 6.4498C103.063 7.47811 101.996 8.16709 100.98 7.89349C89.6105 4.83131 86.5757 13.8779 86.4423 19.9535C86.4268 20.6557 85.9943 21.2916 85.3279 21.5137Z"
-                              fill="url(#paint0_linear_2641_20612)"
-                            />
-                            <rect
-                              x="123.5"
-                              y="45.7188"
-                              width="24.8794"
-                              height="12.8687"
-                              fill="url(#paint1_linear_2641_20612)"
-                            />
-                            <text
-                              fill="#42526E"
-                              xmlSpace="preserve"
-                              style={{ whiteSpace: "pre" }}
-                              fontFamily="Roboto"
-                              fontSize="13"
-                              fontWeight="500"
-                              letterSpacing="0em"
-                            >
-                              <tspan x="6.16797" y="96.9507">
-                                Complete the previous steps to enable
-                                selfie{" "}
-                              </tspan>
-                              <tspan x="111.133" y="116.951">
-                                capture.
-                              </tspan>
-                            </text>
-                            <defs>
-                              <linearGradient
-                                id="paint0_linear_2641_20612"
-                                x1="135"
-                                y1="0.157227"
-                                x2="135.295"
-                                y2="33.2436"
-                                gradientUnits="userSpaceOnUse"
-                              >
-                                <stop stopColor="#F1F1F1" />
-                                <stop
-                                  offset="1"
-                                  stopColor="#F8F8F8"
-                                  stopOpacity="0.2"
-                                />
-                              </linearGradient>
-                              <linearGradient
-                                id="paint1_linear_2641_20612"
-                                x1="135.94"
-                                y1="45.7188"
-                                x2="135.94"
-                                y2="58.5874"
-                                gradientUnits="userSpaceOnUse"
-                              >
-                                <stop stopColor="#BCD3FF" />
-                                <stop offset="1" stopColor="#EAF1FF" />
-                              </linearGradient>
-                            </defs>
-                          </svg>
+                          <CameraSelfieStep onComplete={() => setIsSelfieCompleted(true)} />
                         </div>
                       </div>
                     )}
