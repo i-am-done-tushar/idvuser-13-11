@@ -110,34 +110,8 @@ export function IdentityVerificationPage({
     if (currentStep === 1 && formIsValid && !hasShownStep1Toast) {
       // Show success toast
       toast({
-        title: (
-          <div className="flex items-center gap-2">
-            <div className="flex w-6 h-6 p-1.5 justify-center items-center rounded-full border-2 border-[#ECFDF3] bg-[#D1FADF]">
-              <svg
-                className="w-3 h-3 flex-shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M22 11.0801V12.0001C21.9988 14.1565 21.3005 16.2548 20.0093 17.9819C18.7182 19.7091 16.9033 20.9726 14.8354 21.584C12.7674 22.1954 10.5573 22.122 8.53447 21.3747C6.51168 20.6274 4.78465 19.2462 3.61096 17.4372C2.43727 15.6281 1.87979 13.4882 2.02168 11.3364C2.16356 9.18467 2.99721 7.13643 4.39828 5.49718C5.79935 3.85793 7.69279 2.71549 9.79619 2.24025C11.8996 1.76502 14.1003 1.98245 16.07 2.86011M22 4.00011L12 14.0101L9.00001 11.0101"
-                  stroke="#039855"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span className="text-text-primary font-figtree text-base font-bold">
-              Step 1 completed
-            </span>
-          </div>
-        ),
-        description: (
-          <span className="text-text-secondary font-figtree text-[13px] font-normal">
-            Step 1 completed. Please proceed to the next step
-          </span>
-        ),
+        title: "Step 1 completed",
+        description: "Step 1 completed. Please proceed to the next step",
       });
 
       setHasShownStep1Toast(true);
@@ -174,34 +148,8 @@ export function IdentityVerificationPage({
     ) {
       // Show success toast
       toast({
-        title: (
-          <div className="flex items-center gap-2">
-            <div className="flex w-6 h-6 p-1.5 justify-center items-center rounded-full border-2 border-[#ECFDF3] bg-[#D1FADF]">
-              <svg
-                className="w-3 h-3 flex-shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M22 11.0801V12.0001C21.9988 14.1565 21.3005 16.2548 20.0093 17.9819C18.7182 19.7091 16.9033 20.9726 14.8354 21.584C12.7674 22.1954 10.5573 22.122 8.53447 21.3747C6.51168 20.6274 4.78465 19.2462 3.61096 17.4372C2.43727 15.6281 1.87979 13.4882 2.02168 11.3364C2.16356 9.18467 2.99721 7.13643 4.39828 5.49718C5.79935 3.85793 7.69279 2.71549 9.79619 2.24025C11.8996 1.76502 14.1003 1.98245 16.07 2.86011M22 4.00011L12 14.0101L9.00001 11.0101"
-                  stroke="#039855"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span className="text-text-primary font-figtree text-base font-bold">
-              Step 2 completed
-            </span>
-          </div>
-        ),
-        description: (
-          <span className="text-text-secondary font-figtree text-[13px] font-normal">
-            Step 2 completed. Please proceed to the final step
-          </span>
-        ),
+        title: "Step 2 completed",
+        description: "Step 2 completed. Please proceed to the final step",
       });
 
       setHasShownStep2Toast(true);
@@ -274,34 +222,8 @@ export function IdentityVerificationPage({
     // If we're currently on step 2, advance to step 3 with the same toast UX
     if (currentStep === 2 && !hasShownStep2Toast) {
       toast({
-        title: (
-          <div className="flex items-center gap-2">
-            <div className="flex w-6 h-6 p-1.5 justify-center items-center rounded-full border-2 border-[#ECFDF3] bg-[#D1FADF]">
-              <svg
-                className="w-3 h-3 flex-shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M22 11.0801V12.0001C21.9988 14.1565 21.3005 16.2548 20.0093 17.9819C18.7182 19.7091 16.9033 20.9726 14.8354 21.584C12.7674 22.1954 10.5573 22.122 8.53447 21.3747C6.51168 20.6274 4.78465 19.2462 3.61096 17.4372C2.43727 15.6281 1.87979 13.4882 2.02168 11.3364C2.16356 9.18467 2.99721 7.13643 4.39828 5.49718C5.79935 3.85793 7.69279 2.71549 9.79619 2.24025C11.8996 1.76502 14.1003 1.98245 16.07 2.86011M22 4.00011L12 14.0101L9.00001 11.0101"
-                  stroke="#039855"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span className="text-text-primary font-figtree text-base font-bold">
-              Step 2 completed
-            </span>
-          </div>
-        ),
-        description: (
-          <span className="text-text-secondary font-figtree text-[13px] font-normal">
-            Step 2 completed. Please proceed to the final step
-          </span>
-        ),
+        title: "Step 2 completed",
+        description: "Step 2 completed. Please proceed to the final step",
       });
 
       setHasShownStep2Toast(true);
