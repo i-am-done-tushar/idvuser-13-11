@@ -1,4 +1,9 @@
-export function Header() {
+interface HeaderProps {
+  onMobileMenuToggle?: () => void;
+  isMobileMenuOpen?: boolean;
+}
+
+export function Header({ onMobileMenuToggle, isMobileMenuOpen }: HeaderProps) {
   return (
     <header className="flex w-full h-10 sm:h-11 px-3 sm:px-4 items-center justify-between flex-shrink-0 border-b border-border bg-background">
       <div className="flex items-center gap-2">
@@ -54,7 +59,12 @@ export function Header() {
             </g>
             <defs>
               <clipPath id="clip0_2641_20372">
-                <rect width="79.6875" height="22.5" fill="white" transform="translate(0 0.332031)" />
+                <rect
+                  width="79.6875"
+                  height="22.5"
+                  fill="white"
+                  transform="translate(0 0.332031)"
+                />
               </clipPath>
             </defs>
           </svg>
@@ -63,7 +73,12 @@ export function Header() {
 
       {/* Mobile Menu Button - visible only on mobile */}
       <div className="sm:hidden">
-        <button className="flex items-center justify-center w-6 h-6">
+        <button
+          onClick={() => onMobileMenuToggle && onMobileMenuToggle()}
+          aria-controls="mobile-step-sidebar"
+          aria-expanded={isMobileMenuOpen ? true : false}
+          className="flex items-center justify-center w-6 h-6"
+        >
           <svg
             className="w-6 h-6"
             viewBox="0 0 24 25"

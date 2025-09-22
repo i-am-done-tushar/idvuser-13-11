@@ -389,16 +389,16 @@ export function IdentityDocumentForm({
 
           {/* QR Code Upload */}
           <div className="flex flex-col items-center gap-4 self-stretch border-2 border-dashed border-[#C3C6D4] rounded-lg bg-white p-4">
-            <div className="flex w-full justify-center items-center gap-4">
+            <div className="flex flex-col sm:flex-row w-full justify-center items-center gap-4">
               <div className="flex justify-center items-center">
                 <img
                   src="https://api.builder.io/api/v1/image/assets/TEMP/e4a25327bd6d9a0c88f260c5b3b9c48816547c30?width=220"
                   alt="QR Code"
-                  className="w-[110px] h-[113px]"
+                  className="w-20 h-20 sm:w-[110px] sm:h-[113px] object-contain"
                 />
               </div>
-              <div className="flex flex-col justify-center items-center gap-2">
-                <div className="w-[214px] flex flex-col items-center gap-3">
+              <div className="flex flex-col justify-center items-start sm:items-start gap-2 text-center sm:text-left">
+                <div className="max-w-[214px] flex flex-col items-start gap-3">
                   <div className="self-stretch text-[#676879] text-center font-roboto text-[13px] font-normal leading-5">
                     Continue on another device by scanning the QR code or
                     opening{" "}
@@ -550,6 +550,7 @@ export function IdentityDocumentForm({
             setUploadedFiles((prev) => [...prev, newFile]);
 
             setSelectedDocument("");
+            // call onComplete only when all required documents are uploaded
             const requiredIds = documentTypes.map((d) => d.id);
             const allUploaded = requiredIds.every((id) => next.includes(id));
             if (allUploaded) onComplete?.();

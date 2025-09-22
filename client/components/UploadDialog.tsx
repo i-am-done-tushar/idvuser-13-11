@@ -72,7 +72,7 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="flex w-[800px] max-w-[90vw] max-h-[90vh] flex-col items-start rounded-lg bg-white">
+      <div className="flex w-[800px] max-w-[90vw] max-h-[90vh] flex-col items-start rounded-lg bg-white overflow-auto">
         {/* Header */}
         <div className="flex h-[58px] justify-between items-center self-stretch border-b border-[#D0D4E4] px-6">
           <div className="flex items-center gap-2">
@@ -108,17 +108,17 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
             Upload clear images of both front and back sides.
           </div>
 
-          <div className="flex h-[320px] items-center gap-6">
+          <div className="flex flex-col sm:flex-row h-auto sm:h-[320px] items-center gap-6 px-4 sm:px-0">
             {/* Front Side */}
-            <div className="flex w-[364px] h-[320px] flex-col items-start">
-              <div className="flex w-[364px] h-[272px] flex-col items-center gap-7 flex-shrink-0">
-                <div className="flex h-[272px] flex-col items-start flex-shrink-0 self-stretch">
+            <div className="flex flex-1 min-w-0 h-auto sm:h-[320px] flex-col items-start">
+              <div className="flex w-full h-auto sm:h-[272px] flex-col items-center gap-7 flex-shrink-0">
+                <div className="flex h-auto sm:h-[272px] flex-col items-start flex-shrink-0 self-stretch">
                   <div className="flex justify-center items-center gap-2 flex-1 self-stretch">
                     <div
                       className="flex flex-col justify-end items-center gap-2 flex-1 self-stretch rounded-t-lg border-2 border-dashed border-[#C3C6D4] bg-white cursor-pointer hover:bg-gray-50"
                       onClick={() => frontInputRef.current?.click()}
                     >
-                      <div className="flex w-[326px] h-[262px] flex-col justify-center items-center gap-2">
+                      <div className="flex w-full max-w-[326px] h-auto sm:h-[262px] flex-col justify-center items-center gap-2">
                         <div className="flex w-12 h-12 p-2 justify-center items-center flex-shrink-0 rounded-full bg-[#F6F7FB]">
                           <svg
                             width="24"
@@ -170,15 +170,15 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
             </div>
 
             {/* Back Side */}
-            <div className="flex w-[364px] h-[320px] flex-col items-start">
-              <div className="flex w-[364px] h-[272px] flex-col items-center gap-7 flex-shrink-0">
-                <div className="flex h-[272px] flex-col items-start flex-shrink-0 self-stretch">
+            <div className="flex flex-1 min-w-0 h-auto sm:h-[320px] flex-col items-start">
+              <div className="flex w-full h-auto sm:h-[272px] flex-col items-center gap-7 flex-shrink-0">
+                <div className="flex h-auto sm:h-[272px] flex-col items-start flex-shrink-0 self-stretch">
                   <div className="flex justify-center items-center gap-2 flex-1 self-stretch">
                     <div
                       className="flex flex-col justify-end items-center gap-2 flex-1 self-stretch rounded-t-lg border-2 border-dashed border-[#C3C6D4] bg-white cursor-pointer hover:bg-gray-50"
                       onClick={() => backInputRef.current?.click()}
                     >
-                      <div className="flex w-[326px] h-[262px] flex-col justify-center items-center gap-2">
+                      <div className="flex w-full max-w-[326px] h-auto sm:h-[262px] flex-col justify-center items-center gap-2">
                         <div className="flex w-12 h-12 p-2 justify-center items-center flex-shrink-0 rounded-full bg-[#F6F7FB]">
                           <svg
                             width="24"
