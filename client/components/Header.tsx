@@ -59,7 +59,12 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }: HeaderProps) {
             </g>
             <defs>
               <clipPath id="clip0_2641_20372">
-                <rect width="79.6875" height="22.5" fill="white" transform="translate(0 0.332031)" />
+                <rect
+                  width="79.6875"
+                  height="22.5"
+                  fill="white"
+                  transform="translate(0 0.332031)"
+                />
               </clipPath>
             </defs>
           </svg>

@@ -416,10 +416,7 @@ export function IdentityVerificationPage({
         <div className="flex w-full flex-1 overflow-hidden">
           {/* Desktop Sidebar - hidden on mobile */}
           <div className="hidden lg:block border-r border-border">
-            <StepSidebar
-              sections={activeSections}
-              currentStep={currentStep}
-            />
+            <StepSidebar sections={activeSections} currentStep={currentStep} />
           </div>
 
           {/* Mobile Sidebar Overlay (from burger) */}
@@ -607,7 +604,9 @@ export function IdentityVerificationPage({
                     {currentStep === 3 && expandedSections.includes(3) && (
                       <div className="flex p-3 flex-col justify-center items-center self-stretch border-t border-border bg-background">
                         <div className="flex w-full flex-col items-center gap-2">
-                          <CameraSelfieStep onComplete={() => setIsSelfieCompleted(true)} />
+                          <CameraSelfieStep
+                            onComplete={() => setIsSelfieCompleted(true)}
+                          />
                         </div>
                       </div>
                     )}
