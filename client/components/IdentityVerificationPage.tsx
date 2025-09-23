@@ -74,6 +74,22 @@ export function IdentityVerificationPage({
     permanentPostalCode: "",
   });
 
+  // Helper function to get personal info field configuration from API
+  const getPersonalInfoConfig = () => {
+    if (!templateVersion) return {};
+    
+    const personalInfoSection = templateVersion.sections.find(
+      (section) => section.sectionType === "personalInformation"
+    );
+    
+    if (!personalInfoSection || !personalInfoSection.fieldMappings?.[0]?.structure) {
+      return {};
+    }
+    
+    const fieldConfig = personalInfoSection.fieldMappings[0].structure as any;
+    return fieldConfig.personalInfo || {};
+  };
+
   // Fetch template version data using the templateId
   useEffect(() => {
     if (!templateId) {
@@ -102,21 +118,56 @@ export function IdentityVerificationPage({
     fetchTemplateVersion();
   }, [templateId]);
 
-  // Step 1 specific validation (personal info + email/phone)
+  // Step 1 specific validation (personal info + email/phone) - Dynamic based on API config
   const isStep1Complete = () => {
-    return (
-      isValidName(formData.firstName) &&
-      isValidName(formData.lastName) &&
-      isValidDOB(formData.dateOfBirth) &&
-      isValidEmail(formData.email) &&
-      !!formData.countryCode &&
-      isValidPhoneForCountry(formData.countryCode, formData.phoneNumber) &&
-      isValidAddress(formData.address) &&
-      !!formData.city &&
-      isValidPostalCode(formData.postalCode) &&
-      isEmailVerified &&
-      isPhoneVerified
-    );
+    if (!templateVersion) return false;
+    
+    const personalInfo = getPersonalInfoConfig();
+    
+    // Check each field only if it's required (true) in the API config
+    const validations = [];
+    
+    if (personalInfo.firstName) {
+      validations.push(isValidName(formData.firstName));
+    }
+    
+    if (personalInfo.lastName) {
+      validations.push(isValidName(formData.lastName));
+    }
+    
+    if (personalInfo.middleName) {
+      validations.push(isValidName(formData.middleName));
+    }
+    
+    if (personalInfo.dateOfBirth) {
+      validations.push(isValidDOB(formData.dateOfBirth));
+    }
+    
+    if (personalInfo.email) {
+      validations.push(isValidEmail(formData.email));
+      validations.push(isEmailVerified); // Email must be verified if required
+    }
+    
+    if (personalInfo.phoneNumber) {
+      validations.push(!!formData.countryCode);
+      validations.push(isValidPhoneForCountry(formData.countryCode, formData.phoneNumber));
+      validations.push(isPhoneVerified); // Phone must be verified if required
+    }
+    
+    if (personalInfo.currentAddress) {
+      validations.push(isValidAddress(formData.address));
+      validations.push(!!formData.city);
+      validations.push(isValidPostalCode(formData.postalCode));
+    }
+    
+    if (personalInfo.permanentAddress) {
+      validations.push(isValidAddress(formData.permanentAddress));
+      validations.push(!!formData.permanentCity);
+      validations.push(isValidPostalCode(formData.permanentPostalCode));
+    }
+    
+    // All required fields must be valid
+    return validations.length > 0 && validations.every(validation => validation === true);
   };
 
   // Monitor for Step 1 completion
@@ -139,10 +190,12 @@ export function IdentityVerificationPage({
       }, 1500);
     }
   }, [
+    templateVersion, // Add templateVersion to dependencies
     isEmailVerified,
     isPhoneVerified,
     formData.firstName,
     formData.lastName,
+    formData.middleName,
     formData.dateOfBirth,
     formData.email,
     formData.countryCode,
@@ -150,6 +203,9 @@ export function IdentityVerificationPage({
     formData.address,
     formData.city,
     formData.postalCode,
+    formData.permanentAddress,
+    formData.permanentCity,
+    formData.permanentPostalCode,
     currentStep,
     hasShownStep1Toast,
     toast,
@@ -316,20 +372,70 @@ export function IdentityVerificationPage({
   }, [currentStep]);
 
   const isFormValid = () => {
-    return (
-      isValidName(formData.firstName) &&
-      isValidName(formData.lastName) &&
-      isValidDOB(formData.dateOfBirth) &&
-      isValidEmail(formData.email) &&
-      !!formData.countryCode &&
-      isValidPhoneForCountry(formData.countryCode, formData.phoneNumber) &&
-      isValidAddress(formData.address) &&
-      !!formData.city &&
-      isValidPostalCode(formData.postalCode) &&
-      isEmailVerified &&
-      isPhoneVerified &&
-      isSelfieCompleted
+    if (!templateVersion) return false;
+    
+    const personalInfo = getPersonalInfoConfig();
+    
+    // Check each field only if it's required (true) in the API config
+    const validations = [];
+    
+    if (personalInfo.firstName) {
+      validations.push(isValidName(formData.firstName));
+    }
+    
+    if (personalInfo.lastName) {
+      validations.push(isValidName(formData.lastName));
+    }
+    
+    if (personalInfo.middleName) {
+      validations.push(isValidName(formData.middleName));
+    }
+    
+    if (personalInfo.dateOfBirth) {
+      validations.push(isValidDOB(formData.dateOfBirth));
+    }
+    
+    if (personalInfo.email) {
+      validations.push(isValidEmail(formData.email));
+      validations.push(isEmailVerified);
+    }
+    
+    if (personalInfo.phoneNumber) {
+      validations.push(!!formData.countryCode);
+      validations.push(isValidPhoneForCountry(formData.countryCode, formData.phoneNumber));
+      validations.push(isPhoneVerified);
+    }
+    
+    if (personalInfo.currentAddress) {
+      validations.push(isValidAddress(formData.address));
+      validations.push(!!formData.city);
+      validations.push(isValidPostalCode(formData.postalCode));
+    }
+    
+    if (personalInfo.permanentAddress) {
+      validations.push(isValidAddress(formData.permanentAddress));
+      validations.push(!!formData.permanentCity);
+      validations.push(isValidPostalCode(formData.permanentPostalCode));
+    }
+    
+    // All personal info validations must pass, plus document and selfie completion
+    const personalInfoValid = validations.length > 0 && validations.every(validation => validation === true);
+    
+    // Check if documents section exists and if it's completed
+    const documentsSection = templateVersion.sections.find(
+      (section) => section.sectionType === "documents"
     );
+    const documentsRequired = documentsSection?.isActive || false;
+    
+    // Check if biometrics section exists and if it's completed
+    const biometricsSection = templateVersion.sections.find(
+      (section) => section.sectionType === "biometrics"
+    );
+    const biometricsRequired = biometricsSection?.isActive || false;
+    
+    return personalInfoValid && 
+           (!documentsRequired || isIdentityDocumentCompleted) &&
+           (!biometricsRequired || isSelfieCompleted);
   };
 
   if (loading) {
