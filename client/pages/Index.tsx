@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { IdentityVerificationPage } from "@/components/IdentityVerificationPage";
-import { ShortCodeResolveResponse, TemplateVersionResponse } from "@shared/api";
+import { ShortCodeResolveResponse } from "@shared/api";
 
 export default function Index() {
   const { shortCode } = useParams<{ shortCode?: string }>();
   const [templateVersionId, setTemplateVersionId] = useState<number>(1); // Default template ID
-  const [templateData, setTemplateData] = useState<TemplateVersionResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,18 +30,8 @@ export default function Index() {
       const resolveData: ShortCodeResolveResponse = await resolveResponse.json();
       console.log("Shortcode resolved:", resolveData);
       
-      // Step 2: Get template version details
-      const templateResponse = await fetch(`/api/TemplateVersion/${resolveData.templateVersionId}`);
-      if (!templateResponse.ok) {
-        throw new Error("Failed to get template version");
-      }
-      
-      const templateData: TemplateVersionResponse = await templateResponse.json();
-      console.log("Template version data:", templateData);
-      
-      // Set the template data for the verification page
+      // Set only the template version ID - let IdentityVerificationPage fetch the details
       setTemplateVersionId(resolveData.templateVersionId);
-      setTemplateData(templateData);
       
     } catch (err) {
       console.error("Error resolving shortcode:", err);
@@ -73,7 +62,6 @@ export default function Index() {
   return (
     <IdentityVerificationPage 
       templateId={templateVersionId} 
-      templateData={templateData}
     />
   );
 }

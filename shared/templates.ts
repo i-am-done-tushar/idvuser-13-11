@@ -73,4 +73,16 @@ export interface FormData {
   address: string;
   city: string;
   postalCode: string;
+  permanentAddress: string;
+  permanentCity: string;
+  permanentPostalCode: string;
+}
+
+export interface DocumentConfig {
+  allowCaptureWebcam?: boolean;
+  allowUploadFromDevice?: boolean;
+  supportedCountries?: Array<{
+    countryName: string;
+    documents: string[];
+  }>;
 }

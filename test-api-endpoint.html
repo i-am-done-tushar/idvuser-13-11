@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API Endpoint</title>
+</head>
+<body>
+    <h1>Testing Dynamic Template API</h1>
+    <button onclick="testLocalAPI()">Test Local API</button>
+    <button onclick="testExternalAPI()">Test External API</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testLocalAPI() {
+            const result = document.getElementById('result');
+            try {
+                result.textContent = 'Testing local API...';
+                const response = await fetch('/api/TemplateVersion/1');
+                const data = await response.json();
+                result.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function testExternalAPI() {
+            const result = document.getElementById('result');
+            try {
+                result.textContent = 'Testing external API...';
+                const response = await fetch('http://10.10.2.133:8080/api/TemplateVersion/2');
+                const data = await response.json();
+                result.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
