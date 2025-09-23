@@ -49,9 +49,11 @@ export function PersonalInformationForm({
 
   // Helper function to check if a field should be displayed
   const shouldShowField = (fieldName: string): boolean => {
-    // If no fieldConfig provided, show all fields (backward compatibility)
+    // If no fieldConfig provided or it's an empty object, this means the API didn't provide proper config
+    // In this case, show only essential fields as fallback
     if (!fieldConfig || Object.keys(fieldConfig).length === 0) {
-      return true;
+      const essentialFields = ['firstName', 'lastName', 'email'];
+      return essentialFields.includes(fieldName);
     }
     
     // Map form field names to config field names
@@ -73,9 +75,19 @@ export function PersonalInformationForm({
     };
     
     const configKey = fieldMapping[fieldName];
-    if (!configKey) return true; // Show if not configured
     
-    return fieldConfig[configKey as keyof typeof fieldConfig] === true;
+    if (!configKey) {
+      return false; // Hide if not configured
+    }
+    
+    const shouldShow = fieldConfig[configKey as keyof typeof fieldConfig] === true;
+    
+    // Log only for currentAddress to debug the specific issue
+    if (fieldName === 'address' || fieldName === 'city' || fieldName === 'postalCode') {
+      console.log(`Field ${fieldName} (${configKey}): ${shouldShow} (config value: ${fieldConfig[configKey as keyof typeof fieldConfig]})`);
+    }
+    
+    return shouldShow;
   };
 
   const updateField = (field: keyof FormData, value: string) => {
