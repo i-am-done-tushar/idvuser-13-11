@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { HowItWorksDialog } from "./HowItWorksDialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface CameraSelfieStepProps {
   onComplete?: () => void;
 }
 
 export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
+  const { toast } = useToast();
   const [cameraError, setCameraError] = useState(false);
   const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
   const [selfieCaptured, setSelfieCaptured] = useState(false);
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Ask for camera access on mount
@@ -51,7 +54,8 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
     const ctx = canvas.getContext("2d");
     ctx?.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-    const selfieDataUrl = canvas.toDataURL("image/png");
+    // Convert to JPEG format (API only accepts JPEG and PDF)
+    const selfieDataUrl = canvas.toDataURL("image/jpeg", 0.9);
     console.log("Selfie captured:", selfieDataUrl);
 
     // Set the captured image and freeze the camera view
@@ -59,11 +63,57 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
     setSelfieCaptured(true);
   };
 
-  // Confirm the captured selfie and complete the step
-  const confirmSelfie = () => {
-    // Here you would typically send the captured image to the backend
-    console.log("Selfie confirmed:", capturedImageUrl);
-    onComplete?.();
+  // Confirm the captured selfie and upload to server
+  const uploadSelfie = async () => {
+    if (!capturedImageUrl) return;
+
+    try {
+      setUploading(true);
+      
+      // Convert data URL to blob
+      const response = await fetch(capturedImageUrl);
+      const blob = await response.blob();
+      
+      // Create FormData for upload
+
+      const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
+
+      const formData = new FormData();
+      formData.append('File', blob, 'selfie.jpg');
+      formData.append('DocumentDefinitionId', DOCUMENT_DEFINITION_ID);
+      formData.append('Bucket', 'string');
+      formData.append('UserTemplateSubmissionId', '5');
+      
+      // Upload to the same endpoint as documents
+      const uploadResponse = await fetch('http://10.10.2.133:8080/api/Files/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (uploadResponse.ok) {
+        const result = await uploadResponse.json();
+        console.log('Selfie uploaded successfully:', result);
+        
+        toast({
+          title: "Selfie Uploaded",
+          description: "Your selfie has been uploaded successfully!",
+        });
+        
+        // Mark biometric verification as complete
+        onComplete?.();
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading selfie:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload selfie. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
   // Retake the selfie (clear captured image and show live video again)
@@ -186,15 +236,27 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
               {/* Retry & Capture Buttons */}
               <div className="flex w-full max-w-[440px] p-2 pr-4 flex-row items-center gap-2 rounded-b bg-[#F6F7FB] justify-end">
                 {selfieCaptured && capturedImageUrl ? (
-                  // Show retake button when selfie is captured
-                  <button
-                    onClick={retakeSelfie}
-                    className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-gray-500 hover:bg-gray-600 transition-colors"
-                  >
-                    <span className="text-white font-roboto text-[13px] font-medium">
-                      Retake
-                    </span>
-                  </button>
+                  // Show retake and upload buttons when selfie is captured
+                  <div className="flex gap-2">
+                    <button
+                      onClick={retakeSelfie}
+                      disabled={uploading}
+                      className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      <span className="text-white font-roboto text-[13px] font-medium">
+                        Retake
+                      </span>
+                    </button>
+                    <button
+                      onClick={uploadSelfie}
+                      disabled={uploading}
+                      className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    >
+                      <span className="text-white font-roboto text-[13px] font-medium">
+                        {uploading ? "Uploading..." : "Upload"}
+                      </span>
+                    </button>
+                  </div>
                 ) : (
                   // Show retry and capture buttons when no selfie is captured
                   <>

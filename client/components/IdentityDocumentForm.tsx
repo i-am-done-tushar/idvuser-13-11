@@ -399,7 +399,7 @@ export function IdentityDocumentForm({
                     Continue on another device by scanning the QR code or
                     opening{" "}
                     <span className="text-[#0073EA]">
-                      https://id.xyz/verify
+                      https://google.com
                     </span>
                   </div>
                 </div>
