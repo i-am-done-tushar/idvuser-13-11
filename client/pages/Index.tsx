@@ -13,7 +13,7 @@ export default function Index() {
   const API_BASE =
   import.meta.env.VITE_API_BASE ||
   import.meta.env.VITE_API_URL ||
-  "http://10.10.2.133:8080";
+  "";
 
   useEffect(() => {
     if (shortCode) {
