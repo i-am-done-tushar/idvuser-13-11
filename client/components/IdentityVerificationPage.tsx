@@ -25,7 +25,7 @@ const API_BASE =
   import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 
 // 🚀 DEVELOPMENT FLAG - Set to false to enable OTP verification
-const BYPASS_OTP_FOR_DEVELOPMENT = true;
+const BYPASS_OTP_FOR_DEVELOPMENT = false;
 
 // token helper (kept minimal)
 const getToken = () =>
