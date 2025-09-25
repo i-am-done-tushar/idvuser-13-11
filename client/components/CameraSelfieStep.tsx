@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { HowItWorksDialog } from "./HowItWorksDialog";
 import { useToast } from "@/hooks/use-toast";
 
+const API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+
 interface CameraSelfieStepProps {
   onComplete?: () => void;
 }
@@ -13,6 +15,8 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
   const [selfieCaptured, setSelfieCaptured] = useState(false);
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  // store the uploaded file id so we can delete it if the user re-uploads
+  const [uploadedFileId, setUploadedFileId] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Ask for camera access on mount
@@ -69,36 +73,46 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
 
     try {
       setUploading(true);
-      
+
       // Convert data URL to blob
       const response = await fetch(capturedImageUrl);
       const blob = await response.blob();
-      
-      // Create FormData for upload
 
+      // Create FormData for upload
       const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
+
+      // If there is an existing uploaded file for this selfie, attempt to delete it first
+      if (uploadedFileId) {
+        try {
+          await fetch(`${API_BASE}/api/Files/${uploadedFileId}`, { method: 'DELETE' });
+        } catch (delErr) {
+          console.warn(`Failed to delete previous selfie id ${uploadedFileId}:`, delErr);
+        }
+      }
 
       const formData = new FormData();
       formData.append('File', blob, 'selfie.jpg');
       formData.append('DocumentDefinitionId', DOCUMENT_DEFINITION_ID);
       formData.append('Bucket', 'string');
       formData.append('UserTemplateSubmissionId', '5');
-      
+
       // Upload to the same endpoint as documents
-      const uploadResponse = await fetch('http://10.10.2.133:8080/api/Files/upload', {
+      const uploadResponse = await fetch(`${API_BASE}/api/Files/upload`, {
         method: 'POST',
         body: formData,
       });
-      
+
       if (uploadResponse.ok) {
-        const result = await uploadResponse.json();
-        console.log('Selfie uploaded successfully:', result);
-        
+        const result = await uploadResponse.json().catch(() => ({}));
+        if (result && typeof result.id === 'number') {
+          setUploadedFileId(result.id);
+        }
+
         toast({
           title: "Selfie Uploaded",
           description: "Your selfie has been uploaded successfully!",
         });
-        
+
         // Mark biometric verification as complete
         onComplete?.();
       } else {
