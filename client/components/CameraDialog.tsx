@@ -145,17 +145,17 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
     try {
       setUploading(true);
 
-      // If there's a previous uploaded file for this side, attempt to delete it first
+      // If there's a previous uploaded file for this side, attempt to delete it first (purge)
       const previousId = uploadedFileIds[side];
       if (previousId) {
         try {
-          await fetch(`${API_BASE}/api/Files/${previousId}`, {
+          await fetch(`${API_BASE}/api/Files/${previousId}/purge`, {
             method: "DELETE",
           });
         } catch (delErr) {
           // log and continue - deletion failure shouldn't block new upload
           console.warn(
-            `Failed to delete previous file id ${previousId}:`,
+            `Failed to purge previous file id ${previousId}:`,
             delErr,
           );
         }
@@ -174,9 +174,14 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
 
       if (response.ok) {
         const result = await response.json().catch(() => ({}));
-        // Save returned id so we can delete on subsequent uploads
-        if (result && typeof result.id === "number") {
-          setUploadedFileIds((prev) => ({ ...prev, [side]: result.id }));
+        // Save returned file id so we can delete on subsequent uploads
+        const returnedId =
+          (result && result.file && typeof result.file.id === "number" && result.file.id) ||
+          (typeof result.id === "number" && result.id) ||
+          (result && result.mapping && typeof result.mapping.fileId === "number" && result.mapping.fileId) ||
+          null;
+        if (returnedId) {
+          setUploadedFileIds((prev) => ({ ...prev, [side]: returnedId }));
         }
 
         setUploadedFiles((prev) => ({ ...prev, [side]: true }));
