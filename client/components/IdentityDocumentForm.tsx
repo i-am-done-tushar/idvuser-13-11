@@ -3,6 +3,9 @@ import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 import { DocumentConfig } from "@shared/templates";
 
+const API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
+
 interface UploadedFile {
   id: string;
   name: string;
@@ -25,6 +28,9 @@ export function IdentityDocumentForm({
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [documentUploadIds, setDocumentUploadIds] = useState<
+    Record<string, { front?: number; back?: number }>
+  >({});
 
   // Function to get file icon based on file type
   const getFileIcon = () => (
@@ -117,6 +123,38 @@ export function IdentityDocumentForm({
       }
       return next;
     });
+  };
+
+  // helpers for server uploads
+  const purgeFileIfExists = async (id?: number) => {
+    if (!id) return;
+    try {
+      await fetch(`${API_BASE}/api/Files/${id}/purge`, { method: "DELETE" });
+    } catch (e) {
+      console.warn(`Failed to purge file ${id}`, e);
+    }
+  };
+
+  const uploadFileToServer = async (file: Blob, filename: string) => {
+    const formData = new FormData();
+    formData.append("File", file, filename);
+    formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
+    formData.append("Bucket", "string");
+    formData.append("UserTemplateSubmissionId", "5");
+
+    const res = await fetch(`${API_BASE}/api/Files/upload`, {
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);
+    const result = await res.json().catch(() => ({}));
+    const returnedId =
+      (result && result.file && typeof result.file.id === "number" && result.file.id) ||
+      (typeof result.id === "number" && result.id) ||
+      (result && result.mapping && typeof result.mapping.fileId === "number" && result.mapping.fileId) ||
+      null;
+    if (!returnedId) throw new Error("Upload did not return an id");
+    return returnedId as number;
   };
 
   // Get available countries from configuration
@@ -563,6 +601,14 @@ export function IdentityDocumentForm({
       <CameraDialog
         isOpen={showCameraDialog}
         onClose={() => setShowCameraDialog(false)}
+        previousFileIds={selectedDocument ? documentUploadIds[selectedDocument] : undefined}
+        onUploaded={(side, id) => {
+          if (!selectedDocument) return;
+          setDocumentUploadIds((prev) => ({
+            ...prev,
+            [selectedDocument]: { ...(prev[selectedDocument] || {}), [side]: id },
+          }));
+        }}
         onSubmit={() => {
           setShowCameraDialog(false);
           if (selectedDocument) {
@@ -604,24 +650,37 @@ export function IdentityDocumentForm({
       <UploadDialog
         isOpen={showUploadDialog}
         onClose={() => setShowUploadDialog(false)}
-        onSubmit={() => {
-          setShowUploadDialog(false);
-          if (selectedDocument) {
-            const docId = selectedDocument;
+        onSubmit={async (frontFile, backFile) => {
+          if (!selectedDocument) return;
+          const docId = selectedDocument;
 
-            // ensure uploadedDocuments contains docId
+          try {
+            const prevIds = documentUploadIds[docId];
+            await Promise.all([
+              purgeFileIfExists(prevIds?.front),
+              purgeFileIfExists(prevIds?.back),
+            ]);
+
+            const [frontId, backId] = await Promise.all([
+              uploadFileToServer(frontFile, `${docId}-front.${frontFile.type.includes("pdf") ? "pdf" : "jpg"}`),
+              uploadFileToServer(backFile, `${docId}-back.${backFile.type.includes("pdf") ? "pdf" : "jpg"}`),
+            ]);
+
+            setDocumentUploadIds((prev) => ({
+              ...prev,
+              [docId]: { front: frontId, back: backId },
+            }));
+
             setUploadedDocuments((prevDocs) =>
               prevDocs.includes(docId) ? prevDocs : [...prevDocs, docId],
             );
 
-            // Add uploaded file to the files list, replacing any previous instance for this docId
             const newFile: UploadedFile = {
               id: `${docId}-${Date.now()}`,
               name: `${docId.replace(/_/g, " ")}.pdf`,
               size: "3MB",
               type: "document",
             };
-
             setUploadedFiles((prev) => {
               const filtered = prev.filter(
                 (f) => f.id.replace(/-\d+$/, "") !== docId,
@@ -630,7 +689,7 @@ export function IdentityDocumentForm({
             });
 
             setSelectedDocument("");
-            // call onComplete only when all required documents are uploaded
+
             const requiredIds = currentDocuments.map((docName) =>
               docName.toLowerCase().replace(/\s+/g, "_"),
             );
@@ -638,6 +697,8 @@ export function IdentityDocumentForm({
               (id) => id === docId || uploadedDocuments.includes(id),
             );
             if (allUploaded) onComplete?.();
+          } finally {
+            setShowUploadDialog(false);
           }
         }}
       />
