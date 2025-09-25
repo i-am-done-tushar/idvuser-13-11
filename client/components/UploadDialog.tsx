@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 interface UploadDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (frontFile: File, backFile: File) => void;
 }
 
 export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
@@ -66,7 +66,7 @@ export function UploadDialog({ isOpen, onClose, onSubmit }: UploadDialogProps) {
 
   const handleSubmit = () => {
     if (frontFile && backFile && !frontError && !backError) {
-      onSubmit();
+      onSubmit(frontFile, backFile);
     }
   };
 
