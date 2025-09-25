@@ -3,7 +3,8 @@ import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 import { DocumentConfig } from "@shared/templates";
 
-const API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+const API_BASE =
+  import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
 
 interface UploadedFile {
@@ -149,9 +150,15 @@ export function IdentityDocumentForm({
     if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);
     const result = await res.json().catch(() => ({}));
     const returnedId =
-      (result && result.file && typeof result.file.id === "number" && result.file.id) ||
+      (result &&
+        result.file &&
+        typeof result.file.id === "number" &&
+        result.file.id) ||
       (typeof result.id === "number" && result.id) ||
-      (result && result.mapping && typeof result.mapping.fileId === "number" && result.mapping.fileId) ||
+      (result &&
+        result.mapping &&
+        typeof result.mapping.fileId === "number" &&
+        result.mapping.fileId) ||
       null;
     if (!returnedId) throw new Error("Upload did not return an id");
     return returnedId as number;
@@ -601,12 +608,17 @@ export function IdentityDocumentForm({
       <CameraDialog
         isOpen={showCameraDialog}
         onClose={() => setShowCameraDialog(false)}
-        previousFileIds={selectedDocument ? documentUploadIds[selectedDocument] : undefined}
+        previousFileIds={
+          selectedDocument ? documentUploadIds[selectedDocument] : undefined
+        }
         onUploaded={(side, id) => {
           if (!selectedDocument) return;
           setDocumentUploadIds((prev) => ({
             ...prev,
-            [selectedDocument]: { ...(prev[selectedDocument] || {}), [side]: id },
+            [selectedDocument]: {
+              ...(prev[selectedDocument] || {}),
+              [side]: id,
+            },
           }));
         }}
         onSubmit={() => {
@@ -662,8 +674,14 @@ export function IdentityDocumentForm({
             ]);
 
             const [frontId, backId] = await Promise.all([
-              uploadFileToServer(frontFile, `${docId}-front.${frontFile.type.includes("pdf") ? "pdf" : "jpg"}`),
-              uploadFileToServer(backFile, `${docId}-back.${backFile.type.includes("pdf") ? "pdf" : "jpg"}`),
+              uploadFileToServer(
+                frontFile,
+                `${docId}-front.${frontFile.type.includes("pdf") ? "pdf" : "jpg"}`,
+              ),
+              uploadFileToServer(
+                backFile,
+                `${docId}-back.${backFile.type.includes("pdf") ? "pdf" : "jpg"}`,
+              ),
             ]);
 
             setDocumentUploadIds((prev) => ({

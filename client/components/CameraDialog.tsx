@@ -20,7 +20,13 @@ const API_BASE =
   "http://10.10.2.133:8080";
 const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
 
-export function CameraDialog({ isOpen, onClose, onSubmit, previousFileIds, onUploaded }: CameraDialogProps) {
+export function CameraDialog({
+  isOpen,
+  onClose,
+  onSubmit,
+  previousFileIds,
+  onUploaded,
+}: CameraDialogProps) {
   const { toast } = useToast();
   const [frontCaptured, setFrontCaptured] = useState<CapturedImage | null>(
     null,
