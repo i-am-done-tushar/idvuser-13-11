@@ -153,36 +153,22 @@ export function CameraDialog({
     try {
       setUploading(true);
 
-      // If there's a previous uploaded file for this side, attempt to delete it first (purge)
-      const previousId = uploadedFileIds[side];
-      if (previousId) {
-        try {
-          await fetch(`${API_BASE}/api/Files/${previousId}/purge`, {
-            method: "DELETE",
-          });
-        } catch (delErr) {
-          // log and continue - deletion failure shouldn't block new upload
-          console.warn(
-            `Failed to purge previous file id ${previousId}:`,
-            delErr,
-          );
-        }
-      }
-
       const formData = new FormData();
       formData.append("File", image.blob, `${side}-document.jpg`);
       formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
       formData.append("Bucket", "string");
       formData.append("UserTemplateSubmissionId", "5");
 
-      const response = await fetch(`${API_BASE}/api/Files/upload`, {
-        method: "POST",
-        body: formData,
-      });
+      const existingId = uploadedFileIds[side];
+      const url = existingId
+        ? `${API_BASE}/api/Files/${existingId}`
+        : `${API_BASE}/api/Files/upload`;
+      const method = existingId ? "PUT" : "POST";
+
+      const response = await fetch(url, { method, body: formData });
 
       if (response.ok) {
         const result = await response.json().catch(() => ({}));
-        // Save returned file id so we can delete on subsequent uploads
         const returnedId =
           (result &&
             result.file &&
@@ -193,6 +179,7 @@ export function CameraDialog({
             result.mapping &&
             typeof result.mapping.fileId === "number" &&
             result.mapping.fileId) ||
+          existingId ||
           null;
         if (returnedId) {
           setUploadedFileIds((prev) => ({ ...prev, [side]: returnedId }));
@@ -201,11 +188,11 @@ export function CameraDialog({
 
         setUploadedFiles((prev) => ({ ...prev, [side]: true }));
         toast({
-          title: "Upload Successful",
-          description: `${side === "front" ? "Front" : "Back"} side uploaded successfully.`,
+          title: existingId ? "Update Successful" : "Upload Successful",
+          description: `${side === "front" ? "Front" : "Back"} side ${existingId ? "updated" : "uploaded"} successfully.`,
         });
       } else {
-        throw new Error(`Upload failed: ${response.statusText}`);
+        throw new Error(`${method} failed: ${response.statusText}`);
       }
     } catch (error) {
       console.error(`Error uploading ${side} image:`, error);

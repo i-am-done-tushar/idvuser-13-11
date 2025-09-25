@@ -81,31 +81,18 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
 
       const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
 
-      // If there is an existing uploaded file for this selfie, attempt to delete it first (purge)
-      if (uploadedFileId) {
-        try {
-          await fetch(`${API_BASE}/api/Files/${uploadedFileId}/purge`, {
-            method: "DELETE",
-          });
-        } catch (delErr) {
-          console.warn(
-            `Failed to purge previous selfie id ${uploadedFileId}:`,
-            delErr,
-          );
-        }
-      }
-
       const formData = new FormData();
       formData.append("File", blob, "selfie.jpg");
       formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
       formData.append("Bucket", "string");
       formData.append("UserTemplateSubmissionId", "5");
 
-      // Upload to the same endpoint as documents
-      const uploadResponse = await fetch(`${API_BASE}/api/Files/upload`, {
-        method: "POST",
-        body: formData,
-      });
+      const url = uploadedFileId
+        ? `${API_BASE}/api/Files/${uploadedFileId}`
+        : `${API_BASE}/api/Files/upload`;
+      const method = uploadedFileId ? "PUT" : "POST";
+
+      const uploadResponse = await fetch(url, { method, body: formData });
 
       if (uploadResponse.ok) {
         const result = await uploadResponse.json().catch(() => ({}));
@@ -119,20 +106,20 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
             result.mapping &&
             typeof result.mapping.fileId === "number" &&
             result.mapping.fileId) ||
+          uploadedFileId ||
           null;
         if (returnedId) {
           setUploadedFileId(returnedId);
         }
 
         toast({
-          title: "Selfie Uploaded",
-          description: "Your selfie has been uploaded successfully!",
+          title: uploadedFileId ? "Selfie Updated" : "Selfie Uploaded",
+          description: `Your selfie has been ${uploadedFileId ? "updated" : "uploaded"} successfully!`,
         });
 
-        // Mark biometric verification as complete
         onComplete?.();
       } else {
-        throw new Error("Upload failed");
+        throw new Error(`${method} failed`);
       }
     } catch (error) {
       console.error("Error uploading selfie:", error);

@@ -127,27 +127,27 @@ export function IdentityDocumentForm({
   };
 
   // helpers for server uploads
-  const purgeFileIfExists = async (id?: number) => {
-    if (!id) return;
-    try {
-      await fetch(`${API_BASE}/api/Files/${id}/purge`, { method: "DELETE" });
-    } catch (e) {
-      console.warn(`Failed to purge file ${id}`, e);
-    }
-  };
-
-  const uploadFileToServer = async (file: Blob, filename: string) => {
+  const buildFormData = (file: Blob, filename: string) => {
     const formData = new FormData();
     formData.append("File", file, filename);
     formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
     formData.append("Bucket", "string");
     formData.append("UserTemplateSubmissionId", "5");
+    return formData;
+  };
 
-    const res = await fetch(`${API_BASE}/api/Files/upload`, {
-      method: "POST",
-      body: formData,
-    });
-    if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);
+  const uploadOrUpdateFile = async (
+    file: Blob,
+    filename: string,
+    existingId?: number,
+  ) => {
+    const formData = buildFormData(file, filename);
+    const url = existingId
+      ? `${API_BASE}/api/Files/${existingId}`
+      : `${API_BASE}/api/Files/upload`;
+    const method = existingId ? "PUT" : "POST";
+    const res = await fetch(url, { method, body: formData });
+    if (!res.ok) throw new Error(`${method} failed: ${res.statusText}`);
     const result = await res.json().catch(() => ({}));
     const returnedId =
       (result &&
@@ -159,9 +159,14 @@ export function IdentityDocumentForm({
         result.mapping &&
         typeof result.mapping.fileId === "number" &&
         result.mapping.fileId) ||
+      existingId ||
       null;
-    if (!returnedId) throw new Error("Upload did not return an id");
+    if (!returnedId) throw new Error("Upload/Update did not return an id");
     return returnedId as number;
+  };
+
+  const uploadFileToServer = async (file: Blob, filename: string) => {
+    return uploadOrUpdateFile(file, filename);
   };
 
   // Get available countries from configuration
@@ -668,19 +673,17 @@ export function IdentityDocumentForm({
 
           try {
             const prevIds = documentUploadIds[docId];
-            await Promise.all([
-              purgeFileIfExists(prevIds?.front),
-              purgeFileIfExists(prevIds?.back),
-            ]);
 
             const [frontId, backId] = await Promise.all([
-              uploadFileToServer(
+              uploadOrUpdateFile(
                 frontFile,
                 `${docId}-front.${frontFile.type.includes("pdf") ? "pdf" : "jpg"}`,
+                prevIds?.front,
               ),
-              uploadFileToServer(
+              uploadOrUpdateFile(
                 backFile,
                 `${docId}-back.${backFile.type.includes("pdf") ? "pdf" : "jpg"}`,
+                prevIds?.back,
               ),
             ]);
 
