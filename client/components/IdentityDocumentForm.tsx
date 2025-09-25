@@ -150,10 +150,17 @@ export function IdentityDocumentForm({
     if (!res.ok) throw new Error(`${method} failed: ${res.statusText}`);
     const result = await res.json().catch(() => ({}));
     const returnedId =
-      (result && result.file && typeof result.file.id === "number" && result.file.id) ||
+      (result &&
+        result.file &&
+        typeof result.file.id === "number" &&
+        result.file.id) ||
       (typeof result.id === "number" && result.id) ||
-      (result && result.mapping && typeof result.mapping.fileId === "number" && result.mapping.fileId) ||
-      (existingId || null);
+      (result &&
+        result.mapping &&
+        typeof result.mapping.fileId === "number" &&
+        result.mapping.fileId) ||
+      existingId ||
+      null;
     if (!returnedId) throw new Error("Upload/Update did not return an id");
     return returnedId as number;
   };

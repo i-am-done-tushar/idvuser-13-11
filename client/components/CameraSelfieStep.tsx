@@ -106,7 +106,8 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
             result.mapping &&
             typeof result.mapping.fileId === "number" &&
             result.mapping.fileId) ||
-          uploadedFileId || null;
+          uploadedFileId ||
+          null;
         if (returnedId) {
           setUploadedFileId(returnedId);
         }

@@ -179,7 +179,8 @@ export function CameraDialog({
             result.mapping &&
             typeof result.mapping.fileId === "number" &&
             result.mapping.fileId) ||
-          existingId || null;
+          existingId ||
+          null;
         if (returnedId) {
           setUploadedFileIds((prev) => ({ ...prev, [side]: returnedId }));
           onUploaded?.(side, returnedId);
