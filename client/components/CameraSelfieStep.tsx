@@ -110,9 +110,15 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
       if (uploadResponse.ok) {
         const result = await uploadResponse.json().catch(() => ({}));
         const returnedId =
-          (result && result.file && typeof result.file.id === "number" && result.file.id) ||
+          (result &&
+            result.file &&
+            typeof result.file.id === "number" &&
+            result.file.id) ||
           (typeof result.id === "number" && result.id) ||
-          (result && result.mapping && typeof result.mapping.fileId === "number" && result.mapping.fileId) ||
+          (result &&
+            result.mapping &&
+            typeof result.mapping.fileId === "number" &&
+            result.mapping.fileId) ||
           null;
         if (returnedId) {
           setUploadedFileId(returnedId);

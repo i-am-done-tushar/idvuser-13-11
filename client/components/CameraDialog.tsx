@@ -176,9 +176,15 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
         const result = await response.json().catch(() => ({}));
         // Save returned file id so we can delete on subsequent uploads
         const returnedId =
-          (result && result.file && typeof result.file.id === "number" && result.file.id) ||
+          (result &&
+            result.file &&
+            typeof result.file.id === "number" &&
+            result.file.id) ||
           (typeof result.id === "number" && result.id) ||
-          (result && result.mapping && typeof result.mapping.fileId === "number" && result.mapping.fileId) ||
+          (result &&
+            result.mapping &&
+            typeof result.mapping.fileId === "number" &&
+            result.mapping.fileId) ||
           null;
         if (returnedId) {
           setUploadedFileIds((prev) => ({ ...prev, [side]: returnedId }));
