@@ -102,9 +102,19 @@ export function IdentityDocumentForm({
     </svg>
   );
 
-  // Function to remove uploaded file
+  // Function to remove uploaded file and update uploadedDocuments accordingly
   const removeUploadedFile = (fileId: string) => {
-    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId));
+    setUploadedFiles((prev) => {
+      const next = prev.filter((file) => file.id !== fileId);
+      // derive docId from removed file id (strip trailing timestamp)
+      const removedDocId = fileId.replace(/-\d+$/, "");
+      // if no remaining file for that docId, remove from uploadedDocuments
+      const stillExists = next.some(f => f.id.replace(/-\d+$/, "") === removedDocId);
+      if (!stillExists) {
+        setUploadedDocuments((docs) => docs.filter(d => d !== removedDocId));
+      }
+      return next;
+    });
   };
 
   // Get available countries from configuration
@@ -500,26 +510,29 @@ export function IdentityDocumentForm({
         onClose={() => setShowCameraDialog(false)}
         onSubmit={() => {
           setShowCameraDialog(false);
-          // mark selectedDocument as uploaded
           if (selectedDocument) {
-            const next = uploadedDocuments.includes(selectedDocument)
-              ? uploadedDocuments
-              : [...uploadedDocuments, selectedDocument];
-            setUploadedDocuments(next);
+            const docId = selectedDocument;
 
-            // Add uploaded file to the files list
+            // ensure uploadedDocuments contains docId
+            setUploadedDocuments((prevDocs) => (prevDocs.includes(docId) ? prevDocs : [...prevDocs, docId]));
+
+            // Add uploaded file to the files list, but first remove previous instances of this docId
             const newFile: UploadedFile = {
-              id: `${selectedDocument}-${Date.now()}`,
-              name: `${selectedDocument.replace(/_/g, ' ')}.jpg`,
+              id: `${docId}-${Date.now()}`,
+              name: `${docId.replace(/_/g, ' ')}.jpg`,
               size: "2.5MB",
               type: "image",
             };
-            setUploadedFiles((prev) => [...prev, newFile]);
+
+            setUploadedFiles((prev) => {
+              const filtered = prev.filter((f) => f.id.replace(/-\d+$/, "") !== docId);
+              return [...filtered, newFile];
+            });
 
             setSelectedDocument("");
             // call onComplete only when all required documents are uploaded
             const requiredIds = currentDocuments.map((docName) => docName.toLowerCase().replace(/\s+/g, "_"));
-            const allUploaded = requiredIds.every((id) => next.includes(id));
+            const allUploaded = requiredIds.every((id) => id === docId || uploadedDocuments.includes(id));
             if (allUploaded) onComplete?.();
           }
         }}
@@ -531,24 +544,28 @@ export function IdentityDocumentForm({
         onSubmit={() => {
           setShowUploadDialog(false);
           if (selectedDocument) {
-            const next = uploadedDocuments.includes(selectedDocument)
-              ? uploadedDocuments
-              : [...uploadedDocuments, selectedDocument];
-            setUploadedDocuments(next);
+            const docId = selectedDocument;
 
-            // Add uploaded file to the files list
+            // ensure uploadedDocuments contains docId
+            setUploadedDocuments((prevDocs) => (prevDocs.includes(docId) ? prevDocs : [...prevDocs, docId]));
+
+            // Add uploaded file to the files list, replacing any previous instance for this docId
             const newFile: UploadedFile = {
-              id: `${selectedDocument}-${Date.now()}`,
-              name: `${selectedDocument.replace(/_/g, ' ')}.pdf`,
+              id: `${docId}-${Date.now()}`,
+              name: `${docId.replace(/_/g, ' ')}.pdf`,
               size: "3MB",
               type: "document",
             };
-            setUploadedFiles((prev) => [...prev, newFile]);
+
+            setUploadedFiles((prev) => {
+              const filtered = prev.filter((f) => f.id.replace(/-\d+$/, "") !== docId);
+              return [...filtered, newFile];
+            });
 
             setSelectedDocument("");
             // call onComplete only when all required documents are uploaded
             const requiredIds = currentDocuments.map((docName) => docName.toLowerCase().replace(/\s+/g, "_"));
-            const allUploaded = requiredIds.every((id) => next.includes(id));
+            const allUploaded = requiredIds.every((id) => id === docId || uploadedDocuments.includes(id));
             if (allUploaded) onComplete?.();
           }
         }}
