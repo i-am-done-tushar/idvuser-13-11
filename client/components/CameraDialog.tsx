@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CameraDialogProps {
@@ -12,7 +12,10 @@ interface CapturedImage {
   dataUrl: string;
 }
 
-const API_BASE = "http://10.10.2.133:8080";
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  import.meta.env.VITE_API_URL ||
+  "http://10.10.2.133:8080";
 const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
 
 export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
@@ -31,6 +34,12 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
     front: false,
     back: false,
   });
+
+  // store uploaded file ids returned by the server so we can delete on re-upload
+  const [uploadedFileIds, setUploadedFileIds] = useState<{
+    front?: number;
+    back?: number;
+  }>({});
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -136,6 +145,22 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
     try {
       setUploading(true);
 
+      // If there's a previous uploaded file for this side, attempt to delete it first
+      const previousId = uploadedFileIds[side];
+      if (previousId) {
+        try {
+          await fetch(`${API_BASE}/api/Files/${previousId}`, {
+            method: "DELETE",
+          });
+        } catch (delErr) {
+          // log and continue - deletion failure shouldn't block new upload
+          console.warn(
+            `Failed to delete previous file id ${previousId}:`,
+            delErr,
+          );
+        }
+      }
+
       const formData = new FormData();
       formData.append("File", image.blob, `${side}-document.jpg`);
       formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
@@ -148,6 +173,12 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
       });
 
       if (response.ok) {
+        const result = await response.json().catch(() => ({}));
+        // Save returned id so we can delete on subsequent uploads
+        if (result && typeof result.id === "number") {
+          setUploadedFileIds((prev) => ({ ...prev, [side]: result.id }));
+        }
+
         setUploadedFiles((prev) => ({ ...prev, [side]: true }));
         toast({
           title: "Upload Successful",
