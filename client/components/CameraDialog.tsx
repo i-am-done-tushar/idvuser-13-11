@@ -5,6 +5,8 @@ interface CameraDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;
+  previousFileIds?: { front?: number; back?: number };
+  onUploaded?: (side: "front" | "back", id: number) => void;
 }
 
 interface CapturedImage {
@@ -18,7 +20,7 @@ const API_BASE =
   "http://10.10.2.133:8080";
 const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
 
-export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
+export function CameraDialog({ isOpen, onClose, onSubmit, previousFileIds, onUploaded }: CameraDialogProps) {
   const { toast } = useToast();
   const [frontCaptured, setFrontCaptured] = useState<CapturedImage | null>(
     null,
@@ -39,7 +41,7 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
   const [uploadedFileIds, setUploadedFileIds] = useState<{
     front?: number;
     back?: number;
-  }>({});
+  }>(previousFileIds || {});
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -188,6 +190,7 @@ export function CameraDialog({ isOpen, onClose, onSubmit }: CameraDialogProps) {
           null;
         if (returnedId) {
           setUploadedFileIds((prev) => ({ ...prev, [side]: returnedId }));
+          onUploaded?.(side, returnedId);
         }
 
         setUploadedFiles((prev) => ({ ...prev, [side]: true }));
