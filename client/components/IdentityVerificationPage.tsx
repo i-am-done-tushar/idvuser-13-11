@@ -299,7 +299,9 @@ export function IdentityVerificationPage({
 
     if (nextStep !== currentStep) {
       setCurrentStep(nextStep);
-      setExpandedSections((prev) => (prev.includes(nextStep) ? prev : [...prev, nextStep]));
+      setExpandedSections((prev) =>
+        prev.includes(nextStep) ? prev : [...prev, nextStep],
+      );
       setShowMobileMenu(false);
     }
   }, [
@@ -629,7 +631,9 @@ export function IdentityVerificationPage({
 
   useEffect(() => {
     // Ensure the current step is expanded, but keep previously expanded sections open
-    setExpandedSections((prev) => (prev.includes(currentStep) ? prev : [...prev, currentStep]));
+    setExpandedSections((prev) =>
+      prev.includes(currentStep) ? prev : [...prev, currentStep],
+    );
     if (currentStep >= 2) setShowMobileMenu(false);
   }, [currentStep]);
 
