@@ -572,7 +572,8 @@ export function IdentityVerificationPage({
       if (idx > currentStep) {
         toast({
           title: "Step locked",
-          description: "Please complete the current section before opening the next one.",
+          description:
+            "Please complete the current section before opening the next one.",
           variant: "destructive",
         });
         return prev;
