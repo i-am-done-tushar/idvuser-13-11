@@ -40,12 +40,12 @@ export function DynamicSection({
 }: DynamicSectionProps) {
   
   const renderSectionContent = () => {
-    // If this section is not at the current step, show locked state
-    if (sectionIndex > currentStep) {
+    // Only the current step is active; all others are locked
+    if (sectionIndex !== currentStep) {
       return (
         <div className="flex w-full h-[308px] border-t border-border bg-background">
-          <LockedStepComponent 
-            message={`You'll be able to complete this step after submitting the previous section.`} 
+          <LockedStepComponent
+            message={"This step is locked until you complete the previous step."}
           />
         </div>
       );
