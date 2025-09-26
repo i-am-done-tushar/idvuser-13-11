@@ -18,7 +18,7 @@ const API_BASE =
   import.meta.env.VITE_API_BASE ||
   import.meta.env.VITE_API_URL ||
   "http://10.10.2.133:8080";
-const DOCUMENT_DEFINITION_ID = "5c5df74f-9684-413e-849f-c3b4d53e032d";
+const DOCUMENT_DEFINITION_ID = "543d16b7-78fd-48d5-9ae0-60481f2952a6";
 
 export function CameraDialog({
   isOpen,
@@ -157,7 +157,7 @@ export function CameraDialog({
       formData.append("File", image.blob, `${side}-document.jpg`);
       formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
       formData.append("Bucket", "string");
-      formData.append("UserTemplateSubmissionId", "5");
+      formData.append("UserTemplateSubmissionId", "1");
 
       const existingId = uploadedFileIds[side];
       const isUpdate = !!existingId;
