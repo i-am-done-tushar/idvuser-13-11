@@ -277,6 +277,52 @@ export function IdentityVerificationPage({
     }
   }, [currentStep, isIdentityDocumentCompleted, hasShownStep2Toast, toast]);
 
+  // Determine current step dynamically based on section order and completion state
+  useEffect(() => {
+    const sections = (templateVersion?.sections || [])
+      .filter((s) => s.isActive)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+    if (sections.length === 0) return;
+
+    const isSectionComplete = (type: string) => {
+      if (type === "personalInformation") return isStep1Complete();
+      if (type === "documents") return isIdentityDocumentCompleted;
+      if (type === "biometrics") return isSelfieCompleted;
+      return true;
+    };
+
+    const firstIncompleteIdx = sections.findIndex(
+      (s) => !isSectionComplete(s.sectionType as string),
+    );
+    const nextStep =
+      firstIncompleteIdx === -1 ? sections.length : firstIncompleteIdx + 1;
+
+    if (nextStep !== currentStep) {
+      setCurrentStep(nextStep);
+      setExpandedSections([nextStep]);
+      setShowMobileMenu(false);
+    }
+  }, [
+    templateVersion,
+    isEmailVerified,
+    isPhoneVerified,
+    formData.firstName,
+    formData.lastName,
+    formData.middleName,
+    formData.dateOfBirth,
+    formData.email,
+    formData.countryCode,
+    formData.phoneNumber,
+    formData.address,
+    formData.city,
+    formData.postalCode,
+    formData.permanentAddress,
+    formData.permanentCity,
+    formData.permanentPostalCode,
+    isIdentityDocumentCompleted,
+    isSelfieCompleted,
+  ]);
+
   // ---- OTP handlers (server-backed email; phone kept UI-only unless you add API) ----
   const handleSendEmailOTP = async () => {
     const email = formData.email?.trim();
@@ -563,23 +609,23 @@ export function IdentityVerificationPage({
 
   const toggleSection = (idx: number) => {
     setExpandedSections((prev) => {
-      // Allow collapsing any expanded section
-      if (prev.includes(idx)) {
+      // Allow collapsing the current step
+      if (prev.includes(idx) && idx === currentStep) {
         return prev.filter((i) => i !== idx);
       }
 
-      // Prevent opening sections beyond the current step until the current step is completed
-      if (idx > currentStep) {
+      // Only the current step can be opened
+      if (idx !== currentStep) {
         toast({
           title: "Step locked",
           description:
-            "Please complete the current section before opening the next one.",
+            "You can only access the current step. Complete it to unlock the next one.",
           variant: "destructive",
         });
         return prev;
       }
 
-      // Open the requested section (single-section expanded for clarity)
+      // Open the current step (single-section expanded for clarity)
       return [idx];
     });
   };
