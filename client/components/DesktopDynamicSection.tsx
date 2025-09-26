@@ -157,7 +157,7 @@ export function DesktopDynamicSection({
                   </div>
                 </div>
               </div>
-              {currentStep >= sectionIndex ? (
+              {currentStep === sectionIndex ? (
                 <div className="flex py-4 px-[34px] flex-col items-start self-stretch border-t border-[#DEDEDD] bg-white">
                   <IdentityDocumentForm
                     onComplete={onIdentityDocumentComplete || (() => {})}
@@ -166,7 +166,7 @@ export function DesktopDynamicSection({
                 </div>
               ) : (
                 <div className="flex w-full h-[308px] border-t border-border bg-background">
-                  <LockedStepComponent message="You'll be able to complete this step after submitting your personal information." />
+                  <LockedStepComponent message="This step is locked until you complete the previous step." />
                 </div>
               )}
             </div>
