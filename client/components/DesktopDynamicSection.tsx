@@ -33,7 +33,6 @@ export function DesktopDynamicSection({
   onIdentityDocumentComplete,
   onSelfieComplete,
 }: DesktopDynamicSectionProps) {
-  
   const renderSectionContent = () => {
     // Render based on section type
     switch (section.sectionType) {
@@ -41,7 +40,8 @@ export function DesktopDynamicSection({
         if (!formData || !setFormData) return null;
 
         // Extract field configuration from fieldMappings
-        const fieldConfig = section.fieldMappings?.[0]?.structure?.personalInfo || {};
+        const fieldConfig =
+          section.fieldMappings?.[0]?.structure?.personalInfo || {};
 
         if (currentStep === sectionIndex) {
           return (
@@ -69,7 +69,8 @@ export function DesktopDynamicSection({
                   </div>
                   <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
                     <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                      {section.description || `Complete the ${section.name.toLowerCase()} section.`}
+                      {section.description ||
+                        `Complete the ${section.name.toLowerCase()} section.`}
                     </div>
                   </div>
                 </div>
@@ -113,7 +114,8 @@ export function DesktopDynamicSection({
                 </div>
                 <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
                   <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                    {section.description || `Complete the ${section.name.toLowerCase()} section.`}
+                    {section.description ||
+                      `Complete the ${section.name.toLowerCase()} section.`}
                   </div>
                 </div>
               </div>
@@ -123,11 +125,12 @@ export function DesktopDynamicSection({
             </div>
           </div>
         );
-      
+
       case "documents":
         // Extract document configuration from fieldMappings
-        const documentConfig = section.fieldMappings?.[0]?.structure?.documentVerification || {};
-        
+        const documentConfig =
+          section.fieldMappings?.[0]?.structure?.documentVerification || {};
+
         return (
           <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
             <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-[#DEDEDD] bg-white">
@@ -153,7 +156,8 @@ export function DesktopDynamicSection({
                 </div>
                 <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
                   <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                    {section.description || `Complete the ${section.name.toLowerCase()} section.`}
+                    {section.description ||
+                      `Complete the ${section.name.toLowerCase()} section.`}
                   </div>
                 </div>
               </div>
@@ -172,13 +176,11 @@ export function DesktopDynamicSection({
             </div>
           </div>
         );
-      
+
       case "biometrics":
         if (currentStep === sectionIndex) {
           return (
-            <CameraSelfieStep
-              onComplete={onSelfieComplete || (() => {})}
-            />
+            <CameraSelfieStep onComplete={onSelfieComplete || (() => {})} />
           );
         } else {
           return (
@@ -206,7 +208,8 @@ export function DesktopDynamicSection({
                   </div>
                   <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
                     <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-                      {section.description || `Complete the ${section.name.toLowerCase()} section.`}
+                      {section.description ||
+                        `Complete the ${section.name.toLowerCase()} section.`}
                     </div>
                   </div>
                 </div>
@@ -217,7 +220,7 @@ export function DesktopDynamicSection({
             </div>
           );
         }
-      
+
       default:
         return (
           <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">

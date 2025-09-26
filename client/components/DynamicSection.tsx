@@ -38,14 +38,15 @@ export function DynamicSection({
   onIdentityDocumentComplete,
   onSelfieComplete,
 }: DynamicSectionProps) {
-  
   const renderSectionContent = () => {
     // Only the current step is active; all others are locked
     if (sectionIndex !== currentStep) {
       return (
         <div className="flex w-full h-[308px] border-t border-border bg-background">
           <LockedStepComponent
-            message={"This step is locked until you complete the previous step."}
+            message={
+              "This step is locked until you complete the previous step."
+            }
           />
         </div>
       );
@@ -55,10 +56,11 @@ export function DynamicSection({
     switch (section.sectionType) {
       case "personalInformation":
         if (!formData || !setFormData) return null;
-        
+
         // Extract field configuration from fieldMappings
-        const fieldConfig = section.fieldMappings?.[0]?.structure?.personalInfo || {};
-        
+        const fieldConfig =
+          section.fieldMappings?.[0]?.structure?.personalInfo || {};
+
         return (
           <div className="flex p-5 px-6 flex-col items-start self-stretch border-t border-border bg-background">
             <PersonalInformationForm
@@ -72,11 +74,12 @@ export function DynamicSection({
             />
           </div>
         );
-      
+
       case "documents":
         // Extract document configuration from fieldMappings
-        const documentConfig = section.fieldMappings?.[0]?.structure?.documentVerification || {};
-        
+        const documentConfig =
+          section.fieldMappings?.[0]?.structure?.documentVerification || {};
+
         return (
           <div className="flex p-4 px-6 flex-col items-start self-stretch border-t border-border bg-background">
             <IdentityDocumentForm
@@ -85,18 +88,16 @@ export function DynamicSection({
             />
           </div>
         );
-      
+
       case "biometrics":
         return (
           <div className="flex p-3 flex-col justify-center items-center self-stretch border-t border-border bg-background">
             <div className="flex w-full flex-col items-center gap-2">
-              <CameraSelfieStep
-                onComplete={onSelfieComplete || (() => {})}
-              />
+              <CameraSelfieStep onComplete={onSelfieComplete || (() => {})} />
             </div>
           </div>
         );
-      
+
       default:
         return (
           <div className="flex p-4 px-6 flex-col items-start self-stretch border-t border-border bg-background">
@@ -140,7 +141,8 @@ export function DynamicSection({
           </div>
           <div className="flex pl-6 justify-center items-center gap-2.5 self-stretch">
             <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-              {section.description || `Complete the ${section.name.toLowerCase()} section.`}
+              {section.description ||
+                `Complete the ${section.name.toLowerCase()} section.`}
             </div>
           </div>
         </div>

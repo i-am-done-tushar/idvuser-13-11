@@ -294,7 +294,8 @@ export function IdentityVerificationPage({
     const firstIncompleteIdx = sections.findIndex(
       (s) => !isSectionComplete(s.sectionType as string),
     );
-    const nextStep = firstIncompleteIdx === -1 ? sections.length : firstIncompleteIdx + 1;
+    const nextStep =
+      firstIncompleteIdx === -1 ? sections.length : firstIncompleteIdx + 1;
 
     if (nextStep !== currentStep) {
       setCurrentStep(nextStep);
