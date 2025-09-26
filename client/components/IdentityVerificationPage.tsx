@@ -277,6 +277,51 @@ export function IdentityVerificationPage({
     }
   }, [currentStep, isIdentityDocumentCompleted, hasShownStep2Toast, toast]);
 
+  // Determine current step dynamically based on section order and completion state
+  useEffect(() => {
+    const sections = (templateVersion?.sections || [])
+      .filter((s) => s.isActive)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+    if (sections.length === 0) return;
+
+    const isSectionComplete = (type: string) => {
+      if (type === "personalInformation") return isStep1Complete();
+      if (type === "documents") return isIdentityDocumentCompleted;
+      if (type === "biometrics") return isSelfieCompleted;
+      return true;
+    };
+
+    const firstIncompleteIdx = sections.findIndex(
+      (s) => !isSectionComplete(s.sectionType as string),
+    );
+    const nextStep = firstIncompleteIdx === -1 ? sections.length : firstIncompleteIdx + 1;
+
+    if (nextStep !== currentStep) {
+      setCurrentStep(nextStep);
+      setExpandedSections([nextStep]);
+      setShowMobileMenu(false);
+    }
+  }, [
+    templateVersion,
+    isEmailVerified,
+    isPhoneVerified,
+    formData.firstName,
+    formData.lastName,
+    formData.middleName,
+    formData.dateOfBirth,
+    formData.email,
+    formData.countryCode,
+    formData.phoneNumber,
+    formData.address,
+    formData.city,
+    formData.postalCode,
+    formData.permanentAddress,
+    formData.permanentCity,
+    formData.permanentPostalCode,
+    isIdentityDocumentCompleted,
+    isSelfieCompleted,
+  ]);
+
   // ---- OTP handlers (server-backed email; phone kept UI-only unless you add API) ----
   const handleSendEmailOTP = async () => {
     const email = formData.email?.trim();
