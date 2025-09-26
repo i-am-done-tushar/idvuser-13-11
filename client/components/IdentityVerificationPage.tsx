@@ -563,23 +563,23 @@ export function IdentityVerificationPage({
 
   const toggleSection = (idx: number) => {
     setExpandedSections((prev) => {
-      // Allow collapsing any expanded section
-      if (prev.includes(idx)) {
+      // Allow collapsing the current step
+      if (prev.includes(idx) && idx === currentStep) {
         return prev.filter((i) => i !== idx);
       }
 
-      // Prevent opening sections beyond the current step until the current step is completed
-      if (idx > currentStep) {
+      // Only the current step can be opened
+      if (idx !== currentStep) {
         toast({
           title: "Step locked",
           description:
-            "Please complete the current section before opening the next one.",
+            "You can only access the current step. Complete it to unlock the next one.",
           variant: "destructive",
         });
         return prev;
       }
 
-      // Open the requested section (single-section expanded for clarity)
+      // Open the current step (single-section expanded for clarity)
       return [idx];
     });
   };
