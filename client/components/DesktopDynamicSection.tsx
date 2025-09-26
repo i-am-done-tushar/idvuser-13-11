@@ -43,7 +43,7 @@ export function DesktopDynamicSection({
         const fieldConfig =
           section.fieldMappings?.[0]?.structure?.personalInfo || {};
 
-        if (currentStep === sectionIndex) {
+        if (currentStep >= sectionIndex) {
           return (
             <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
               <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-border">
@@ -161,7 +161,7 @@ export function DesktopDynamicSection({
                   </div>
                 </div>
               </div>
-              {currentStep === sectionIndex ? (
+              {currentStep >= sectionIndex ? (
                 <div className="flex py-4 px-[34px] flex-col items-start self-stretch border-t border-[#DEDEDD] bg-white">
                   <IdentityDocumentForm
                     onComplete={onIdentityDocumentComplete || (() => {})}
@@ -178,7 +178,7 @@ export function DesktopDynamicSection({
         );
 
       case "biometrics":
-        if (currentStep === sectionIndex) {
+        if (currentStep >= sectionIndex) {
           return (
             <CameraSelfieStep onComplete={onSelfieComplete || (() => {})} />
           );
