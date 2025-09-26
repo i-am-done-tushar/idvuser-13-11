@@ -562,15 +562,31 @@ export function IdentityVerificationPage({
   };
 
   const toggleSection = (idx: number) => {
-    setExpandedSections((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
-    );
+    setExpandedSections((prev) => {
+      // Allow collapsing any expanded section
+      if (prev.includes(idx)) {
+        return prev.filter((i) => i !== idx);
+      }
+
+      // Prevent opening sections beyond the current step until the current step is completed
+      if (idx > currentStep) {
+        toast({
+          title: "Step locked",
+          description:
+            "Please complete the current section before opening the next one.",
+          variant: "destructive",
+        });
+        return prev;
+      }
+
+      // Open the requested section (single-section expanded for clarity)
+      return [idx];
+    });
   };
 
   useEffect(() => {
-    setExpandedSections((prev) =>
-      prev.includes(currentStep) ? prev : [currentStep],
-    );
+    // Always ensure only the current step is expanded when the step changes
+    setExpandedSections([currentStep]);
     if (currentStep >= 2) setShowMobileMenu(false);
   }, [currentStep]);
 
