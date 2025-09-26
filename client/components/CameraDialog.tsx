@@ -159,30 +159,9 @@ export function CameraDialog({
       formData.append("Bucket", "string");
       formData.append("UserTemplateSubmissionId", "1");
 
-      const existingId = uploadedFileIds[side];
-      const isUpdate = !!existingId;
-      const url = isUpdate
-        ? `${API_BASE}/api/Files/${existingId}`
-        : `${API_BASE}/api/Files/upload`;
-
-      let response: Response;
-      if (isUpdate) {
-        const contentType =
-          image.blob?.type && typeof image.blob.type === "string"
-            ? image.blob.type
-            : "application/octet-stream";
-        const headers: HeadersInit = {
-          "Content-Type": contentType,
-          "Content-Disposition": `attachment; filename="${side}-document.jpg"`,
-        };
-        response = await fetch(url, {
-          method: "PUT",
-          headers,
-          body: image.blob,
-        });
-      } else {
-        response = await fetch(url, { method: "POST", body: formData });
-      }
+      // Always use POST for uploads, never PUT
+      const url = `${API_BASE}/api/Files/upload`;
+      const response = await fetch(url, { method: "POST", body: formData });
 
       if (response.ok) {
         const result = await response.json().catch(() => ({}));
@@ -196,7 +175,6 @@ export function CameraDialog({
             result.mapping &&
             typeof result.mapping.fileId === "number" &&
             result.mapping.fileId) ||
-          existingId ||
           null;
         if (returnedId) {
           setUploadedFileIds((prev) => ({ ...prev, [side]: returnedId }));
@@ -205,13 +183,11 @@ export function CameraDialog({
 
         setUploadedFiles((prev) => ({ ...prev, [side]: true }));
         toast({
-          title: existingId ? "Update Successful" : "Upload Successful",
-          description: `${side === "front" ? "Front" : "Back"} side ${existingId ? "updated" : "uploaded"} successfully.`,
+          title: "Upload Successful",
+          description: `${side === "front" ? "Front" : "Back"} side uploaded successfully.`,
         });
       } else {
-        throw new Error(
-          `${isUpdate ? "PUT" : "POST"} failed: ${response.statusText}`,
-        );
+        throw new Error(`POST failed: ${response.statusText}`);
       }
     } catch (error) {
       console.error(`Error uploading ${side} image:`, error);

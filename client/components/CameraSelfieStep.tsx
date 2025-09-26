@@ -16,6 +16,7 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
   const [selfieCaptured, setSelfieCaptured] = useState(false);
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadSuccessful, setUploadSuccessful] = useState(false);
   // store the uploaded file id so we can delete it if the user re-uploads
   const [uploadedFileId, setUploadedFileId] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,29 +88,9 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
       formData.append("Bucket", "string");
       formData.append("UserTemplateSubmissionId", "1");
 
-      const isUpdate = !!uploadedFileId;
-      const url = isUpdate
-        ? `${API_BASE}/api/Files/${uploadedFileId}`
-        : `${API_BASE}/api/Files/upload`;
-
-      let uploadResponse: Response;
-      if (isUpdate) {
-        const contentType =
-          blob?.type && typeof blob.type === "string"
-            ? blob.type
-            : "application/octet-stream";
-        const headers: HeadersInit = {
-          "Content-Type": contentType,
-          "Content-Disposition": `attachment; filename="selfie.jpg"`,
-        };
-        uploadResponse = await fetch(url, {
-          method: "PUT",
-          headers,
-          body: blob,
-        });
-      } else {
-        uploadResponse = await fetch(url, { method: "POST", body: formData });
-      }
+      // Always use POST for uploads, never PUT
+      const url = `${API_BASE}/api/Files/upload`;
+      const uploadResponse = await fetch(url, { method: "POST", body: formData });
 
       if (uploadResponse.ok) {
         const result = await uploadResponse.json().catch(() => ({}));
@@ -123,20 +104,22 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
             result.mapping &&
             typeof result.mapping.fileId === "number" &&
             result.mapping.fileId) ||
-          uploadedFileId ||
           null;
         if (returnedId) {
           setUploadedFileId(returnedId);
         }
 
+        // Mark upload as successful
+        setUploadSuccessful(true);
+
         toast({
-          title: uploadedFileId ? "Selfie Updated" : "Selfie Uploaded",
-          description: `Your selfie has been ${uploadedFileId ? "updated" : "uploaded"} successfully!`,
+          title: "Selfie Uploaded",
+          description: "Your selfie has been uploaded successfully!",
         });
 
         onComplete?.();
       } else {
-        throw new Error(`${isUpdate ? "PUT" : "POST"} failed`);
+        throw new Error("POST failed");
       }
     } catch (error) {
       console.error("Error uploading selfie:", error);
@@ -154,6 +137,7 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
   const retakeSelfie = () => {
     setCapturedImageUrl(null);
     setSelfieCaptured(false);
+    setUploadSuccessful(false); // Reset upload status when retaking
   };
 
   // Retry initializing camera without reloading the page
@@ -283,11 +267,32 @@ export function CameraSelfieStep({ onComplete }: CameraSelfieStepProps) {
                     </button>
                     <button
                       onClick={uploadSelfie}
-                      disabled={uploading}
-                      className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50"
+                      disabled={uploading || uploadSuccessful}
+                      className={`flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded transition-colors disabled:opacity-50 ${
+                        uploadSuccessful
+                          ? "bg-green-500 hover:bg-green-600"
+                          : "bg-primary hover:bg-primary/90"
+                      }`}
                     >
+                      {uploadSuccessful && (
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          viewBox="0 0 18 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236Z"
+                            fill="white"
+                          />
+                        </svg>
+                      )}
                       <span className="text-white font-roboto text-[13px] font-medium">
-                        {uploading ? "Uploading..." : "Upload"}
+                        {uploading
+                          ? "Uploading..."
+                          : uploadSuccessful
+                            ? "Uploaded"
+                            : "Upload"}
                       </span>
                     </button>
                   </div>
