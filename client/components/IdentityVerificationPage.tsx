@@ -753,21 +753,7 @@ export function IdentityVerificationPage({
   // active sections by order
   const activeSections = (templateVersion?.sections || [])
     .filter((s) => s.isActive)
-    .sort((a, b) => {
-      // Enforce canonical ordering independent of backend orderIndex:
-      // biometrics -> documents -> personalInformation -> others
-      const typePriority: Record<string, number> = {
-        biometrics: 0,
-        documents: 1,
-        personalInformation: 2,
-      };
-
-      const pa = typePriority[a.sectionType] ?? 99;
-      const pb = typePriority[b.sectionType] ?? 99;
-      if (pa !== pb) return pa - pb;
-      // fallback to orderIndex for equal priority
-      return a.orderIndex - b.orderIndex;
-    });
+    .sort((a, b) => a.orderIndex - b.orderIndex);
 
   if (!templateVersion || activeSections.length === 0) {
     return (
