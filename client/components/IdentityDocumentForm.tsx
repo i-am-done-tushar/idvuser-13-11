@@ -134,7 +134,7 @@ export function IdentityDocumentForm({
     formData.append("File", file, filename);
     formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
     formData.append("Bucket", "string");
-    const submissionIdToUse = submissionId?.toString() || "1";
+    const submissionIdToUse = submissionId?.toString();
     console.log("IdentityDocumentForm: Using UserTemplateSubmissionId:", submissionIdToUse);
     formData.append("UserTemplateSubmissionId", submissionIdToUse);
     return formData;

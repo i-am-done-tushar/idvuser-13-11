@@ -87,7 +87,7 @@ export function CameraSelfieStep({ onComplete, submissionId }: CameraSelfieStepP
       formData.append("File", blob, "selfie.jpg");
       formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
       formData.append("Bucket", "string");
-      const submissionIdToUse = submissionId?.toString() || "1";
+      const submissionIdToUse = submissionId?.toString();
       console.log("CameraSelfieStep: Using UserTemplateSubmissionId:", submissionIdToUse);
       formData.append("UserTemplateSubmissionId", submissionIdToUse);
 
