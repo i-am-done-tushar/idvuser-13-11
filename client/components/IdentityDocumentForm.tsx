@@ -340,216 +340,220 @@ export function IdentityDocumentForm({
           {/* 1st change */}
           {/* Document Options Grid */}
           <div className="flex flex-col items-start gap-4 self-stretch">
-            {currentDocuments.map((docName, index) => {
-              const docId = docName.toLowerCase().replace(/\s+/g, "_");
-              const isSelected = selectedDocument === docId;
-              const isUploaded = uploadedDocuments.includes(docId);
-              const docStyle = getDocumentStyle(docName);
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 w-full">
+              {currentDocuments.map((docName, index) => {
+                const docId = docName.toLowerCase().replace(/\s+/g, "_");
+                const isSelected = selectedDocument === docId;
+                const isUploaded = uploadedDocuments.includes(docId);
+                const docStyle = getDocumentStyle(docName);
 
-              return (
-                <div key={docId} className="flex flex-col items-start gap-4 self-stretch">
-                  {/* Document Button */}
-                  <button
-                    onClick={() => {
-                      if (selectedDocument === docId) {
-                        // toggle off
-                        setSelectedDocument("");
-                        setShowCameraDialog(false);
-                        setShowUploadDialog(false);
-                      } else {
-                        setSelectedDocument(docId);
-                      }
-                    }}
-                    className={`relative flex p-4 pb-3 flex-col items-start gap-3 rounded border transition-all w-full sm:w-auto ${
-                      isUploaded
-                        ? "border-[#00B499] bg-[#EBFFF5]"
-                        : isSelected
-                          ? "border-[#0073EA] bg-[#F0F8FF]"
-                          : "border-[#C3C6D4] bg-white hover:border-[#0073EA]/50"
-                    }`}
-                  >
-                    {/* Icon */}
-                    <div
-                      className="flex w-8 h-8 p-2 justify-center items-center gap-2 aspect-square rounded"
-                      style={{ backgroundColor: docStyle.color }}
+                return (
+                  <div key={docId} className="flex flex-col">
+                    {/* Document Button */}
+                    <button
+                      onClick={() => {
+                        if (selectedDocument === docId) {
+                          // toggle off
+                          setSelectedDocument("");
+                          setShowCameraDialog(false);
+                          setShowUploadDialog(false);
+                        } else {
+                          setSelectedDocument(docId);
+                        }
+                      }}
+                      className={`relative flex p-3 flex-col items-start gap-2 rounded border transition-all w-full ${
+                        isUploaded
+                          ? "border-[#00B499] bg-[#EBFFF5]"
+                          : isSelected
+                            ? "border-[#0073EA] bg-[#F0F8FF]"
+                            : "border-[#C3C6D4] bg-white hover:border-[#0073EA]/50"
+                      }`}
                     >
-                      {docStyle.icon}
-                    </div>
-
-                    {/* Document Name */}
-                    <div className="text-[#172B4D] font-roboto text-[14px] font-medium leading-[22px]">
-                      {docName}
-                    </div>
-
-                    {isUploaded && (
-                      <div className="absolute top-2 right-2 flex items-center gap-1 bg-white rounded-full p-1 border border-[#E6F1FD]">
-                        <svg
-                          className="w-4 h-4"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236Z"
-                            fill="#039855"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-
-                  {/* Upload Methods - Show directly below selected document */}
-                  {isSelected && (
-                    <div className="flex flex-col items-start gap-4 self-stretch pl-4 border-l-2 border-[#0073EA]/20">
-                      {/* Upload Methods Header */}
-                      <div className="flex flex-col items-start gap-1 self-stretch">
-                        <div className="flex items-center gap-2 self-stretch">
-                          <div className="text-[#172B4D] font-roboto text-base font-bold leading-[26px]">
-                            Choose a method to upload your document
-                          </div>
+                      {/* Icon */}
+                      <div
+                        className="flex w-6 h-6 p-1 justify-center items-center gap-1 aspect-square rounded"
+                        style={{ backgroundColor: docStyle.color }}
+                      >
+                        <div className="scale-75">
+                          {docStyle.icon}
                         </div>
                       </div>
 
-                      {/* Upload Options */}
-                      {documentConfig.allowCaptureWebcam ||
-                      documentConfig.allowUploadFromDevice ? (
-                        <div
-                          className={`grid gap-4 w-full ${
-                            documentConfig.allowCaptureWebcam &&
-                            documentConfig.allowUploadFromDevice
-                              ? "grid-cols-1 sm:grid-cols-2"
-                              : "grid-cols-1"
-                          }`}
-                        >
-                          {/* Camera Upload - Show if allowCaptureWebcam is true */}
-                          {documentConfig.allowCaptureWebcam && (
-                            <button
-                              onClick={() => setShowCameraDialog(true)}
-                              className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
-                            >
-                              <div className="flex flex-col justify-center items-center gap-2">
-                                <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
-                                  <svg
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 24 25"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M1.99805 8.87722C1.99805 8.5269 1.99805 8.35174 2.01267 8.20421C2.15365 6.78127 3.27932 5.6556 4.70226 5.51462C4.84979 5.5 5.03441 5.5 5.40363 5.5C5.5459 5.5 5.61704 5.5 5.67744 5.49634C6.44866 5.44963 7.124 4.96288 7.41219 4.246C7.43476 4.18986 7.45586 4.12657 7.49805 4C7.54024 3.87343 7.56134 3.81014 7.58391 3.754C7.8721 3.03712 8.54744 2.55037 9.31866 2.50366C9.37906 2.5 9.44577 2.5 9.57919 2.5H14.4169C14.5503 2.5 14.617 2.5 14.6774 2.50366C15.4486 2.55037 16.124 3.03712 16.4121 3.754C16.4347 3.81014 16.4558 3.87343 16.498 4C16.5402 4.12657 16.5613 4.18986 16.5839 4.246C16.872 4.96288 17.5474 5.44963 18.3186 5.49634C18.379 5.5 18.4501 5.5 18.5924 5.5C18.9616 5.5 19.1463 5.5 19.2938 5.51462C20.7167 5.6556 21.8424 6.78127 21.9834 8.20421C21.998 8.35174 21.998 8.5269 21.998 8.87722V16.7C21.998 18.3802 21.998 19.2202 21.671 19.862C21.3834 20.4265 20.9245 20.8854 20.36 21.173C19.7182 21.5 18.8782 21.5 17.198 21.5H6.79805C5.11789 21.5 4.27781 21.5 3.63608 21.173C3.07159 20.8854 2.61265 20.4265 2.32503 19.862C1.99805 19.2202 1.99805 18.3802 1.99805 16.7V8.87722Z"
-                                      stroke="#676879"
-                                      strokeWidth="1.35"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                    <path
-                                      d="M11.998 17C14.2071 17 15.998 15.2091 15.998 13C15.998 10.7909 14.2071 9 11.998 9C9.78891 9 7.99805 10.7909 7.99805 13C7.99805 15.2091 9.78891 17 11.998 17Z"
-                                      stroke="#676879"
-                                      strokeWidth="1.35"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                  </svg>
-                                </div>
-                                <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
-                                  Camera
-                                </div>
-                                <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
-                                  Take a photo using camera
-                                </div>
-                              </div>
-                            </button>
-                          )}
+                      {/* Document Name */}
+                      <div className="text-[#172B4D] font-roboto text-[12px] font-medium leading-[16px] text-left">
+                        {docName}
+                      </div>
 
-                          {/* File Upload - Show if allowUploadFromDevice is true */}
-                          {documentConfig.allowUploadFromDevice && (
-                            <button
-                              onClick={() => setShowUploadDialog(true)}
-                              className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
-                            >
-                              <div className="flex flex-col justify-center items-center gap-2">
-                                <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
-                                  <svg
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 24 25"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M7.76471 12.0294C6.88944 12.0294 6.4518 12.0294 6.09274 12.1256C5.11837 12.3867 4.35729 13.1478 4.09621 14.1221C4 14.4812 4 14.9188 4 15.7941V16.9235C4 18.5049 4 19.2955 4.30775 19.8995C4.57845 20.4308 5.01039 20.8627 5.54168 21.1334C6.14566 21.4412 6.93632 21.4412 8.51765 21.4412H16.4235C18.0049 21.4412 18.7955 21.4412 19.3995 21.1334C19.9308 20.8627 20.3627 20.4308 20.6334 19.8995C20.9412 19.2955 20.9412 18.5049 20.9412 16.9235V15.7941C20.9412 14.9188 20.9412 14.4812 20.845 14.1221C20.5839 13.1478 19.8228 12.3867 18.8485 12.1256C18.4894 12.0294 18.0518 12.0294 17.1765 12.0294M16.2353 8.26471L12.4706 4.5M12.4706 4.5L8.70588 8.26471M12.4706 4.5V15.7941"
-                                      stroke="#676879"
-                                      strokeWidth="1.41176"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                  </svg>
-                                </div>
-                                <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
-                                  Upload Files
-                                </div>
-                                <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
-                                  Upload from device
-                                </div>
-                              </div>
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-[120px] border-2 border-dashed border-[#C3C6D4] rounded-lg bg-gray-50">
-                          <div className="text-[#676879] font-roboto text-[12px] font-normal text-center">
-                            No upload methods available.
-                            <br />
-                            Please contact support.
-                          </div>
+                      {isUploaded && (
+                        <div className="absolute top-1 right-1 flex items-center gap-1 bg-white rounded-full p-0.5 border border-[#E6F1FD]">
+                          <svg
+                            className="w-3 h-3"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236Z"
+                              fill="#039855"
+                            />
+                          </svg>
                         </div>
                       )}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
 
-                      {/* QR Code Upload - Moved here too */}
-                      <div className="flex flex-col items-center gap-3 self-stretch border-2 border-dashed border-[#C3C6D4] rounded-lg bg-white p-3">
-                        <div className="flex flex-col sm:flex-row w-full justify-center items-center gap-3">
-                          <div className="flex justify-center items-center">
-                            <img
-                              src="https://api.builder.io/api/v1/image/assets/TEMP/e4a25327bd6d9a0c88f260c5b3b9c48816547c30?width=220"
-                              alt="QR Code"
-                              className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
-                            />
-                          </div>
-                          <div className="flex flex-col justify-center items-start sm:items-start gap-1 text-center sm:text-left">
-                            <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
-                              Continue on another device by scanning the QR code
-                            </div>
-                          </div>
-                        </div>
-                        <div className="w-full flex justify-end items-center">
-                          <div className="flex items-center gap-1">
+            {/* Upload Methods - Show below grid when a document is selected */}
+            {selectedDocument && (
+              <div className="flex flex-col items-start gap-4 self-stretch mt-2 pl-4 border-l-2 border-[#0073EA]/20">
+                {/* Upload Methods Header */}
+                <div className="flex flex-col items-start gap-1 self-stretch">
+                  <div className="flex items-center gap-2 self-stretch">
+                    <div className="text-[#172B4D] font-roboto text-base font-bold leading-[26px]">
+                      Choose a method to upload your document
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upload Options */}
+                {documentConfig.allowCaptureWebcam ||
+                documentConfig.allowUploadFromDevice ? (
+                  <div
+                    className={`grid gap-4 w-full ${
+                      documentConfig.allowCaptureWebcam &&
+                      documentConfig.allowUploadFromDevice
+                        ? "grid-cols-1 sm:grid-cols-2"
+                        : "grid-cols-1"
+                    }`}
+                  >
+                    {/* Camera Upload - Show if allowCaptureWebcam is true */}
+                    {documentConfig.allowCaptureWebcam && (
+                      <button
+                        onClick={() => setShowCameraDialog(true)}
+                        className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex flex-col justify-center items-center gap-2">
+                          <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
                             <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 20 21"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 25"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
                             >
                               <path
-                                d="M10.0003 13.8332V10.4998M10.0003 7.1665H10.0087M18.3337 10.4998C18.3337 15.1022 14.6027 18.8332 10.0003 18.8332C5.39795 18.8332 1.66699 15.1022 1.66699 10.4998C1.66699 5.89746 5.39795 2.1665 10.0003 2.1665C14.6027 2.1665 18.3337 5.89746 18.3337 10.4998Z"
-                                stroke="#0073EA"
-                                strokeWidth="1.5"
+                                d="M1.99805 8.87722C1.99805 8.5269 1.99805 8.35174 2.01267 8.20421C2.15365 6.78127 3.27932 5.6556 4.70226 5.51462C4.84979 5.5 5.03441 5.5 5.40363 5.5C5.5459 5.5 5.61704 5.5 5.67744 5.49634C6.44866 5.44963 7.124 4.96288 7.41219 4.246C7.43476 4.18986 7.45586 4.12657 7.49805 4C7.54024 3.87343 7.56134 3.81014 7.58391 3.754C7.8721 3.03712 8.54744 2.55037 9.31866 2.50366C9.37906 2.5 9.44577 2.5 9.57919 2.5H14.4169C14.5503 2.5 14.617 2.5 14.6774 2.50366C15.4486 2.55037 16.124 3.03712 16.4121 3.754C16.4347 3.81014 16.4558 3.87343 16.498 4C16.5402 4.12657 16.5613 4.18986 16.5839 4.246C16.872 4.96288 17.5474 5.44963 18.3186 5.49634C18.379 5.5 18.4501 5.5 18.5924 5.5C18.9616 5.5 19.1463 5.5 19.2938 5.51462C20.7167 5.6556 21.8424 6.78127 21.9834 8.20421C21.998 8.35174 21.998 8.5269 21.998 8.87722V16.7C21.998 18.3802 21.998 19.2202 21.671 19.862C21.3834 20.4265 20.9245 20.8854 20.36 21.173C19.7182 21.5 18.8782 21.5 17.198 21.5H6.79805C5.11789 21.5 4.27781 21.5 3.63608 21.173C3.07159 20.8854 2.61265 20.4265 2.32503 19.862C1.99805 19.2202 1.99805 18.3802 1.99805 16.7V8.87722Z"
+                                stroke="#676879"
+                                strokeWidth="1.35"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M11.998 17C14.2071 17 15.998 15.2091 15.998 13C15.998 10.7909 14.2071 9 11.998 9C9.78891 9 7.99805 10.7909 7.99805 13C7.99805 15.2091 9.78891 17 11.998 17Z"
+                                stroke="#676879"
+                                strokeWidth="1.35"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               />
                             </svg>
-                            <div className="text-[#0073EA] font-roboto text-[10px] font-normal">
-                              How does this work?
-                            </div>
+                          </div>
+                          <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
+                            Camera
+                          </div>
+                          <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
+                            Take a photo using camera
                           </div>
                         </div>
+                      </button>
+                    )}
+
+                    {/* File Upload - Show if allowUploadFromDevice is true */}
+                    {documentConfig.allowUploadFromDevice && (
+                      <button
+                        onClick={() => setShowUploadDialog(true)}
+                        className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex flex-col justify-center items-center gap-2">
+                          <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 25"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M7.76471 12.0294C6.88944 12.0294 6.4518 12.0294 6.09274 12.1256C5.11837 12.3867 4.35729 13.1478 4.09621 14.1221C4 14.4812 4 14.9188 4 15.7941V16.9235C4 18.5049 4 19.2955 4.30775 19.8995C4.57845 20.4308 5.01039 20.8627 5.54168 21.1334C6.14566 21.4412 6.93632 21.4412 8.51765 21.4412H16.4235C18.0049 21.4412 18.7955 21.4412 19.3995 21.1334C19.9308 20.8627 20.3627 20.4308 20.6334 19.8995C20.9412 19.2955 20.9412 18.5049 20.9412 16.9235V15.7941C20.9412 14.9188 20.9412 14.4812 20.845 14.1221C20.5839 13.1478 19.8228 12.3867 18.8485 12.1256C18.4894 12.0294 18.0518 12.0294 17.1765 12.0294M16.2353 8.26471L12.4706 4.5M12.4706 4.5L8.70588 8.26471M12.4706 4.5V15.7941"
+                                stroke="#676879"
+                                strokeWidth="1.41176"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+                          <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
+                            Upload Files
+                          </div>
+                          <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
+                            Upload from device
+                          </div>
+                        </div>
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[120px] border-2 border-dashed border-[#C3C6D4] rounded-lg bg-gray-50">
+                    <div className="text-[#676879] font-roboto text-[12px] font-normal text-center">
+                      No upload methods available.
+                      <br />
+                      Please contact support.
+                    </div>
+                  </div>
+                )}
+
+                {/* QR Code Upload - Moved here too */}
+                <div className="flex flex-col items-center gap-3 self-stretch border-2 border-dashed border-[#C3C6D4] rounded-lg bg-white p-3">
+                  <div className="flex flex-col sm:flex-row w-full justify-center items-center gap-3">
+                    <div className="flex justify-center items-center">
+                      <img
+                        src="https://api.builder.io/api/v1/image/assets/TEMP/e4a25327bd6d9a0c88f260c5b3b9c48816547c30?width=220"
+                        alt="QR Code"
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+                      />
+                    </div>
+                    <div className="flex flex-col justify-center items-start sm:items-start gap-1 text-center sm:text-left">
+                      <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
+                        Continue on another device by scanning the QR code
                       </div>
                     </div>
-                  )}
+                  </div>
+                  <div className="w-full flex justify-end items-center">
+                    <div className="flex items-center gap-1">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 20 21"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.0003 13.8332V10.4998M10.0003 7.1665H10.0087M18.3337 10.4998C18.3337 15.1022 14.6027 18.8332 10.0003 18.8332C5.39795 18.8332 1.66699 15.1022 1.66699 10.4998C1.66699 5.89746 5.39795 2.1665 10.0003 2.1665C14.6027 2.1665 18.3337 5.89746 18.3337 10.4998Z"
+                          stroke="#0073EA"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <div className="text-[#0073EA] font-roboto text-[10px] font-normal">
+                        How does this work?
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
       )}
