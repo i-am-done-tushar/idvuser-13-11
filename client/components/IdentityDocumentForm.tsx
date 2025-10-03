@@ -418,100 +418,146 @@ export function IdentityDocumentForm({
                 </div>
 
                 {/* Upload Options */}
-                {documentConfig.allowCaptureWebcam ||
-                documentConfig.allowUploadFromDevice ? (
-                  <div
-                    className={`grid gap-4 w-full ${
-                      documentConfig.allowCaptureWebcam &&
-                      documentConfig.allowUploadFromDevice
-                        ? "grid-cols-1 sm:grid-cols-2"
-                        : "grid-cols-1"
-                    }`}
-                  >
-                    {/* Camera Upload - Show if allowCaptureWebcam is true */}
-                    {documentConfig.allowCaptureWebcam && (
-                      <button
-                        onClick={() => setShowCameraDialog(true)}
-                        className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                  {/* Left Section - Traditional Upload Methods */}
+                  <div className="flex flex-col gap-4">
+                    {documentConfig.allowCaptureWebcam ||
+                    documentConfig.allowUploadFromDevice ? (
+                      <div
+                        className={`grid gap-4 w-full ${
+                          documentConfig.allowCaptureWebcam &&
+                          documentConfig.allowUploadFromDevice
+                            ? "grid-cols-1 sm:grid-cols-2"
+                            : "grid-cols-1"
+                        }`}
                       >
-                        <div className="flex flex-col justify-center items-center gap-2">
-                          <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 24 25"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M1.99805 8.87722C1.99805 8.5269 1.99805 8.35174 2.01267 8.20421C2.15365 6.78127 3.27932 5.6556 4.70226 5.51462C4.84979 5.5 5.03441 5.5 5.40363 5.5C5.5459 5.5 5.61704 5.5 5.67744 5.49634C6.44866 5.44963 7.124 4.96288 7.41219 4.246C7.43476 4.18986 7.45586 4.12657 7.49805 4C7.54024 3.87343 7.56134 3.81014 7.58391 3.754C7.8721 3.03712 8.54744 2.55037 9.31866 2.50366C9.37906 2.5 9.44577 2.5 9.57919 2.5H14.4169C14.5503 2.5 14.617 2.5 14.6774 2.50366C15.4486 2.55037 16.124 3.03712 16.4121 3.754C16.4347 3.81014 16.4558 3.87343 16.498 4C16.5402 4.12657 16.5613 4.18986 16.5839 4.246C16.872 4.96288 17.5474 5.44963 18.3186 5.49634C18.379 5.5 18.4501 5.5 18.5924 5.5C18.9616 5.5 19.1463 5.5 19.2938 5.51462C20.7167 5.6556 21.8424 6.78127 21.9834 8.20421C21.998 8.35174 21.998 8.5269 21.998 8.87722V16.7C21.998 18.3802 21.998 19.2202 21.671 19.862C21.3834 20.4265 20.9245 20.8854 20.36 21.173C19.7182 21.5 18.8782 21.5 17.198 21.5H6.79805C5.11789 21.5 4.27781 21.5 3.63608 21.173C3.07159 20.8854 2.61265 20.4265 2.32503 19.862C1.99805 19.2202 1.99805 18.3802 1.99805 16.7V8.87722Z"
-                                stroke="#676879"
-                                strokeWidth="1.35"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <path
-                                d="M11.998 17C14.2071 17 15.998 15.2091 15.998 13C15.998 10.7909 14.2071 9 11.998 9C9.78891 9 7.99805 10.7909 7.99805 13C7.99805 15.2091 9.78891 17 11.998 17Z"
-                                stroke="#676879"
-                                strokeWidth="1.35"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                          <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
-                            Camera
-                          </div>
-                          <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
-                            Take a photo using camera
-                          </div>
-                        </div>
-                      </button>
-                    )}
+                        {/* Camera Upload - Show if allowCaptureWebcam is true */}
+                        {documentConfig.allowCaptureWebcam && (
+                          <button
+                            onClick={() => setShowCameraDialog(true)}
+                            className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex flex-col justify-center items-center gap-2">
+                              <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 25"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M1.99805 8.87722C1.99805 8.5269 1.99805 8.35174 2.01267 8.20421C2.15365 6.78127 3.27932 5.6556 4.70226 5.51462C4.84979 5.5 5.03441 5.5 5.40363 5.5C5.5459 5.5 5.61704 5.5 5.67744 5.49634C6.44866 5.44963 7.124 4.96288 7.41219 4.246C7.43476 4.18986 7.45586 4.12657 7.49805 4C7.54024 3.87343 7.56134 3.81014 7.58391 3.754C7.8721 3.03712 8.54744 2.55037 9.31866 2.50366C9.37906 2.5 9.44577 2.5 9.57919 2.5H14.4169C14.5503 2.5 14.617 2.5 14.6774 2.50366C15.4486 2.55037 16.124 3.03712 16.4121 3.754C16.4347 3.81014 16.4558 3.87343 16.498 4C16.5402 4.12657 16.5613 4.18986 16.5839 4.246C16.872 4.96288 17.5474 5.44963 18.3186 5.49634C18.379 5.5 18.4501 5.5 18.5924 5.5C18.9616 5.5 19.1463 5.5 19.2938 5.51462C20.7167 5.6556 21.8424 6.78127 21.9834 8.20421C21.998 8.35174 21.998 8.5269 21.998 8.87722V16.7C21.998 18.3802 21.998 19.2202 21.671 19.862C21.3834 20.4265 20.9245 20.8854 20.36 21.173C19.7182 21.5 18.8782 21.5 17.198 21.5H6.79805C5.11789 21.5 4.27781 21.5 3.63608 21.173C3.07159 20.8854 2.61265 20.4265 2.32503 19.862C1.99805 19.2202 1.99805 18.3802 1.99805 16.7V8.87722Z"
+                                    stroke="#676879"
+                                    strokeWidth="1.35"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                  <path
+                                    d="M11.998 17C14.2071 17 15.998 15.2091 15.998 13C15.998 10.7909 14.2071 9 11.998 9C9.78891 9 7.99805 10.7909 7.99805 13C7.99805 15.2091 9.78891 17 11.998 17Z"
+                                    stroke="#676879"
+                                    strokeWidth="1.35"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                              <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
+                                Camera
+                              </div>
+                              <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
+                                Take a photo using camera
+                              </div>
+                            </div>
+                          </button>
+                        )}
 
-                    {/* File Upload - Show if allowUploadFromDevice is true */}
-                    {documentConfig.allowUploadFromDevice && (
-                      <button
-                        onClick={() => setShowUploadDialog(true)}
-                        className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex flex-col justify-center items-center gap-2">
-                          <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 24 25"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M7.76471 12.0294C6.88944 12.0294 6.4518 12.0294 6.09274 12.1256C5.11837 12.3867 4.35729 13.1478 4.09621 14.1221C4 14.4812 4 14.9188 4 15.7941V16.9235C4 18.5049 4 19.2955 4.30775 19.8995C4.57845 20.4308 5.01039 20.8627 5.54168 21.1334C6.14566 21.4412 6.93632 21.4412 8.51765 21.4412H16.4235C18.0049 21.4412 18.7955 21.4412 19.3995 21.1334C19.9308 20.8627 20.3627 20.4308 20.6334 19.8995C20.9412 19.2955 20.9412 18.5049 20.9412 16.9235V15.7941C20.9412 14.9188 20.9412 14.4812 20.845 14.1221C20.5839 13.1478 19.8228 12.3867 18.8485 12.1256C18.4894 12.0294 18.0518 12.0294 17.1765 12.0294M16.2353 8.26471L12.4706 4.5M12.4706 4.5L8.70588 8.26471M12.4706 4.5V15.7941"
-                                stroke="#676879"
-                                strokeWidth="1.41176"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                          <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
-                            Upload Files
-                          </div>
-                          <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
-                            Upload from device
-                          </div>
+                        {/* File Upload - Show if allowUploadFromDevice is true */}
+                        {documentConfig.allowUploadFromDevice && (
+                          <button
+                            onClick={() => setShowUploadDialog(true)}
+                            className="flex flex-col justify-center items-center border-2 border-dashed border-[#C3C6D4] rounded-lg h-[120px] bg-white hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex flex-col justify-center items-center gap-2">
+                              <div className="flex w-[40px] h-[40px] p-2 justify-center items-center rounded-full bg-[#F6F7FB]">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 25"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M7.76471 12.0294C6.88944 12.0294 6.4518 12.0294 6.09274 12.1256C5.11837 12.3867 4.35729 13.1478 4.09621 14.1221C4 14.4812 4 14.9188 4 15.7941V16.9235C4 18.5049 4 19.2955 4.30775 19.8995C4.57845 20.4308 5.01039 20.8627 5.54168 21.1334C6.14566 21.4412 6.93632 21.4412 8.51765 21.4412H16.4235C18.0049 21.4412 18.7955 21.4412 19.3995 21.1334C19.9308 20.8627 20.3627 20.4308 20.6334 19.8995C20.9412 19.2955 20.9412 18.5049 20.9412 16.9235V15.7941C20.9412 14.9188 20.9412 14.4812 20.845 14.1221C20.5839 13.1478 19.8228 12.3867 18.8485 12.1256C18.4894 12.0294 18.0518 12.0294 17.1765 12.0294M16.2353 8.26471L12.4706 4.5M12.4706 4.5L8.70588 8.26471M12.4706 4.5V15.7941"
+                                    stroke="#676879"
+                                    strokeWidth="1.41176"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                              <div className="text-[#323238] text-center font-figtree text-[12px] font-medium">
+                                Upload Files
+                              </div>
+                              <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
+                                Upload from device
+                              </div>
+                            </div>
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-[120px] border-2 border-dashed border-[#C3C6D4] rounded-lg bg-gray-50">
+                        <div className="text-[#676879] font-roboto text-[12px] font-normal text-center">
+                          No upload methods available.
+                          <br />
+                          Please contact support.
                         </div>
-                      </button>
+                      </div>
                     )}
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-[120px] border-2 border-dashed border-[#C3C6D4] rounded-lg bg-gray-50">
-                    <div className="text-[#676879] font-roboto text-[12px] font-normal text-center">
-                      No upload methods available.
-                      <br />
-                      Please contact support.
+
+                  {/* Right Section - DigiLocker */}
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col justify-center items-center border-2 border-dashed border-[#6366F1] rounded-lg h-[120px] bg-gradient-to-br from-[#6366F1]/5 to-[#8B5CF6]/5 hover:from-[#6366F1]/10 hover:to-[#8B5CF6]/10 transition-all cursor-pointer">
+                      <div className="flex flex-col justify-center items-center gap-3">
+                        <div className="flex w-[48px] h-[48px] p-2 justify-center items-center rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6]">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M6 10V8C6 6.93913 6.42143 5.92172 7.17157 5.17157C7.92172 4.42143 8.93913 4 10 4H14C15.0609 4 16.0783 4.42143 16.8284 5.17157C17.5786 5.92172 18 6.93913 18 8V10M5 10H19C19.5523 10 20 10.4477 20 11V19C20 19.5523 19.5523 20 19 20H5C4.44772 20 4 19.5523 4 19V11C4 10.4477 4.44772 10 5 10Z"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <circle
+                              cx="12"
+                              cy="15"
+                              r="1.5"
+                              fill="white"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="text-[#6366F1] text-center font-figtree text-[14px] font-semibold">
+                            DigiLocker
+                          </div>
+                          <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
+                            Your documents anytime, anywhere
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                    
+                    
                   </div>
-                )}
+                </div>
 
                 {/* QR Code Upload - Moved here too */}
                 <div className="flex flex-col items-center gap-3 self-stretch border-2 border-dashed border-[#C3C6D4] rounded-lg bg-white p-3">
