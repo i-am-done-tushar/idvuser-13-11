@@ -12,7 +12,7 @@ export default function Index() {
   const [error, setError] = useState<string | null>(null);
   const [inputShortCode, setInputShortCode] = useState("");
 
-  const DEMO_SHORTCODE = "ARoOFoNcwBWaYIMwcxU8E9yLjAfbpn0siJaOwvhF623eyeLXsGD66aDFedvk0t_a6Nt2_ZVZCMcNhNvEPmrroa0poedRTjDZT1eRxxCxR33b_KV9T7pdqOgJdpY_te4Nar1O8yaPUJI3q8JqHWhK0ypthnZxSsJOllRd-I4ac4sEN3iEenh-W0tls8Mi4tysc8_N5Z0JRuwr3l0kM6qFh52ykAUS7-ACv1KeiQoFXpc";
+  const DEMO_SHORTCODE = "AUD5YZ1_hFHx03NMDOsKXZNRtlbh2v7MLFczwNzPZ1xWZchjgpw2eRFzxOYrvN_au9mhlLPaIqaJFyg2G9rEbBfbbBIXEt67xZ1SgwNHk0fuFjL-17kys5LAKB__aG7kbTZ2NBzwfgMYfyLKY3LNg0FC44If_0Pz54CszDyzCDd0FIPKYgZgRhuh7-XAsy0SRrhIwoTwqry8DuPlH5i0HDa87-yyztmlqRFnGKmOmZ9aGvLq911uMv1VSEpa1SPBIdKDlW_9IubmhQWTmDUP_qZOv77U0FyLsg";
 
   const API_BASE =
     import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
@@ -30,7 +30,7 @@ export default function Index() {
 
     try {
       const resolveResponse = await fetch(
-        `${API_BASE}/api/templates-link-generation/resolve/${code}`,
+        `${API_BASE}/api/templates-link-generation/resolve?shortCode=${encodeURIComponent(code)}`,
       );
       if (!resolveResponse.ok) {
         throw new Error("Failed to resolve shortcode");

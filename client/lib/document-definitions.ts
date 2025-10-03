@@ -18,19 +18,19 @@ export const getDocumentDefinitionId = (country: string, documentName: string): 
   const countryCode = countryToISO2[country];
   if (!countryCode) {
     console.warn(`Country "${country}" not found in mapping, using fallback ID`);
-    return "543d16b7-78fd-48d5-9ae0-60481f2952a6"; // fallback to Aadhaar
+    return "6bb2a401-2678-43d1-acb0-227ec9da6761"; // fallback to Aadhaar
   }
   
   // Document mapping for India (IN)
   if (countryCode === "IN") {
     const documentMapping: Record<string, string> = {
-      "aadhaar_card": "543d16b7-78fd-48d5-9ae0-60481f2952a6", // AADHAAR_IND
-      "voter_id": "820fe16b-1e77-45e3-a379-cc65a8b80282", // VOTERID_IND
-      "passport": "92af84b9-196a-4278-b7a3-009b858a468a", // PASSPORT_IND
-      "indian_passport": "92af84b9-196a-4278-b7a3-009b858a468a", // PASSPORT_IND
-      "pan_card": "9b04f4a9-8bf1-4fa3-a215-da3d2797dffa", // PAN_IND
-      "driving_license": "f4c1d677-cc9c-47a0-a2d5-16da984b2343", // DL_IND
-      "driver_license": "f4c1d677-cc9c-47a0-a2d5-16da984b2343", // DL_IND
+      "aadhaar_card": "6bb2a401-2678-43d1-acb0-227ec9da6761", // AADHAAR_IND
+      "voter_id": "88ccdb04-a701-41b1-ad5e-aef0b2c76e06", // VOTERID_IND
+      "passport": "9ca14fe5-9649-4e09-ab97-af887e619513", // PASSPORT_IND
+      "indian_passport": "9ca14fe5-9649-4e09-ab97-af887e619513", // PASSPORT_IND
+      "pan_card": "69243f9f-5c00-4522-b80c-0bb87bb32514", // PAN_IND
+      "driving_license": "986c9fbd-fb6f-4d60-a1aa-7e7c459ae199", // DL_IND
+      "driver_license": "986c9fbd-fb6f-4d60-a1aa-7e7c459ae199", // DL_IND
     };
     
     const documentId = documentMapping[normalizedDoc];
@@ -54,7 +54,7 @@ export const getDocumentDefinitionId = (country: string, documentName: string): 
   // }
   
   console.warn(`Document "${documentName}" not found for country "${country}", using fallback ID`);
-  return "543d16b7-78fd-48d5-9ae0-60481f2952a6"; // fallback to Aadhaar
+  return "6bb2a401-2678-43d1-acb0-227ec9da6761"; // fallback to Aadhaar
 };
 
 /**
