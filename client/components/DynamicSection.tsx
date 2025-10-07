@@ -22,6 +22,10 @@ interface DynamicSectionProps {
   onIdentityDocumentComplete?: () => void;
   onSelfieComplete?: () => void;
   submissionId?: number | null;
+  // QR Code and session props
+  shortCode?: string;
+  templateVersionId?: number;
+  userId?: number | null;
 }
 
 export function DynamicSection({
@@ -39,6 +43,9 @@ export function DynamicSection({
   onIdentityDocumentComplete,
   onSelfieComplete,
   submissionId,
+  shortCode,
+  templateVersionId,
+  userId,
 }: DynamicSectionProps) {
   const renderSectionContent = () => {
     // Show content for current and completed steps; only future steps are locked
@@ -88,6 +95,9 @@ export function DynamicSection({
               onComplete={onIdentityDocumentComplete || (() => {})}
               documentConfig={documentConfig}
               submissionId={submissionId}
+              shortCode={shortCode}
+              templateVersionId={templateVersionId}
+              userId={userId}
             />
           </div>
         );

@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 import { DocumentConfig } from "@shared/templates";
 import { getDocumentDefinitionId } from "@/lib/document-definitions";
+import { QRCodeDisplay } from "./QRCodeDisplay";
+import { useSessionSync } from "@/hooks/useSessionSync";
+import { extractSessionFromURL } from "@/lib/qr-utils";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
@@ -18,12 +21,18 @@ interface IdentityDocumentFormProps {
   onComplete?: () => void;
   documentConfig?: DocumentConfig;
   submissionId?: number | null;
+  shortCode?: string; // Add shortCode prop for QR generation
+  templateVersionId?: number; // Add for session sync
+  userId?: number; // Add for session sync
 }
 
 export function IdentityDocumentForm({
   onComplete,
   documentConfig = {},
   submissionId,
+  shortCode = "",
+  templateVersionId,
+  userId,
 }: IdentityDocumentFormProps) {
   const [country, setCountry] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
@@ -35,7 +44,33 @@ export function IdentityDocumentForm({
     Record<string, { front?: number; back?: number }>
   >({});
 
-  // Function to get file icon based on file type
+  // Initialize session sync for cross-device functionality
+  const { sessionState, updateSession } = useSessionSync({
+    shortCode,
+    templateVersionId,
+    userId,
+    currentStep: 'document-upload',
+    uploadedDocuments,
+    formData: { country, selectedDocument },
+  });
+
+  // Sync state changes with session
+  useEffect(() => {
+    updateSession({
+      uploadedDocuments,
+      formData: { country, selectedDocument },
+      currentStep: 'document-upload',
+    });
+  }, [uploadedDocuments, country, selectedDocument, updateSession]);
+
+  // Load session state from URL if coming from QR scan
+  useEffect(() => {
+    const urlSession = extractSessionFromURL();
+    if (urlSession.sessionId) {
+      // User scanned QR code - restore session state
+      console.log('Loading session from QR scan:', urlSession);
+    }
+  }, []);  // Function to get file icon based on file type
   const getFileIcon = () => (
     <svg
       width="16"
@@ -559,19 +594,21 @@ export function IdentityDocumentForm({
                   </div>
                 </div>
 
-                {/* QR Code Upload - Moved here too */}
-                <div className="flex flex-col items-center gap-3 self-stretch border-2 border-dashed border-[#C3C6D4] rounded-lg bg-white p-3">
-                  <div className="flex flex-col sm:flex-row w-full justify-center items-center gap-3">
-                    <div className="flex justify-center items-center">
-                      <img
-                        src="https://api.builder.io/api/v1/image/assets/TEMP/e4a25327bd6d9a0c88f260c5b3b9c48816547c30?width=220"
-                        alt="QR Code"
-                        className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+                {/* QR Code Upload - Dynamic QR Code */}
+                <div className="flex flex-col items-center gap-4 self-stretch border-2 border-dashed border-[#C3C6D4] rounded-lg bg-white p-6">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-2">
+                      <QRCodeDisplay
+                        shortCode={shortCode}
+                        templateVersionId={templateVersionId}
+                        userId={userId}
+                        sessionId={sessionState?.sessionId || 'default-session'}
+                        currentStep="document-upload"
+                        size="large"
+                        showUrl={false}
                       />
-                    </div>
-                    <div className="flex flex-col justify-center items-start sm:items-start gap-1 text-center sm:text-left">
-                      <div className="text-[#676879] text-center font-roboto text-[11px] font-normal leading-4">
-                        Continue on another device by scanning the QR code
+                      <div className="text-[#676879] text-center font-roboto text-[12px] font-normal leading-4 max-w-[200px]">
+                        Scan this QR code with your mobile device to continue verification
                       </div>
                     </div>
                   </div>

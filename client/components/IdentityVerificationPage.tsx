@@ -36,11 +36,13 @@ interface IdentityVerificationPageProps {
   // NOTE: despite the name, we call /TemplateVersion/{id} so this is a VERSION id
   templateId: number;
   userId: number | null;
+  shortCode: string; // Add shortCode for QR generation
 }
 
 export function IdentityVerificationPage({
   templateId,
   userId,
+  shortCode,
 }: IdentityVerificationPageProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -1150,6 +1152,9 @@ export function IdentityVerificationPage({
                     onIdentityDocumentComplete={handleIdentityDocumentComplete}
                     onSelfieComplete={() => setIsSelfieCompleted(true)}
                     submissionId={submissionId}
+                    shortCode={shortCode}
+                    templateVersionId={templateVersion?.versionId}
+                    userId={userId}
                   />
                 ))}
               </div>
@@ -1176,6 +1181,9 @@ export function IdentityVerificationPage({
                       }
                       onSelfieComplete={() => setIsSelfieCompleted(true)}
                       submissionId={submissionId}
+                      shortCode={shortCode}
+                      templateVersionId={templateVersion?.versionId}
+                      userId={userId}
                     />
                   ))}
                 </div>

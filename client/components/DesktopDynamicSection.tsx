@@ -19,6 +19,10 @@ interface DesktopDynamicSectionProps {
   onIdentityDocumentComplete?: () => void;
   onSelfieComplete?: () => void;
   submissionId?: number | null;
+  // QR Code and session props
+  shortCode?: string;
+  templateVersionId?: number;
+  userId?: number | null;
 }
 
 export function DesktopDynamicSection({
@@ -34,6 +38,9 @@ export function DesktopDynamicSection({
   onIdentityDocumentComplete,
   onSelfieComplete,
   submissionId,
+  shortCode,
+  templateVersionId,
+  userId,
 }: DesktopDynamicSectionProps) {
   const renderSectionContent = () => {
     // Render based on section type
@@ -169,6 +176,9 @@ export function DesktopDynamicSection({
                     onComplete={onIdentityDocumentComplete || (() => {})}
                     documentConfig={documentConfig}
                     submissionId={submissionId}
+                    shortCode={shortCode}
+                    templateVersionId={templateVersionId}
+                    userId={userId}
                   />
                 </div>
               ) : (

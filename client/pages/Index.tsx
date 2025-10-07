@@ -153,6 +153,10 @@ export default function Index() {
 
   // If we have a shortcode and no error, show the identity verification page
   return (
-    <IdentityVerificationPage templateId={templateVersionId} userId={userId} />
+    <IdentityVerificationPage 
+      templateId={templateVersionId} 
+      userId={userId} 
+      shortCode={shortCode || ""} 
+    />
   );
 }
