@@ -24,6 +24,15 @@ interface IdentityDocumentFormProps {
   shortCode?: string; // Add shortCode prop for QR generation
   templateVersionId?: number; // Add for session sync
   userId?: number; // Add for session sync
+  // Lifted state for persistence
+  documentFormState?: {
+    country: string;
+    selectedDocument: string;
+    uploadedDocuments: string[];
+    uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
+    documentUploadIds: Record<string, { front?: number; back?: number }>;
+  };
+  setDocumentFormState?: (state: any) => void;
 }
 
 export function IdentityDocumentForm({
@@ -33,16 +42,100 @@ export function IdentityDocumentForm({
   shortCode = "",
   templateVersionId,
   userId,
+  documentFormState,
+  setDocumentFormState,
 }: IdentityDocumentFormProps) {
-  const [country, setCountry] = useState("");
-  const [selectedDocument, setSelectedDocument] = useState("");
+  // Use lifted state directly if available, otherwise local state
+  const [localCountry, setLocalCountry] = useState("");
+  const [localSelectedDocument, setLocalSelectedDocument] = useState("");
   const [showCameraDialog, setShowCameraDialog] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
-  const [uploadedDocuments, setUploadedDocuments] = useState<string[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [documentUploadIds, setDocumentUploadIds] = useState<
+  const [localUploadedDocuments, setLocalUploadedDocuments] = useState<string[]>([]);
+  const [localUploadedFiles, setLocalUploadedFiles] = useState<UploadedFile[]>([]);
+  const [localDocumentUploadIds, setLocalDocumentUploadIds] = useState<
     Record<string, { front?: number; back?: number }>
   >({});
+
+  // Determine if we're using lifted state or local state
+  const isUsingLiftedState = !!(documentFormState && setDocumentFormState);
+
+  // Get current state values
+  const country = isUsingLiftedState ? documentFormState!.country : localCountry;
+  const selectedDocument = isUsingLiftedState ? documentFormState!.selectedDocument : localSelectedDocument;
+  const uploadedDocuments = isUsingLiftedState ? documentFormState!.uploadedDocuments : localUploadedDocuments;
+  const uploadedFiles = isUsingLiftedState ? documentFormState!.uploadedFiles : localUploadedFiles;
+  const documentUploadIds = isUsingLiftedState ? documentFormState!.documentUploadIds : localDocumentUploadIds;
+
+  // State setters that work with either lifted or local state
+  const setCountry = (value: string) => {
+    if (isUsingLiftedState) {
+      setDocumentFormState!({
+        ...documentFormState!,
+        country: value,
+      });
+    } else {
+      setLocalCountry(value);
+    }
+  };
+
+  const setSelectedDocument = (value: string) => {
+    if (isUsingLiftedState) {
+      setDocumentFormState!({
+        ...documentFormState!,
+        selectedDocument: value,
+      });
+    } else {
+      setLocalSelectedDocument(value);
+    }
+  };
+
+  const setUploadedDocuments = (value: string[] | ((prev: string[]) => string[])) => {
+    if (isUsingLiftedState) {
+      const newValue = typeof value === 'function' ? value(documentFormState!.uploadedDocuments) : value;
+      setDocumentFormState!({
+        ...documentFormState!,
+        uploadedDocuments: newValue,
+      });
+    } else {
+      if (typeof value === 'function') {
+        setLocalUploadedDocuments(value);
+      } else {
+        setLocalUploadedDocuments(value);
+      }
+    }
+  };
+
+  const setUploadedFiles = (value: UploadedFile[] | ((prev: UploadedFile[]) => UploadedFile[])) => {
+    if (isUsingLiftedState) {
+      const newValue = typeof value === 'function' ? value(documentFormState!.uploadedFiles) : value;
+      setDocumentFormState!({
+        ...documentFormState!,
+        uploadedFiles: newValue,
+      });
+    } else {
+      if (typeof value === 'function') {
+        setLocalUploadedFiles(value);
+      } else {
+        setLocalUploadedFiles(value);
+      }
+    }
+  };
+
+  const setDocumentUploadIds = (value: Record<string, { front?: number; back?: number }> | ((prev: Record<string, { front?: number; back?: number }>) => Record<string, { front?: number; back?: number }>)) => {
+    if (isUsingLiftedState) {
+      const newValue = typeof value === 'function' ? value(documentFormState!.documentUploadIds) : value;
+      setDocumentFormState!({
+        ...documentFormState!,
+        documentUploadIds: newValue,
+      });
+    } else {
+      if (typeof value === 'function') {
+        setLocalDocumentUploadIds(value);
+      } else {
+        setLocalDocumentUploadIds(value);
+      }
+    }
+  };
 
   // Initialize session sync for cross-device functionality
   const { sessionState, updateSession } = useSessionSync({
@@ -701,6 +794,58 @@ export function IdentityDocumentForm({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Submit Button and Progress - Show when documents are uploaded */}
+      {uploadedFiles.length > 0 && (
+        <div className="flex flex-col items-start gap-4 self-stretch pt-4 border-t border-border">
+          <button
+            onClick={() => {
+              const requiredIds = currentDocuments.map((docName) =>
+                docName.toLowerCase().replace(/\s+/g, "_"),
+              );
+              const allUploaded = requiredIds.every((id) => 
+                uploadedDocuments.includes(id)
+              );
+              
+              if (allUploaded) {
+                onComplete?.();
+              } else {
+                // Show which documents are still missing
+                const missingDocs = requiredIds.filter(id => !uploadedDocuments.includes(id));
+                alert(`Please upload the following documents: ${missingDocs.map(id => id.replace(/_/g, ' ')).join(', ')}`);
+              }
+            }}
+            className="flex w-full px-6 py-3 justify-center items-center gap-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
+          >
+            Submit Documents
+          </button>
+          
+          {/* Upload Progress Indicator */}
+          <div className="flex flex-col gap-2 self-stretch">
+            <div className="text-text-secondary font-roboto text-sm">
+              {uploadedDocuments.length} of {currentDocuments.length} required documents uploaded
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {currentDocuments.map((docName) => {
+                const docId = docName.toLowerCase().replace(/\s+/g, "_");
+                const isUploaded = uploadedDocuments.includes(docId);
+                return (
+                  <div
+                    key={docId}
+                    className={`flex items-center gap-1 px-2 py-1 rounded text-xs ${
+                      isUploaded 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {isUploaded ? '✓' : '○'} {docName}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

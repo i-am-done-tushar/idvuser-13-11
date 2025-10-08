@@ -102,6 +102,21 @@ export function IdentityVerificationPage({
     permanentPostalCode: "",
   });
 
+  // Document form state - lift up to preserve across section toggles
+  const [documentFormState, setDocumentFormState] = useState({
+    country: "",
+    selectedDocument: "",
+    uploadedDocuments: [] as string[],
+    uploadedFiles: [] as Array<{id: string, name: string, size: string, type: string}>,
+    documentUploadIds: {} as Record<string, { front?: number; back?: number }>,
+  });
+
+  // Biometric form state - lift up to preserve across section toggles  
+  const [biometricFormState, setBiometricFormState] = useState({
+    capturedImage: null as string | null,
+    isImageCaptured: false,
+  });
+
   // ---- helpers pulled from your new version ----
   const getPersonalInfoConfig = () => {
     if (!templateVersion) return {};
@@ -278,12 +293,38 @@ export function IdentityVerificationPage({
     }
   };
 
-  // Collapse and mark section as filled when completed
+  // Mark section as filled when completed and send POST
   const handleSectionComplete = async (sectionIndex: number, section: any) => {
     setCompletedSections((prev) => ({ ...prev, [sectionIndex]: true }));
-    setExpandedSectionIndex(-1); // Collapse
     await postSectionData(section);
-    toast({ title: "Section completed", description: "This section has been filled." });
+    
+    // Provide specific feedback based on section type
+    if (section.sectionType === "personalInformation") {
+      toast({ 
+        title: "✅ Personal Information Completed", 
+        description: "Your personal information has been saved. You can now proceed to Document Verification.",
+        duration: 3000,
+      });
+      
+      // Move to document section after personal info completion
+      setTimeout(() => {
+        setCurrentStep(2);
+        setExpandedSectionIndex(2);
+        toast({
+          title: "📄 Document Verification",
+          description: "Please upload the required identity documents to continue.",
+          duration: 4000,
+        });
+      }, 2000);
+    } else {
+      toast({ 
+        title: "✅ Section Completed", 
+        description: "This section has been successfully completed.",
+        duration: 3000,
+      });
+    }
+    
+    // Don't auto-collapse - let the step advancement logic handle UI transitions
   };
 
   // ---- OTP API calls (server-backed) ----
@@ -436,18 +477,12 @@ export function IdentityVerificationPage({
     const ok = isStep1Complete();
     if (ok && !completedSections[1] && sections[0]) {
       // Mark section 1 as completed when form is valid
-      handleSectionComplete(1, sections[0]);
+      setCompletedSections((prev) => ({ ...prev, 1: true }));
+      // Post section data immediately
+      postSectionData(sections[0]);
     }
     
-    // Auto-mark documents section as completed when valid
-    if (isIdentityDocumentCompleted && !completedSections[2] && sections[1]) {
-      handleSectionComplete(2, sections[1]);
-    }
-    
-    // Auto-mark biometrics section as completed when valid
-    if (isSelfieCompleted && !completedSections[3] && sections[2]) {
-      handleSectionComplete(3, sections[2]);
-    }
+    // Don't auto-mark other sections - let them be marked when user explicitly completes them
     
     // advance to step 2 when step 1 complete
     if (currentStep === 1 && ok && !hasShownStep1Toast) {
@@ -741,22 +776,65 @@ export function IdentityVerificationPage({
     setShowConsentDialog(false);
   };
 
+  const handleSelfieComplete = () => {
+    setIsSelfieCompleted(true);
+    
+    // Mark section 3 as completed
+    setCompletedSections((prev) => ({ ...prev, 3: true }));
+    
+    // Post section data immediately
+    const biometricsSection = activeSections.find(s => s.sectionType === "biometrics");
+    if (biometricsSection) {
+      postSectionData(biometricsSection);
+    }
+    
+    toast({
+      title: "🎉 Verification Complete!",
+      description: "All sections have been completed successfully. Your identity verification is now complete.",
+      duration: 5000,
+    });
+    
+    // Optional: Navigate to success page after completion
+    setTimeout(() => {
+      // You can add navigation to success page here if needed
+      console.log("Identity verification process completed successfully");
+    }, 2000);
+  };
+
   const handleIdentityDocumentComplete = () => {
     setIsIdentityDocumentCompleted(true);
+    
+    // Mark section 2 as completed
+    setCompletedSections((prev) => ({ ...prev, 2: true }));
+    
+    // Post section data immediately
+    const documentsSection = activeSections.find(s => s.sectionType === "documents");
+    if (documentsSection) {
+      postSectionData(documentsSection);
+    }
+    
     if (!hasShownStep2Toast) {
       toast({
-        title: "Step 2 completed",
-        description: "Step 2 completed. Please proceed to the final step",
+        title: "✅ Document Verification Completed",
+        description: "Your documents have been successfully uploaded and verified. Moving to Biometric Verification...",
+        duration: 3000,
       });
       setHasShownStep2Toast(true);
     }
-    // Mark section 2 as completed and auto-collapse
-    setCompletedSections((prev) => ({ ...prev, 2: true }));
+    
+    // Move to next step after a delay to show completion
     setTimeout(() => {
       setCurrentStep(3);
       setExpandedSectionIndex(3);
       setShowMobileMenu(false);
-    }, 1500);
+      
+      // Show transition toast
+      toast({
+        title: "📸 Biometric Verification",
+        description: "Please complete the biometric verification to finish the identity verification process.",
+        duration: 4000,
+      });
+    }, 2000);
   };
 
   const handleSubmit = async () => {
@@ -1244,13 +1322,17 @@ export function IdentityVerificationPage({
                     isPhoneVerified={isPhoneVerified}
                     onSendEmailOTP={handleSendEmailOTP}
                     onSendPhoneOTP={handleSendPhoneOTP}
-                    onIdentityDocumentComplete={() => handleSectionComplete(index + 1, section)}
-                    onSelfieComplete={() => handleSectionComplete(index + 1, section)}
+                    onIdentityDocumentComplete={handleIdentityDocumentComplete}
+                    onSelfieComplete={handleSelfieComplete}
                     submissionId={submissionId}
                     shortCode={shortCode}
                     templateVersionId={templateVersion?.versionId}
                     userId={userId}
                     isFilled={!!completedSections[index + 1]}
+                    documentFormState={documentFormState}
+                    setDocumentFormState={setDocumentFormState}
+                    biometricFormState={biometricFormState}
+                    setBiometricFormState={setBiometricFormState}
                   />
                 ))}
               </div>
@@ -1272,8 +1354,8 @@ export function IdentityVerificationPage({
                       isPhoneVerified={isPhoneVerified}
                       onSendEmailOTP={handleSendEmailOTP}
                       onSendPhoneOTP={handleSendPhoneOTP}
-                      onIdentityDocumentComplete={() => handleSectionComplete(index + 1, section)}
-                      onSelfieComplete={() => handleSectionComplete(index + 1, section)}
+                      onIdentityDocumentComplete={handleIdentityDocumentComplete}
+                      onSelfieComplete={handleSelfieComplete}
                       submissionId={submissionId}
                       shortCode={shortCode}
                       templateVersionId={templateVersion?.versionId}
@@ -1281,6 +1363,10 @@ export function IdentityVerificationPage({
                       isFilled={!!completedSections[index + 1]}
                       isExpanded={expandedSectionIndex === index + 1}
                       onToggle={toggleSection}
+                      documentFormState={documentFormState}
+                      setDocumentFormState={setDocumentFormState}
+                      biometricFormState={biometricFormState}
+                      setBiometricFormState={setBiometricFormState}
                     />
                   ))}
                 </div>

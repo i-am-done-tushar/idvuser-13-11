@@ -28,6 +28,21 @@ interface DynamicSectionProps {
   userId?: number | null;
   // Section completion state
   isFilled?: boolean;
+  // Document form state
+  documentFormState?: {
+    country: string;
+    selectedDocument: string;
+    uploadedDocuments: string[];
+    uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
+    documentUploadIds: Record<string, { front?: number; back?: number }>;
+  };
+  setDocumentFormState?: (state: any) => void;
+  // Biometric form state
+  biometricFormState?: {
+    capturedImage: string | null;
+    isImageCaptured: boolean;
+  };
+  setBiometricFormState?: (state: any) => void;
 }
 
 export function DynamicSection({
@@ -49,6 +64,10 @@ export function DynamicSection({
   templateVersionId,
   userId,
   isFilled,
+  documentFormState,
+  setDocumentFormState,
+  biometricFormState,
+  setBiometricFormState,
 }: DynamicSectionProps) {
   const renderSectionContent = () => {
     // Show content for current and completed steps; only future steps are locked
@@ -101,6 +120,8 @@ export function DynamicSection({
               shortCode={shortCode}
               templateVersionId={templateVersionId}
               userId={userId}
+              documentFormState={documentFormState}
+              setDocumentFormState={setDocumentFormState}
             />
           </div>
         );
