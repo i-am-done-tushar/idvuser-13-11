@@ -16,7 +16,7 @@ interface UploadedFile {
   size: string;
   type: string;
 }
-//just a comment 
+
 interface IdentityDocumentFormProps {
   onComplete?: () => void;
   documentConfig?: DocumentConfig;

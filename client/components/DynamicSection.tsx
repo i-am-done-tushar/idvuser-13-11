@@ -45,6 +45,7 @@ interface DynamicSectionProps {
   setBiometricFormState?: (state: any) => void;
 }
 
+
 export function DynamicSection({
   section,
   sectionIndex,
@@ -69,6 +70,7 @@ export function DynamicSection({
   biometricFormState,
   setBiometricFormState,
 }: DynamicSectionProps) {
+  
   const renderSectionContent = () => {
     // Show content for current and completed steps; only future steps are locked
     if (sectionIndex > currentStep) {
