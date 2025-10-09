@@ -367,6 +367,14 @@ function createServer() {
     "/api/templates-link-generation/resolve/:shortCode",
     handleResolveShortCode
   );
+  app2.get("/api/links/resolve", (req, res, next) => {
+    const shortCode = req.query.shortCode;
+    if (!shortCode) {
+      return res.status(400).json({ error: "shortCode query parameter is required" });
+    }
+    const modifiedReq = { ...req, params: { ...req.params, shortCode } };
+    handleResolveShortCode(modifiedReq, res);
+  });
   app2.get("/api/TemplateVersion/:versionId", handleGetTemplateVersionDirect);
   return app2;
 }
