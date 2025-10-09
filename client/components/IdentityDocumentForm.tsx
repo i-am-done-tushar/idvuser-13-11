@@ -132,18 +132,31 @@ export function IdentityDocumentForm({
   const buildFormData = (file: Blob, filename: string) => {
     const formData = new FormData();
     formData.append("File", file, filename);
-    
+
     // Get dynamic document definition ID based on selected country and document
-    const selectedDocumentName = currentDocuments.find((docName) => 
-      docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument
-    ) || "";
-    const documentDefinitionId = getDocumentDefinitionId(country, selectedDocumentName);
-    
+    const selectedDocumentName =
+      currentDocuments.find(
+        (docName) =>
+          docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument,
+      ) || "";
+    const documentDefinitionId = getDocumentDefinitionId(
+      country,
+      selectedDocumentName,
+    );
+
     formData.append("DocumentDefinitionId", documentDefinitionId);
     formData.append("Bucket", "string");
     const submissionIdToUse = submissionId?.toString() || "1";
-    console.log("IdentityDocumentForm: Using UserTemplateSubmissionId:", submissionIdToUse);
-    console.log("IdentityDocumentForm: Using DocumentDefinitionId:", documentDefinitionId, "for document:", selectedDocumentName);
+    console.log(
+      "IdentityDocumentForm: Using UserTemplateSubmissionId:",
+      submissionIdToUse,
+    );
+    console.log(
+      "IdentityDocumentForm: Using DocumentDefinitionId:",
+      documentDefinitionId,
+      "for document:",
+      selectedDocumentName,
+    );
     formData.append("UserTemplateSubmissionId", submissionIdToUse);
     return formData;
   };
@@ -349,7 +362,10 @@ export function IdentityDocumentForm({
               const docStyle = getDocumentStyle(docName);
 
               return (
-                <div key={docId} className="flex flex-col items-start gap-4 self-stretch">
+                <div
+                  key={docId}
+                  className="flex flex-col items-start gap-4 self-stretch"
+                >
                   {/* Document Button */}
                   <button
                     onClick={() => {
@@ -639,9 +655,12 @@ export function IdentityDocumentForm({
         }}
         submissionId={submissionId}
         country={country}
-        selectedDocumentName={currentDocuments.find((docName) => 
-          docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument
-        ) || ""}
+        selectedDocumentName={
+          currentDocuments.find(
+            (docName) =>
+              docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument,
+          ) || ""
+        }
         onSubmit={() => {
           setShowCameraDialog(false);
           if (selectedDocument) {
