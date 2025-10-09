@@ -5,6 +5,33 @@ import { CameraSelfieStep } from "./CameraSelfieStep";
 import { LockedStepComponent } from "./LockedStepComponent";
 import { FormData } from "@shared/templates";
 
+// type PersonalInfoRequired = {
+//   phoneNumber: boolean; gender: boolean;
+//   currentCity: boolean; currentPostal: boolean;
+//   permanentCity: boolean; permanentPostal: boolean;
+//   dob: boolean; middleName: boolean;
+// };
+
+// type DocumentsConfig = {
+//   allowUploadFromDevice: boolean;
+//   allowCaptureWebcam: boolean;
+//   documentHandling: "reject" | "retry" | "";
+//   retryAttempts: number;
+//   allowedFileTypes: string[];
+//   supportedCountries: { countryName: string; documents: string[] }[];
+//   selectedCountries: string[];
+//   selectedDocuments: string[];
+// };
+
+// type BiometricsConfig = {
+//   maxRetries: number;
+//   askUserRetry: boolean;
+//   blockAfterRetries: boolean;
+//   dataRetention: string;
+//   livenessThreshold: number;
+//   faceMatchThreshold: number;
+// };
+
 interface DesktopDynamicSectionProps {
   section: TemplateVersionSection;
   sectionIndex: number;
@@ -27,6 +54,10 @@ interface DesktopDynamicSectionProps {
   isFilled?: boolean;
   isExpanded?: boolean;
   onToggle?: (sectionIndex: number) => void;
+  // personalInfoConfig?: any;
+  // personalInfoRequired?: PersonalInfoRequired;
+  // documentsConfig?: DocumentsConfig;
+  // biometricsConfig?: BiometricsConfig;
 }
 
 export function DesktopDynamicSection({
@@ -107,12 +138,17 @@ export function DesktopDynamicSection({
 
     // Render based on section type
     switch (section.sectionType) {
-      case "personalInformation":
+      case "personalInformation": {
         if (!formData || !setFormData) return null;
 
-        // Extract field configuration from fieldMappings
-        const fieldConfig =
-          section.fieldMappings?.[0]?.structure?.personalInfo || {};
+        // read legacy mapping
+        const legacyPI = section.fieldMappings?.[0]?.structure?.personalInfo ?? {};
+
+        // enrich fieldConfig: ensure camelCase requiredToggles is present
+        const fieldConfig = {
+          ...legacyPI,
+          requiredToggles: legacyPI?.requiredToggles ?? {},
+        };
 
         return (
           <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
@@ -134,11 +170,34 @@ export function DesktopDynamicSection({
             </div>
           </div>
         );
+      }
 
-      case "documents":
-        // Extract document configuration from fieldMappings
-        const documentConfig =
-          section.fieldMappings?.[0]?.structure?.documentVerification || {};
+      case "documents": {
+        const legacy =
+          section.fieldMappings?.[0]?.structure?.documentVerification ?? {};
+
+        const documentConfig = {
+          allowUploadFromDevice: !!legacy.allowUploadFromDevice,
+          allowCaptureWebcam: !!legacy.allowCaptureWebcam,
+          documentHandling: legacy.documentHandlingRejectImmediately
+            ? "reject"
+            : legacy.documentHandlingAllowRetries
+              ? "retry"
+              : "",
+          retryAttempts: Number(legacy.retryAttempts) || 0,
+          allowedFileTypes: Array.isArray(legacy.allowedFileTypes)
+            ? legacy.allowedFileTypes
+            : [],
+          supportedCountries: Array.isArray(legacy.supportedCountries)
+            ? legacy.supportedCountries
+            : [],
+          selectedCountries: Array.isArray(legacy.selectedCountries)
+            ? legacy.selectedCountries
+            : [],
+          selectedDocuments: Array.isArray(legacy.selectedDocuments)
+            ? legacy.selectedDocuments
+            : [],
+        };
 
         return (
           <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
@@ -146,6 +205,29 @@ export function DesktopDynamicSection({
               {renderSectionHeader()}
               {isExpanded && (
                 <div className="flex py-4 px-[34px] flex-col items-start self-stretch border-t border-[#DEDEDD] bg-white">
+                  {/* summary chips so the new fields are visible */}
+                  <div className="text-xs text-muted-foreground flex flex-wrap gap-2 mb-3">
+                    <span className="px-2 py-1 rounded-full border bg-white">
+                      Upload: {documentConfig.allowUploadFromDevice ? "Device ✓" : "Device ✗"}
+                    </span>
+                    <span className="px-2 py-1 rounded-full border bg-white">
+                      Capture: {documentConfig.allowCaptureWebcam ? "Webcam ✓" : "Webcam ✗"}
+                    </span>
+                    <span className="px-2 py-1 rounded-full border bg-white">
+                      Handling: {documentConfig.documentHandling || "—"}
+                    </span>
+                    {documentConfig.documentHandling === "retry" && (
+                      <span className="px-2 py-1 rounded-full border bg-white">
+                        Retries: {documentConfig.retryAttempts}
+                      </span>
+                    )}
+                    {!!documentConfig.allowedFileTypes.length && (
+                      <span className="px-2 py-1 rounded-full border bg-white">
+                        File types: {documentConfig.allowedFileTypes.join(", ").toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+
                   <IdentityDocumentForm
                     onComplete={onIdentityDocumentComplete || (() => {})}
                     documentConfig={documentConfig}
@@ -159,25 +241,64 @@ export function DesktopDynamicSection({
             </div>
           </div>
         );
+      }
 
-      case "biometrics":
+      case "biometrics": {
+        const legacy =
+          section.fieldMappings?.[0]?.structure?.biometricVerification ?? {};
+
+        const bioCfg = {
+          maxRetries: Number(legacy.maxRetries) || 0,
+          askUserRetry: !!legacy.askUserRetry,
+          blockAfterRetries: !!legacy.blockAfterRetries,
+          dataRetention: legacy.dataRetention || "",
+          livenessThreshold: Number(legacy.livenessThreshold) || 0,
+          faceMatchThreshold: Number(legacy.faceMatchThreshold) || 0,
+        };
+
         return (
           <div className="flex flex-col items-start gap-4 self-stretch rounded bg-background">
             <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-border">
               {renderSectionHeader()}
               {isExpanded && (
-                <div className="flex p-3 flex-col justify-center items-center self-stretch border-t border-border bg-background">
-                  <div className="flex w-full flex-col items-center gap-2">
-                    <CameraSelfieStep 
-                      onComplete={onSelfieComplete || (() => {})} 
-                      submissionId={submissionId}
-                    />
+                <>
+                  {/* summary chips */}
+                  <div className="flex w-full py-3 px-[34px] border-t border-border bg-background">
+                    <div className="text-xs text-muted-foreground flex flex-wrap gap-2">
+                      <span className="px-2 py-1 rounded-full border bg-white">
+                        Max retries: {bioCfg.maxRetries}
+                      </span>
+                      <span className="px-2 py-1 rounded-full border bg-white">
+                        Liveness ≥ {bioCfg.livenessThreshold}%
+                      </span>
+                      <span className="px-2 py-1 rounded-full border bg-white">
+                        Face match ≥ {bioCfg.faceMatchThreshold}%
+                      </span>
+                      <span className="px-2 py-1 rounded-full border bg-white">
+                        On low score: {bioCfg.askUserRetry ? "Ask to retry" : bioCfg.blockAfterRetries ? "Block after retries" : "—"}
+                      </span>
+                      {bioCfg.dataRetention && (
+                        <span className="px-2 py-1 rounded-full border bg-white">
+                          Retention: {bioCfg.dataRetention}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
+
+                  <div className="flex p-3 flex-col justify-center items-center self-stretch bg-background">
+                    <div className="flex w-full flex-col items-center gap-2">
+                      <CameraSelfieStep
+                        onComplete={onSelfieComplete || (() => {})}
+                        submissionId={submissionId}
+                      />
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </div>
         );
+      }
 
       default:
         return (

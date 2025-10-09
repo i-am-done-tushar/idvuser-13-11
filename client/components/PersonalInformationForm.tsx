@@ -31,6 +31,16 @@ interface PersonalInformationFormProps {
     middleName?: boolean;
     city?: boolean;
     postalCode?: boolean;
+    requiredToggles?: {
+      phoneNumber?: boolean;
+      gender?: boolean;
+      currentCity?: boolean;
+      currentPostal?: boolean;
+      permanentCity?: boolean;
+      permanentPostal?: boolean;
+      dob?: boolean;
+      middleName?: boolean;
+    };
   };
 }
 
@@ -46,6 +56,39 @@ export function PersonalInformationForm({
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {},
   );
+
+    // read required toggles from backend (camelCase only)
+  const rt = fieldConfig?.requiredToggles ?? {};
+
+  // map backend toggles to form field names used in this component
+  const isRequired = (field: string) => {
+    const map: Record<string, boolean> = {
+      // backend → UI field names
+      dateOfBirth: !!rt.dob,
+      middleName: !!rt.middleName,
+      gender: !!rt.gender,
+      phoneNumber: !!rt.phoneNumber,
+
+      city: !!rt.currentCity,
+      postalCode: !!rt.currentPostal,
+
+      permanentCity: !!rt.permanentCity,
+      permanentPostalCode: !!rt.permanentPostal,
+
+      // if you later add toggles for these, wire them here:
+      // firstName: !!rt.firstName,
+      // lastName:  !!rt.lastName,
+      // email:     !!rt.email,
+      // address:   !!rt.currentAddress,
+      // permanentAddress: !!rt.permanentAddress,
+    };
+    return !!map[field];
+  };
+
+  // tiny component to show the red star
+  const RequiredMark = ({ show }: { show: boolean }) =>
+    show ? <span className="text-destructive">*</span> : null;
+
 
   // Helper function to check if a field should be displayed
   const shouldShowField = (fieldName: string): boolean => {
@@ -207,7 +250,10 @@ export function PersonalInformationForm({
               <div className="flex flex-col items-start flex-1 w-full">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
+                    <span className="text-text-primary">
                     First Name
+                    <span className="text-destructive"> *</span>
+                    </span>
                   </div>
                 </div>
 
@@ -251,7 +297,10 @@ export function PersonalInformationForm({
             <div className="flex flex-col items-start flex-1 w-full">
               <div className="flex pb-2 items-start gap-2 self-stretch">
                 <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                  Last Name
+                  <span className="text-text-primary">
+                    Last Name
+                    <span className="text-destructive"> *</span>
+                    </span>
                 </div>
               </div>
 
@@ -297,7 +346,9 @@ export function PersonalInformationForm({
               <div className="flex flex-col items-start flex-1 w-full">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                    Middle Name
+                    <span className="text-text-primary">
+                      Middle Name <RequiredMark show={isRequired("middleName")} />
+                    </span>
                   </div>
                 </div>
                 <div className="flex h-[38px] py-[15px] px-3 justify-between items-center self-stretch rounded border border-input-border bg-background">
@@ -318,7 +369,9 @@ export function PersonalInformationForm({
               <div className="flex w-full sm:flex-1 flex-col items-start">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                    Date Of Birth
+                    <span className="text-text-primary">
+                    Date Of Birth <RequiredMark show={isRequired("dateOfBirth")} />
+                    </span>
                   </div>
                 </div>
 
@@ -365,8 +418,9 @@ export function PersonalInformationForm({
                 <div className="flex flex-col items-start flex-1 w-full">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 font-roboto text-[13px] font-normal leading-[18px]">
-                    <span className="text-text-primary">Email </span>
-                    <span className="text-destructive">*</span>
+                    <span className="text-text-primary">Email
+                    <span className="text-destructive"> *</span>
+                    </span>
                   </div>
                 </div>
 
@@ -430,8 +484,9 @@ export function PersonalInformationForm({
                 <div className="flex flex-col items-start flex-1 w-full">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
                   <div className="flex h-2.5 flex-col justify-center flex-1 font-roboto text-[13px] font-normal leading-[18px]">
-                    <span className="text-text-primary">Phone Number </span>
-                    <span className="text-destructive">*</span>
+                    <span className="text-text-primary">
+                        Phone Number <RequiredMark show={isRequired("phoneNumber")} />
+                    </span>
                   </div>
                 </div>
 
@@ -529,9 +584,9 @@ export function PersonalInformationForm({
             <div className="flex w-full lg:w-[458px] h-auto lg:h-14 items-start gap-4 lg:gap-6 flex-shrink-0">
               <div className="flex w-full h-auto lg:h-14 flex-col items-start flex-1">
                 <div className="flex pb-2 items-start gap-2 self-stretch">
-                  <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                    Gender
-                  </div>
+                  <span className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
+                    Gender <RequiredMark show={isRequired("gender")} />
+                  </span>
                 </div>
                 <div className="flex flex-wrap items-start gap-2 sm:gap-3">
                   {["Male", "Female", "Non-Binary", "Prefer Not To Say"].map(
@@ -588,7 +643,9 @@ export function PersonalInformationForm({
                   <div className="flex flex-col items-start flex-1 w-full">
                     <div className="flex pb-2 items-start gap-2 self-stretch">
                       <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                        Current Address
+                        <span className="text-text-primary">
+                        Current Address <RequiredMark show={isRequired("address")} />
+                        </span>
                       </div>
                     </div>
                     <div
@@ -626,7 +683,9 @@ export function PersonalInformationForm({
                   <div className="flex flex-col items-start w-full sm:flex-1">
                     <div className="flex pb-2 items-start gap-2 self-stretch">
                       <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                        City
+                        <span className="text-text-primary">
+                        City <RequiredMark show={isRequired("city")} />
+                        </span>
                       </div>
                     </div>
                     <div
@@ -659,7 +718,9 @@ export function PersonalInformationForm({
                   <div className="flex flex-col items-start w-full sm:flex-1">
                     <div className="flex pb-2 items-start gap-2 self-stretch">
                       <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                        Postal Code
+                       <span className="text-text-primary">
+                        Postal Code <RequiredMark show={isRequired("postalCode")} />
+                       </span>
                       </div>
                     </div>
                     <div
@@ -718,7 +779,9 @@ export function PersonalInformationForm({
                   <div className="flex flex-col items-start flex-1 w-full">
                     <div className="flex pb-2 items-start gap-2 self-stretch">
                       <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                        Permanent Address
+                        <span className="text-text-primary">
+                        Permanent Address <RequiredMark show={isRequired("permanentAddress")} />
+                        </span>
                       </div>
                     </div>
                     <div
@@ -756,7 +819,9 @@ export function PersonalInformationForm({
                   <div className="flex flex-col items-start w-full sm:flex-1">
                     <div className="flex pb-2 items-start gap-2 self-stretch">
                       <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                        Permanent City
+                        <span className="text-text-primary">
+                        Permanent City <RequiredMark show={isRequired("permanentCity")} />
+                        </span>
                       </div>
                     </div>
                     <div
@@ -789,7 +854,9 @@ export function PersonalInformationForm({
                   <div className="flex flex-col items-start w-full sm:flex-1">
                     <div className="flex pb-2 items-start gap-2 self-stretch">
                       <div className="flex h-2.5 flex-col justify-center flex-1 text-text-primary font-roboto text-[13px] font-normal leading-[18px]">
-                        Permanent Postal Code
+                        <span className="text-text-primary">
+                        Permanent Postal Code <RequiredMark show={isRequired("permanentPostalCode")} />
+                        </span>
                       </div>
                     </div>
                     <div

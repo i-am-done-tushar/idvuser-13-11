@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "./Header";
 import { StepSidebar } from "./StepSidebar";
@@ -117,6 +117,81 @@ export function IdentityVerificationPage({
     const fieldConfig = personalInfoSection.fieldMappings[0].structure as any;
     return fieldConfig.personalInfo || {};
   };
+
+  // // NEW: personal info required toggles (back-compat snake/camel + nested/top-level)
+  // const getPersonalInfoRequiredToggles = () => {
+  //   const sec = templateVersion?.sections.find(s => s.sectionType === "personalInformation");
+  //   const fm = sec?.fieldMappings?.[0];
+  //   const nested =
+  //     (fm?.structure as any)?.personalInfo?.required_toggles ??
+  //     (fm?.structure as any)?.personalInfo?.requiredToggles ??
+  //     null;
+
+  //   const topLevel =
+  //     (fm as any)?.required_toggles ??
+  //     (fm as any)?.requiredToggles ??
+  //     null;
+
+  //   const rt = nested || topLevel || {};
+  //   return {
+  //     phoneNumber: !!(rt.phone_number ?? rt.phoneNumber),
+  //     gender: !!rt.gender,
+  //     currentCity: !!(rt.current_city ?? rt.currentCity),
+  //     currentPostal: !!(rt.current_postal ?? rt.currentPostal),
+  //     permanentCity: !!(rt.permanent_city ?? rt.permanentCity),
+  //     permanentPostal: !!(rt.permanent_postal ?? rt.permanentPostal),
+  //     dob: !!rt.dob,
+  //     middleName: !!(rt.middle_name ?? rt.middleName),
+  //   };
+  // };
+
+  // // NEW: documents config (adds retryAttempts + allowedFileTypes)
+  // const getDocumentsConfig = () => {
+  //   const sec = templateVersion?.sections.find(s => s.sectionType === "documents");
+  //   const dv = (sec?.fieldMappings?.[0]?.structure as any)?.documentVerification ?? {};
+  //   const handling = dv.documentHandlingRejectImmediately
+  //     ? "reject"
+  //     : dv.documentHandlingAllowRetries
+  //       ? "retry"
+  //       : "";
+
+  //   return {
+  //     allowUploadFromDevice: !!dv.allowUploadFromDevice,
+  //     allowCaptureWebcam: !!dv.allowCaptureWebcam,
+  //     documentHandling: handling as "reject" | "retry" | "",
+  //     retryAttempts: Number.isFinite(dv.retryAttempts) ? dv.retryAttempts : 0,
+  //     allowedFileTypes: Array.isArray(dv.allowedFileTypes) ? dv.allowedFileTypes : [],
+  //     supportedCountries: Array.isArray(dv.supportedCountries) ? dv.supportedCountries : [],
+  //     // keep your old preview arrays too (if present)
+  //     selectedCountries: Array.isArray(dv.selectedCountries) ? dv.selectedCountries : [],
+  //     selectedDocuments: Array.isArray(dv.selectedDocuments) ? dv.selectedDocuments : [],
+  //   };
+  // };
+
+  // // NEW: biometrics config (adds thresholds)
+  // const getBiometricsConfig = () => {
+  //   const sec = templateVersion?.sections.find(s => s.sectionType === "biometrics");
+  //   const bv = (sec?.fieldMappings?.[0]?.structure as any)?.biometricVerification ?? {};
+  //   const clamp = (n: any) => {
+  //     const x = Number(n);
+  //     if (!Number.isFinite(x)) return 95;
+  //     return Math.min(100, Math.max(90, Math.round(x)));
+  //   };
+  //   return {
+  //     maxRetries: Number.isFinite(bv.maxRetries) ? bv.maxRetries : 3,
+  //     askUserRetry: !!bv.askUserRetry,
+  //     blockAfterRetries: !!bv.blockAfterRetries,
+  //     dataRetention: typeof bv.dataRetention === "string" ? bv.dataRetention : "6 Months",
+  //     livenessThreshold: clamp(bv.livenessThreshold),
+  //     faceMatchThreshold: clamp(bv.faceMatchThreshold),
+  //   };
+  // };
+
+  // const personalInfoRequired = useMemo(getPersonalInfoRequiredToggles, [templateVersion]);
+  // const docsCfg = useMemo(getDocumentsConfig, [templateVersion]);
+  // const bioCfg  = useMemo(getBiometricsConfig, [templateVersion]);
+  // const personalCfg = useMemo(getPersonalInfoConfig, [templateVersion]);
+
 
   // ---- create UserTemplateSubmission early to get submissionId ----
   const createUserTemplateSubmission = async () => {
@@ -556,6 +631,11 @@ export function IdentityVerificationPage({
   const handleSendEmailOTP = async () => {
     const email = formData.email?.trim();
     const versionId = getActiveVersionId();
+    if (BYPASS_OTP_FOR_DEVELOPMENT) {
+      setIsEmailVerified(true);
+      toast({ title: "Email verified (dev bypass)", description: "OTP skipped in development." });
+      return;
+    }
 
     if (!email || !isValidEmail(email)) {
       toast({
@@ -591,10 +671,17 @@ export function IdentityVerificationPage({
 
   const handleSendPhoneOTP = async () => {
     const versionId = getActiveVersionId();
+
     if (versionId == null) {
       toast({ title: "Missing version", description: "No active template version found." });
       return;
     }
+    if (BYPASS_OTP_FOR_DEVELOPMENT) {
+      setIsPhoneVerified(true);
+      toast({ title: "Phone verified (dev bypass)", description: "OTP skipped in development." });
+      return;
+    }
+
 
     const cc = (formData.countryCode || "").trim(); // keep as provided (e.g. +91 or 91)
     const nn = (formData.phoneNumber || "").replace(/\D+/g, ""); // national digits only
@@ -1251,6 +1338,10 @@ export function IdentityVerificationPage({
                     templateVersionId={templateVersion?.versionId}
                     userId={userId}
                     isFilled={!!completedSections[index + 1]}
+                    // personalInfoConfig={personalCfg}
+                    // personalInfoRequired={personalInfoRequired}
+                    // documentsConfig={docsCfg}
+                    // biometricsConfig={bioCfg}
                   />
                 ))}
               </div>
@@ -1281,6 +1372,11 @@ export function IdentityVerificationPage({
                       isFilled={!!completedSections[index + 1]}
                       isExpanded={expandedSectionIndex === index + 1}
                       onToggle={toggleSection}
+                      // personalInfoConfig={personalCfg}
+                      // personalInfoRequired={personalInfoRequired}
+                      // documentsConfig={docsCfg}
+                      // biometricsConfig={bioCfg}
+
                     />
                   ))}
                 </div>
