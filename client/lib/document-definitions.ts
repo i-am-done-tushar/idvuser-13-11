@@ -18,7 +18,7 @@ export const getDocumentDefinitionId = (country: string, documentName: string): 
   const countryCode = countryToISO2[country];
   if (!countryCode) {
     console.warn(`Country "${country}" not found in mapping, using fallback ID`);
-    return "6bb2a401-2678-43d1-acb0-227ec9da6761"; // fallback to Aadhaar
+    return "7579ebab-673f-401e-9395-075e9addf4a7"; // fallback to Aadhaar
   }
   
   // Document mapping for India (IN)
@@ -54,7 +54,7 @@ export const getDocumentDefinitionId = (country: string, documentName: string): 
   // }
   
   console.warn(`Document "${documentName}" not found for country "${country}", using fallback ID`);
-  return "6bb2a401-2678-43d1-acb0-227ec9da6761"; // fallback to Aadhaar
+  return "7579ebab-673f-401e-9395-075e9addf4a7"; // fallback to Aadhaar
 };
 
 /**
