@@ -81,7 +81,7 @@ export function CameraSelfieStep({ onComplete, submissionId }: CameraSelfieStepP
       const response = await fetch(capturedImageUrl);
       const blob = await response.blob();
 
-      const DOCUMENT_DEFINITION_ID = "88ccdb04-a701-41b1-ad5e-aef0b2c76e06";
+      const DOCUMENT_DEFINITION_ID = "7579ebab-673f-401e-9395-075e9addf4a7";
 
       const formData = new FormData();
       formData.append("File", blob, "selfie.jpg");

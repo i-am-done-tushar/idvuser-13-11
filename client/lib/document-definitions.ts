@@ -24,13 +24,13 @@ export const getDocumentDefinitionId = (country: string, documentName: string): 
   // Document mapping for India (IN)
   if (countryCode === "IN") {
     const documentMapping: Record<string, string> = {
-      "aadhaar_card": "6bb2a401-2678-43d1-acb0-227ec9da6761", // AADHAAR_IND
-      "voter_id": "88ccdb04-a701-41b1-ad5e-aef0b2c76e06", // VOTERID_IND
-      "passport": "9ca14fe5-9649-4e09-ab97-af887e619513", // PASSPORT_IND
-      "indian_passport": "9ca14fe5-9649-4e09-ab97-af887e619513", // PASSPORT_IND
-      "pan_card": "69243f9f-5c00-4522-b80c-0bb87bb32514", // PAN_IND
-      "driving_license": "986c9fbd-fb6f-4d60-a1aa-7e7c459ae199", // DL_IND
-      "driver_license": "986c9fbd-fb6f-4d60-a1aa-7e7c459ae199", // DL_IND
+      "aadhaar_card": "7579ebab-673f-401e-9395-075e9addf4a7", // AADHAAR_IND
+      "voter_id": "7579ebab-673f-401e-9395-075e9addf4a7", // VOTERID_IND
+      "passport": "7579ebab-673f-401e-9395-075e9addf4a7", // PASSPORT_IND
+      "indian_passport": "7579ebab-673f-401e-9395-075e9addf4a7", // PASSPORT_IND
+      "pan_card": "7579ebab-673f-401e-9395-075e9addf4a7", // PAN_IND
+      "driving_license": "7579ebab-673f-401e-9395-075e9addf4a7", // DL_IND
+      "driver_license": "7579ebab-673f-401e-9395-075e9addf4a7", // DL_IND
     };
     
     const documentId = documentMapping[normalizedDoc];
