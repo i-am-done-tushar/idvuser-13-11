@@ -5,33 +5,6 @@ import { CameraSelfieStep } from "./CameraSelfieStep";
 import { LockedStepComponent } from "./LockedStepComponent";
 import { FormData } from "@shared/templates";
 
-// type PersonalInfoRequired = {
-//   phoneNumber: boolean; gender: boolean;
-//   currentCity: boolean; currentPostal: boolean;
-//   permanentCity: boolean; permanentPostal: boolean;
-//   dob: boolean; middleName: boolean;
-// };
-
-// type DocumentsConfig = {
-//   allowUploadFromDevice: boolean;
-//   allowCaptureWebcam: boolean;
-//   documentHandling: "reject" | "retry" | "";
-//   retryAttempts: number;
-//   allowedFileTypes: string[];
-//   supportedCountries: { countryName: string; documents: string[] }[];
-//   selectedCountries: string[];
-//   selectedDocuments: string[];
-// };
-
-// type BiometricsConfig = {
-//   maxRetries: number;
-//   askUserRetry: boolean;
-//   blockAfterRetries: boolean;
-//   dataRetention: string;
-//   livenessThreshold: number;
-//   faceMatchThreshold: number;
-// };
-
 interface DesktopDynamicSectionProps {
   section: TemplateVersionSection;
   sectionIndex: number;
@@ -69,10 +42,6 @@ interface DesktopDynamicSectionProps {
     isImageCaptured: boolean;
   };
   setBiometricFormState?: (state: any) => void;
-  // personalInfoConfig?: any;
-  // personalInfoRequired?: PersonalInfoRequired;
-  // documentsConfig?: DocumentsConfig;
-  // biometricsConfig?: BiometricsConfig;
 }
 
 export function DesktopDynamicSection({
