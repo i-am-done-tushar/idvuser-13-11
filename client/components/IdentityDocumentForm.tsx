@@ -157,10 +157,12 @@ export function IdentityDocumentForm({
     const url = `${API_BASE}/api/Files/upload`;
     const formData = buildFormData(file, filename);
     const res = await fetch(url, { method: "POST", body: formData });
-    
-    if (!res.ok) {
+
+    // Check for 201 Created or 200 OK
+    if (!res.ok && res.status !== 201) {
       throw new Error(`POST failed: ${res.statusText}`);
     }
+
     const result = await res.json().catch(() => ({}));
     const returnedId =
       (result &&
@@ -569,23 +571,23 @@ export function IdentityDocumentForm({
             </div>
           </div>
 
-          {/* Uploaded Files Grid */}
+          {/* Uploaded Files Grid - Matches Figma Design */}
           <div className="flex flex-wrap items-start gap-4 self-stretch">
             {uploadedFiles.map((file) => (
               <div
                 key={file.id}
-                className="flex flex-1 min-w-0 max-w-[456px] p-4 flex-col justify-center items-start gap-2 rounded-lg bg-muted"
+                className="flex flex-1 min-w-0 max-w-[456px] p-4 flex-col justify-center items-start gap-2 rounded-lg bg-[#F6F7FB]"
               >
                 <div className="flex justify-between items-start self-stretch">
                   <div className="flex items-center gap-2">
-                    <div className="flex p-[7px] justify-center items-center gap-2 rounded border border-border bg-background">
+                    <div className="flex p-[7px] justify-center items-center gap-2 rounded border border-[#D0D4E4] bg-white">
                       {getFileIcon()}
                     </div>
                     <div className="flex flex-col justify-center items-start gap-[2px]">
-                      <div className="text-text-primary font-figtree text-[13px] font-medium leading-normal">
+                      <div className="text-[#323238] font-figtree text-[13px] font-normal leading-normal">
                         {file.name}
                       </div>
-                      <div className="text-text-muted font-figtree text-xs font-normal leading-5">
+                      <div className="text-[#676879] font-figtree text-xs font-normal leading-5">
                         Size {file.size}
                       </div>
                     </div>
@@ -593,7 +595,7 @@ export function IdentityDocumentForm({
                   <button
                     onClick={() => removeUploadedFile(file.id)}
                     aria-label="Remove file"
-                    className="flex w-7 h-7 justify-center items-center gap-2.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                    className="flex w-7 h-7 justify-center items-center gap-2.5 rounded-full bg-[#F6F7FB] hover:bg-[#E6E9F0] transition-colors"
                   >
                     <svg
                       width="18"
