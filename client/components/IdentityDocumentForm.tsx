@@ -735,65 +735,168 @@ export function IdentityDocumentForm({
       )}
 
       {/* Files Uploaded Section */}
-      {uploadedFiles.length > 0 && (
+      {(uploadedFiles.length > 0 || uploadedDocuments.length > 0) && (
         <div className="flex flex-col items-start gap-4 self-stretch">
           {/* Section Header */}
           <div className="flex flex-col items-start gap-1 self-stretch">
             <div className="flex items-center gap-2 self-stretch">
               <div className="text-text-primary font-roboto text-base font-bold leading-[26px]">
-                Files Uploaded
+                Documents Uploaded ({Math.max(uploadedFiles.length, uploadedDocuments.length)})
               </div>
             </div>
             <div className="self-stretch text-text-secondary font-roboto text-[13px] font-normal leading-5">
-              Select the ID you'd like to use for verification.
+              Click on any document to view the captured image.
             </div>
           </div>
 
           {/* Uploaded Files Grid */}
           <div className="flex flex-wrap items-start gap-4 self-stretch">
-            {uploadedFiles.map((file) => (
-              <div
-                key={file.id}
-                className="flex flex-1 min-w-0 max-w-[456px] p-4 flex-col justify-center items-start gap-2 rounded-lg bg-muted"
-              >
-                <div className="flex justify-between items-start self-stretch">
-                  <div className="flex items-center gap-2">
-                    <div className="flex p-[7px] justify-center items-center gap-2 rounded border border-border bg-background">
-                      {getFileIcon()}
-                    </div>
-                    <div className="flex flex-col justify-center items-start gap-[2px]">
-                      <div className="text-text-primary font-figtree text-[13px] font-medium leading-normal">
-                        {file.name}
+            {uploadedFiles.length > 0 ? (
+              uploadedFiles.map((file) => {
+                const docId = file.id.replace(/-\d+$/, "");
+                const isUploaded = uploadedDocuments.includes(docId);
+                const storedImage = localStorage.getItem(`document_${docId}_image`);
+                
+                return (
+                  <div
+                    key={file.id}
+                    className={`flex flex-1 min-w-0 max-w-[456px] p-4 flex-col justify-center items-start gap-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                      isUploaded 
+                        ? 'bg-green-100 border-2 border-green-300 hover:bg-green-200' 
+                        : 'bg-muted hover:bg-muted/80'
+                    }`}
+                    onClick={() => {
+                      if (storedImage) {
+                        // Create a modal to view the image
+                        const modal = document.createElement('div');
+                        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
+                        modal.innerHTML = `
+                          <div class="relative max-w-3xl max-h-[90vh] bg-white rounded-lg p-4">
+                            <button class="absolute top-2 right-2 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300" onclick="this.closest('.fixed').remove()">
+                              ×
+                            </button>
+                            <img src="${storedImage}" alt="${file.name}" class="max-w-full max-h-full object-contain" />
+                            <p class="text-center mt-2 text-sm text-gray-600">${file.name}</p>
+                          </div>
+                        `;
+                        document.body.appendChild(modal);
+                        modal.addEventListener('click', (e) => {
+                          if (e.target === modal) modal.remove();
+                        });
+                      } else {
+                        alert(`No image available for ${file.name}`);
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-start self-stretch">
+                      <div className="flex items-center gap-2">
+                        <div className={`flex p-[7px] justify-center items-center gap-2 rounded border ${
+                          isUploaded ? 'border-green-500 bg-green-50' : 'border-border bg-background'
+                        }`}>
+                          {isUploaded ? (
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M13.5 4.5L6 12L2.5 8.5" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          ) : (
+                            getFileIcon()
+                          )}
+                        </div>
+                        <div className="flex flex-col justify-center items-start gap-[2px]">
+                          <div className={`font-figtree text-[13px] font-medium leading-normal ${
+                            isUploaded ? 'text-green-800' : 'text-text-primary'
+                          }`}>
+                            {file.name}
+                            {isUploaded && <span className="ml-2 text-xs text-green-600">✓ Uploaded</span>}
+                          </div>
+                          <div className={`font-figtree text-xs font-normal leading-5 ${
+                            isUploaded ? 'text-green-600' : 'text-text-muted'
+                          }`}>
+                            Size {file.size} {storedImage && '• Click to view'}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-text-muted font-figtree text-xs font-normal leading-5">
-                        Size {file.size}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent modal from opening
+                          removeUploadedFile(file.id);
+                        }}
+                        aria-label="Remove file"
+                        className="flex w-7 h-7 justify-center items-center gap-2.5 rounded-full bg-white/70 hover:bg-white transition-colors"
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 18 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5"
+                            stroke="#676879"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              // Fallback: Show uploaded documents from uploadedDocuments array if uploadedFiles is empty
+              uploadedDocuments.map((docId) => {
+                const storedImage = localStorage.getItem(`document_${docId}_image`);
+                const displayName = docId.replace(/_/g, " ");
+                
+                return (
+                  <div
+                    key={docId}
+                    className="flex flex-1 min-w-0 max-w-[456px] p-4 flex-col justify-center items-start gap-2 rounded-lg cursor-pointer transition-all duration-200 bg-green-100 border-2 border-green-300 hover:bg-green-200"
+                    onClick={() => {
+                      if (storedImage) {
+                        // Create a modal to view the image
+                        const modal = document.createElement('div');
+                        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
+                        modal.innerHTML = `
+                          <div class="relative max-w-3xl max-h-[90vh] bg-white rounded-lg p-4">
+                            <button class="absolute top-2 right-2 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300" onclick="this.closest('.fixed').remove()">
+                              ×
+                            </button>
+                            <img src="${storedImage}" alt="${displayName}" class="max-w-full max-h-full object-contain" />
+                            <p class="text-center mt-2 text-sm text-gray-600">${displayName}</p>
+                          </div>
+                        `;
+                        document.body.appendChild(modal);
+                        modal.addEventListener('click', (e) => {
+                          if (e.target === modal) modal.remove();
+                        });
+                      } else {
+                        alert(`No image available for ${displayName}`);
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-start self-stretch">
+                      <div className="flex items-center gap-2">
+                        <div className="flex p-[7px] justify-center items-center gap-2 rounded border border-green-500 bg-green-50">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13.5 4.5L6 12L2.5 8.5" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div className="flex flex-col justify-center items-start gap-[2px]">
+                          <div className="font-figtree text-[13px] font-medium leading-normal text-green-800">
+                            {displayName} <span className="ml-2 text-xs text-green-600">✓ Uploaded</span>
+                          </div>
+                          <div className="font-figtree text-xs font-normal leading-5 text-green-600">
+                            Document captured {storedImage && '• Click to view'}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => removeUploadedFile(file.id)}
-                    aria-label="Remove file"
-                    className="flex w-7 h-7 justify-center items-center gap-2.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5"
-                        stroke="#676879"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
         </div>
       )}
@@ -872,10 +975,15 @@ export function IdentityDocumentForm({
         selectedDocumentName={currentDocuments.find((docName) => 
           docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument
         ) || ""}
-        onSubmit={() => {
+        onSubmit={(capturedImageData) => {
           setShowCameraDialog(false);
           if (selectedDocument) {
             const docId = selectedDocument;
+
+            // Store captured image in localStorage if available
+            if (capturedImageData) {
+              localStorage.setItem(`document_${docId}_image`, capturedImageData);
+            }
 
             // ensure uploadedDocuments contains docId
             setUploadedDocuments((prevDocs) =>

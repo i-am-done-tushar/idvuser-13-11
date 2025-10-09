@@ -298,30 +298,68 @@ export function IdentityVerificationPage({
     setCompletedSections((prev) => ({ ...prev, [sectionIndex]: true }));
     await postSectionData(section);
     
+    // Check if this is the last section
+    const isLastSection = sectionIndex === activeSections.length;
+    
     // Provide specific feedback based on section type
     if (section.sectionType === "personalInformation") {
-      toast({ 
-        title: "✅ Personal Information Completed", 
-        description: "Your personal information has been saved. You can now proceed to Document Verification.",
-        duration: 3000,
-      });
-      
-      // Move to document section after personal info completion
-      setTimeout(() => {
-        setCurrentStep(2);
-        setExpandedSectionIndex(2);
-        toast({
-          title: "📄 Document Verification",
-          description: "Please upload the required identity documents to continue.",
-          duration: 4000,
+      if (isLastSection) {
+        toast({ 
+          title: "🎉 Verification Complete!", 
+          description: "All sections have been completed successfully. Your identity verification is now complete.",
+          duration: 5000,
         });
-      }, 2000);
+      } else {
+        toast({ 
+          title: `✅ ${section.name || 'Personal Information'} Completed`, 
+          description: "Your personal information has been saved. Moving to the next section...",
+          duration: 3000,
+        });
+        
+        // Move to next section after personal info completion
+        setTimeout(() => {
+          const nextSectionIndex = sectionIndex + 1;
+          if (nextSectionIndex <= activeSections.length) {
+            setCurrentStep(nextSectionIndex);
+            setExpandedSectionIndex(nextSectionIndex);
+            const nextSection = activeSections[nextSectionIndex - 1];
+            toast({
+              title: `� ${nextSection?.name || 'Next Section'}`,
+              description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+              duration: 4000,
+            });
+          }
+        }, 2000);
+      }
     } else {
-      toast({ 
-        title: "✅ Section Completed", 
-        description: "This section has been successfully completed.",
-        duration: 3000,
-      });
+      if (isLastSection) {
+        toast({ 
+          title: "🎉 Verification Complete!", 
+          description: "All sections have been completed successfully. Your identity verification is now complete.",
+          duration: 5000,
+        });
+      } else {
+        toast({ 
+          title: `✅ ${section.name || 'Section'} Completed`, 
+          description: "This section has been successfully completed. Moving to the next section...",
+          duration: 3000,
+        });
+        
+        // Move to next section
+        setTimeout(() => {
+          const nextSectionIndex = sectionIndex + 1;
+          if (nextSectionIndex <= activeSections.length) {
+            setCurrentStep(nextSectionIndex);
+            setExpandedSectionIndex(nextSectionIndex);
+            const nextSection = activeSections[nextSectionIndex - 1];
+            toast({
+              title: `📋 ${nextSection?.name || 'Next Section'}`,
+              description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+              duration: 4000,
+            });
+          }
+        }, 2000);
+      }
     }
     
     // Don't auto-collapse - let the step advancement logic handle UI transitions
@@ -791,62 +829,109 @@ export function IdentityVerificationPage({
   const handleSelfieComplete = () => {
     setIsSelfieCompleted(true);
     
-    // Mark section 3 as completed
-    setCompletedSections((prev) => ({ ...prev, 3: true }));
+    // Find the biometric section and its index dynamically
+    const biometricsSection = activeSections.find(s => s.sectionType === "biometrics");
+    const biometricsSectionIndex = activeSections.findIndex(s => s.sectionType === "biometrics") + 1;
+    
+    // Mark the correct section as completed
+    setCompletedSections((prev) => ({ ...prev, [biometricsSectionIndex]: true }));
     
     // Post section data immediately
-    const biometricsSection = activeSections.find(s => s.sectionType === "biometrics");
     if (biometricsSection) {
       postSectionData(biometricsSection);
     }
     
-    toast({
-      title: "🎉 Verification Complete!",
-      description: "All sections have been completed successfully. Your identity verification is now complete.",
-      duration: 5000,
-    });
+    // Check if this is the last section
+    const isLastSection = biometricsSectionIndex === activeSections.length;
     
-    // Optional: Navigate to success page after completion
-    setTimeout(() => {
-      // You can add navigation to success page here if needed
-      console.log("Identity verification process completed successfully");
-    }, 2000);
+    if (isLastSection) {
+      toast({
+        title: "🎉 Verification Complete!",
+        description: "All sections have been completed successfully. Your identity verification is now complete.",
+        duration: 5000,
+      });
+    } else {
+      toast({
+        title: `✅ ${biometricsSection?.name || 'Biometric Verification'} Completed`,
+        description: "Biometric verification completed successfully. Please continue to the next section.",
+        duration: 3000,
+      });
+      
+      // Move to next section if not the last
+      setTimeout(() => {
+        const nextSectionIndex = biometricsSectionIndex + 1;
+        if (nextSectionIndex <= activeSections.length) {
+          setCurrentStep(nextSectionIndex);
+          setExpandedSectionIndex(nextSectionIndex);
+          const nextSection = activeSections[nextSectionIndex - 1];
+          toast({
+            title: `📋 ${nextSection?.name || 'Next Section'}`,
+            description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+            duration: 4000,
+          });
+        }
+      }, 2000);
+    }
+    
+    // Optional: Navigate to success page after completion if it's the last section
+    if (isLastSection) {
+      setTimeout(() => {
+        console.log("Identity verification process completed successfully");
+      }, 2000);
+    }
   };
 
   const handleIdentityDocumentComplete = () => {
     setIsIdentityDocumentCompleted(true);
     
-    // Mark section 2 as completed
-    setCompletedSections((prev) => ({ ...prev, 2: true }));
+    // Find the documents section and its index dynamically
+    const documentsSection = activeSections.find(s => s.sectionType === "documents");
+    const documentsSectionIndex = activeSections.findIndex(s => s.sectionType === "documents") + 1;
+    
+    // Mark the correct section as completed
+    setCompletedSections((prev) => ({ ...prev, [documentsSectionIndex]: true }));
     
     // Post section data immediately
-    const documentsSection = activeSections.find(s => s.sectionType === "documents");
     if (documentsSection) {
       postSectionData(documentsSection);
     }
     
+    // Check if this is the last section
+    const isLastSection = documentsSectionIndex === activeSections.length;
+    
     if (!hasShownStep2Toast) {
-      toast({
-        title: "✅ Document Verification Completed",
-        description: "Your documents have been successfully uploaded and verified. Moving to Biometric Verification...",
-        duration: 3000,
-      });
+      if (isLastSection) {
+        toast({
+          title: "🎉 Verification Complete!",
+          description: "All sections have been completed successfully. Your identity verification is now complete.",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          title: `✅ ${documentsSection?.name || 'Document Verification'} Completed`,
+          description: "Your documents have been successfully uploaded and verified. Moving to the next section...",
+          duration: 3000,
+        });
+      }
       setHasShownStep2Toast(true);
     }
     
-    // Move to next step after a delay to show completion
-    setTimeout(() => {
-      setCurrentStep(3);
-      setExpandedSectionIndex(3);
-      setShowMobileMenu(false);
-      
-      // Show transition toast
-      toast({
-        title: "📸 Biometric Verification",
-        description: "Please complete the biometric verification to finish the identity verification process.",
-        duration: 4000,
-      });
-    }, 2000);
+    // Move to next step if not the last section
+    if (!isLastSection) {
+      setTimeout(() => {
+        const nextSectionIndex = documentsSectionIndex + 1;
+        if (nextSectionIndex <= activeSections.length) {
+          setCurrentStep(nextSectionIndex);
+          setExpandedSectionIndex(nextSectionIndex);
+          const nextSection = activeSections[nextSectionIndex - 1];
+          toast({
+            title: `� ${nextSection?.name || 'Next Section'}`,
+            description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+            duration: 4000,
+          });
+        }
+      }, 2000);
+    }
   };
 
   const handleSubmit = async () => {

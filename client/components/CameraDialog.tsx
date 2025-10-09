@@ -5,7 +5,7 @@ import { getDocumentDefinitionId } from "@/lib/document-definitions";
 interface CameraDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (capturedImageData?: string) => void;
   previousFileIds?: { front?: number; back?: number };
   onUploaded?: (side: "front" | "back", id: number) => void;
   submissionId?: number | null;
@@ -243,12 +243,17 @@ export function CameraDialog({
   };
 
   const handleSubmit = () => {
-    if (uploadedFiles.front && uploadedFiles.back) {
+    // Allow submission if at least one side is uploaded
+    if (uploadedFiles.front || uploadedFiles.back) {
+      const sidesUploaded = (uploadedFiles.front ? 1 : 0) + (uploadedFiles.back ? 1 : 0);
       toast({
         title: "Done",
-        description: "Both documents uploaded successfully.",
+        description: `Document${sidesUploaded > 1 ? 's' : ''} uploaded successfully.`,
       });
-      onSubmit();
+      
+      // Pass the front image data (or back if front not available)
+      const imageData = frontCaptured?.dataUrl || backCaptured?.dataUrl;
+      onSubmit(imageData);
     }
   };
 
@@ -669,9 +674,9 @@ export function CameraDialog({
         <div className="flex h-[68px] justify-end items-center gap-2 self-stretch border-t border-[#D0D4E4] bg-white px-6">
           <button
             onClick={handleSubmit}
-            disabled={!uploadedFiles.front || !uploadedFiles.back}
+            disabled={!uploadedFiles.front && !uploadedFiles.back}
             className={`flex h-[38px] px-4 py-[11px] justify-center items-center gap-2 rounded ${
-              uploadedFiles.front && uploadedFiles.back
+              uploadedFiles.front || uploadedFiles.back
                 ? "bg-green-600 hover:bg-green-700"
                 : "bg-gray-400 cursor-not-allowed"
             }`}

@@ -505,14 +505,14 @@ export function PersonalInformationForm({
                         aria-describedby={
                           errors.countryCode ? "err-countryCode" : undefined
                         }
-                        className="text-text-muted font-roboto text-[13px] font-normal leading-5 bg-transparent outline-none border-r border-input-border pr-2 mr-2 w-20 flex-none sm:w-auto"
+                        className="text-text-muted font-roboto text-[13px] font-normal leading-5 bg-transparent outline-none border-r border-input-border pr-2 mr-2 min-w-[70px] max-w-[100px] flex-shrink-0"
                       >
                         <option value="">Select</option>
                         {COUNTRY_PHONE_RULES.map((c) => (
                           <option
                             key={c.dial}
                             value={c.dial}
-                          >{`${c.dial} (${c.name})`}</option>
+                          >{`${c.dial} ${c.name}`}</option>
                         ))}
                       </select>
                       <input
