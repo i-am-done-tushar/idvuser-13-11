@@ -34,8 +34,10 @@ interface PersonalInformationFormProps {
     requiredToggles?: {
       phoneNumber?: boolean;
       gender?: boolean;
+      currentAddress?: boolean;
       currentCity?: boolean;
       currentPostal?: boolean;
+      permanentAddress?: boolean;
       permanentCity?: boolean;
       permanentPostal?: boolean;
       dob?: boolean;
@@ -69,9 +71,11 @@ export function PersonalInformationForm({
       gender: !!rt.gender,
       phoneNumber: !!rt.phoneNumber,
 
+      address: !!rt.currentAddress,
       city: !!rt.currentCity,
       postalCode: !!rt.currentPostal,
 
+      permanentAddress: !!rt.permanentAddress,
       permanentCity: !!rt.permanentCity,
       permanentPostalCode: !!rt.permanentPostal,
 
@@ -79,8 +83,6 @@ export function PersonalInformationForm({
       // firstName: !!rt.firstName,
       // lastName:  !!rt.lastName,
       // email:     !!rt.email,
-      // address:   !!rt.currentAddress,
-      // permanentAddress: !!rt.permanentAddress,
     };
     return !!map[field];
   };
