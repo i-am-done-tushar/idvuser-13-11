@@ -50,6 +50,7 @@ export function IdentityDocumentForm({
   const [localSelectedDocument, setLocalSelectedDocument] = useState("");
   const [showCameraDialog, setShowCameraDialog] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
   const [localUploadedDocuments, setLocalUploadedDocuments] = useState<string[]>([]);
   const [localUploadedFiles, setLocalUploadedFiles] = useState<UploadedFile[]>([]);
   const [localDocumentUploadIds, setLocalDocumentUploadIds] = useState<
@@ -709,17 +710,23 @@ export function IdentityDocumentForm({
                 <div className="flex flex-col items-center gap-4 self-stretch border-2 border-dashed border-[#C3C6D4] rounded-lg bg-white p-6">
                   <div className="flex flex-col items-center gap-3">
                     <div className="flex flex-col items-center gap-2">
-                      <QRCodeDisplay
-                        shortCode={shortCode}
-                        templateVersionId={templateVersionId}
-                        userId={userId}
-                        sessionId={sessionState?.sessionId || 'default-session'}
-                        currentStep="document-upload"
-                        size="large"
-                        showUrl={false}
-                      />
+                      <div 
+                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => setShowQRModal(true)}
+                        title="Click to view larger QR code"
+                      >
+                        <QRCodeDisplay
+                          shortCode={shortCode}
+                          templateVersionId={templateVersionId}
+                          userId={userId}
+                          sessionId={sessionState?.sessionId || 'default-session'}
+                          currentStep="document-upload"
+                          size="large"
+                          showUrl={false}
+                        />
+                      </div>
                       <div className="text-[#676879] text-center font-roboto text-[12px] font-normal leading-4 max-w-[200px]">
-                        Scan this QR code with your mobile device to continue verification
+                        Scan this QR code with your other device to continue verificatio
                       </div>
                     </div>
                   </div>
@@ -1095,6 +1102,35 @@ export function IdentityDocumentForm({
           }
         }}
       />
+
+      {/* QR Code Modal */}
+      {showQRModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowQRModal(false);
+            }
+          }}
+        >
+          <div className="flex flex-col items-center gap-6 p-10 rounded-xl bg-black/40 backdrop-blur-sm">
+            <div className="scale-[2.5] transform p-4 bg-white rounded-lg shadow-2xl">
+              <QRCodeDisplay
+                shortCode={shortCode}
+                templateVersionId={templateVersionId}
+                userId={userId}
+                sessionId={sessionState?.sessionId || 'default-session'}
+                currentStep="document-upload"
+                size="large"
+                showUrl={false}
+              />
+            </div>
+            <p className="text-center text-base font-medium text-white/90 mt-4">
+              Scan this QR code with your mobile device
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
