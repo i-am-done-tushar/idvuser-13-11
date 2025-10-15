@@ -84,9 +84,15 @@ export interface DocumentConfig {
   allowCaptureWebcam?: boolean;
   allowUploadFromDevice?: boolean;
   supportedCountries?: Array<{
+    countryId?: number;
     countryName: string;
-    documents: string[];
+    documents: Array<string | {
+      title: string;
+      documentDefinitionId: string;
+    }>;
   }>;
   documentHandlingAllowRetries?: boolean;
   documentHandlingRejectImmediately?: boolean;
+  retryAttempts?: number;
+  allowedFileTypes?: string[];
 }

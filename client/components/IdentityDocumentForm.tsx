@@ -268,10 +268,23 @@ export function IdentityDocumentForm({
         (docName) =>
           docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument,
       ) || "";
-    const documentDefinitionId = getDocumentDefinitionId(
+    
+    // First try to get the document definition ID from the API config
+    let documentDefinitionId = getDocumentDefinitionIdFromConfig(
       country,
       selectedDocumentName,
     );
+
+    // Fallback to the hardcoded mapping if not found in config
+    if (!documentDefinitionId) {
+      console.warn(
+        `Document definition ID not found in config for ${selectedDocumentName}, using fallback mapping`
+      );
+      documentDefinitionId = getDocumentDefinitionId(
+        country,
+        selectedDocumentName,
+      );
+    }
 
     formData.append("DocumentDefinitionId", documentDefinitionId);
     formData.append("Bucket", "string");
@@ -336,8 +349,34 @@ export function IdentityDocumentForm({
     return countryData?.documents || [];
   };
 
-  // Get current documents to display
-  const currentDocuments = country ? getDocumentsForCountry(country) : [];
+  // Get document definition ID for a specific document
+  const getDocumentDefinitionIdFromConfig = (countryName: string, documentTitle: string): string | null => {
+    const countryData = availableCountries.find(
+      (c) => c.countryName === countryName,
+    );
+    if (!countryData) return null;
+
+    // Find the document in the country's documents array
+    const doc = countryData.documents.find((d) => {
+      if (typeof d === 'string') {
+        return d === documentTitle;
+      } else {
+        return d.title === documentTitle;
+      }
+    });
+
+    // Return the documentDefinitionId if it exists
+    if (doc && typeof doc !== 'string' && doc.documentDefinitionId) {
+      return doc.documentDefinitionId;
+    }
+
+    return null;
+  };
+
+  // Get current documents to display (titles only)
+  const currentDocuments = country 
+    ? getDocumentsForCountry(country).map(d => typeof d === 'string' ? d : d.title)
+    : [];
 
   // Default document colors and icons
   const getDocumentStyle = (docName: string) => {
