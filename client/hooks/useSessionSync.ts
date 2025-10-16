@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface SessionState {
   shortCode: string;
@@ -55,17 +55,17 @@ export function useSessionSync(initialState: Partial<SessionState>) {
     localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionState));
   }, [sessionState]);
 
-  // Update session state
-  const updateSession = (updates: Partial<SessionState>) => {
+  // Update session state (memoized to prevent unnecessary re-renders)
+  const updateSession = useCallback((updates: Partial<SessionState>) => {
     setSessionState(prev => ({
       ...prev,
       ...updates,
       lastUpdated: Date.now(),
     }));
-  };
+  }, []);
 
-  // Clear session
-  const clearSession = () => {
+  // Clear session (memoized to prevent unnecessary re-renders)
+  const clearSession = useCallback(() => {
     localStorage.removeItem(SESSION_STORAGE_KEY);
     setSessionState({
       sessionId: generateSessionId(),
@@ -75,7 +75,7 @@ export function useSessionSync(initialState: Partial<SessionState>) {
       lastUpdated: Date.now(),
       ...initialState,
     } as SessionState);
-  };
+  }, [initialState]);
 
   // Simulate server sync (in a real implementation, this would sync with backend)
   useEffect(() => {
@@ -88,7 +88,7 @@ export function useSessionSync(initialState: Partial<SessionState>) {
     }, SYNC_INTERVAL);
 
     return () => clearInterval(syncInterval);
-  }, [sessionState]);
+  }, [sessionState.sessionId]); // Only depend on sessionId, not the entire sessionState
 
   return {
     sessionState,

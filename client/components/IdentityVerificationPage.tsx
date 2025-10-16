@@ -113,6 +113,14 @@ export function IdentityVerificationPage({
     documentUploadIds: {} as Record<string, { front?: number; back?: number }>,
   });
 
+  // Wrap setDocumentFormState to add logging
+  const setDocumentFormStateWithLogging = (newState: any) => {
+    console.log('🔧 Parent setDocumentFormState called with:', newState);
+    console.log('🔧 Previous documentFormState:', documentFormState);
+    setDocumentFormState(newState);
+    console.log('🔧 After setState, new documentFormState should be:', newState);
+  };
+
   // Biometric form state - lift up to preserve across section toggles  
   const [biometricFormState, setBiometricFormState] = useState({
     capturedImage: null as string | null,
@@ -1745,7 +1753,7 @@ export function IdentityVerificationPage({
                     userId={userId}
                     isFilled={!!completedSections[index + 1]}
                     documentFormState={documentFormState}
-                    setDocumentFormState={setDocumentFormState}
+                    setDocumentFormState={setDocumentFormStateWithLogging}
                     biometricFormState={biometricFormState}
                     setBiometricFormState={setBiometricFormState}
                     // personalInfoConfig={personalCfg}
@@ -1784,7 +1792,7 @@ export function IdentityVerificationPage({
                       isExpanded={!!expandedSections[index + 1]}
                       onToggle={toggleSection}
                       documentFormState={documentFormState}
-                      setDocumentFormState={setDocumentFormState}
+                      setDocumentFormState={setDocumentFormStateWithLogging}
                       biometricFormState={biometricFormState}
                       setBiometricFormState={setBiometricFormState}
                       // personalInfoConfig={personalCfg}
