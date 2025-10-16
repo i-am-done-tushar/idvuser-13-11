@@ -65,7 +65,7 @@ export function IdentityDocumentForm({
       setIsDigilockerLoading(true);
 
       const res = await fetch(
-        `https://localhost:62435/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
+        `http://10.10.2.133:8086/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
         { method: "GET", headers: { accept: "*/*" } }
       );
 
@@ -223,7 +223,7 @@ export function IdentityDocumentForm({
       const documentId = 1;                     // your internal doc def id
       const templateName = "template p";        // current template name
 
-      const url = new URL(`https://localhost:62435/api/IdentityVerification/fetch-document`);
+      const url = new URL(`http://10.10.2.133:8086/api/IdentityVerification/fetch-document`);
       url.searchParams.set("AuthCode", authCode);
       url.searchParams.set("CodeVerifier", codeVerifier);
       url.searchParams.set("RequestedDocType", requestedDocType);
@@ -259,8 +259,7 @@ export function IdentityDocumentForm({
     };
 
     run();
-  }, ["https://localhost:62435", selectedDocument]);
-
+  }, ["http://10.10.2.133:8086", selectedDocument]);
   // Load session state from URL if coming from QR scan
   useEffect(() => {
     const urlSession = extractSessionFromURL();
