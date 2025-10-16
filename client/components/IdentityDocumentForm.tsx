@@ -32,7 +32,13 @@ interface IdentityDocumentFormProps {
     uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
     documentUploadIds: Record<string, { front?: number; back?: number }>;
   };
-  setDocumentFormState?: (state: any) => void;
+  setDocumentFormState?: React.Dispatch<React.SetStateAction<{
+    country: string;
+    selectedDocument: string;
+    uploadedDocuments: string[];
+    uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
+    documentUploadIds: Record<string, { front?: number; back?: number }>;
+  }>>;
 }
 
 export function IdentityDocumentForm({
@@ -92,6 +98,14 @@ export function IdentityDocumentForm({
 
   // Determine if we're using lifted state or local state
   const isUsingLiftedState = !!(documentFormState && setDocumentFormState);
+  
+  console.log('🏗️ IdentityDocumentForm render:', {
+    isUsingLiftedState,
+    hasDocumentFormState: !!documentFormState,
+    hasSetDocumentFormState: !!setDocumentFormState,
+    currentUploadedDocuments: isUsingLiftedState ? documentFormState?.uploadedDocuments : localUploadedDocuments,
+    currentUploadedFiles: isUsingLiftedState ? documentFormState?.uploadedFiles : localUploadedFiles,
+  });
 
   // Get current state values
   const country = isUsingLiftedState ? documentFormState!.country : localCountry;
@@ -103,10 +117,10 @@ export function IdentityDocumentForm({
   // State setters that work with either lifted or local state
   const setCountry = (value: string) => {
     if (isUsingLiftedState) {
-      setDocumentFormState!({
-        ...documentFormState!,
+      setDocumentFormState!((prevState) => ({
+        ...prevState,
         country: value,
-      });
+      }));
     } else {
       setLocalCountry(value);
     }
@@ -114,54 +128,60 @@ export function IdentityDocumentForm({
 
   const setSelectedDocument = (value: string) => {
     if (isUsingLiftedState) {
-      setDocumentFormState!({
-        ...documentFormState!,
+      setDocumentFormState!((prevState) => ({
+        ...prevState,
         selectedDocument: value,
-      });
+      }));
     } else {
       setLocalSelectedDocument(value);
     }
   };
 
   const setUploadedDocuments = (value: string[] | ((prev: string[]) => string[])) => {
+    console.log('🔧 setUploadedDocuments called, isUsingLiftedState:', isUsingLiftedState);
     if (isUsingLiftedState) {
       const newValue = typeof value === 'function' ? value(documentFormState!.uploadedDocuments) : value;
-      setDocumentFormState!({
-        ...documentFormState!,
+      console.log('🔧 Setting lifted uploadedDocuments:', newValue);
+      setDocumentFormState!((prevState) => ({
+        ...prevState,
         uploadedDocuments: newValue,
-      });
+      }));
     } else {
       if (typeof value === 'function') {
         setLocalUploadedDocuments(value);
       } else {
         setLocalUploadedDocuments(value);
       }
+      console.log('🔧 Setting local uploadedDocuments');
     }
   };
 
   const setUploadedFiles = (value: UploadedFile[] | ((prev: UploadedFile[]) => UploadedFile[])) => {
+    console.log('🔧 setUploadedFiles called, isUsingLiftedState:', isUsingLiftedState);
     if (isUsingLiftedState) {
       const newValue = typeof value === 'function' ? value(documentFormState!.uploadedFiles) : value;
-      setDocumentFormState!({
-        ...documentFormState!,
+      console.log('🔧 Setting lifted uploadedFiles:', newValue);
+      setDocumentFormState!((prevState) => ({
+        ...prevState,
         uploadedFiles: newValue,
-      });
+      }));
     } else {
       if (typeof value === 'function') {
         setLocalUploadedFiles(value);
       } else {
         setLocalUploadedFiles(value);
       }
+      console.log('🔧 Setting local uploadedFiles');
     }
   };
 
   const setDocumentUploadIds = (value: Record<string, { front?: number; back?: number }> | ((prev: Record<string, { front?: number; back?: number }>) => Record<string, { front?: number; back?: number }>)) => {
     if (isUsingLiftedState) {
       const newValue = typeof value === 'function' ? value(documentFormState!.documentUploadIds) : value;
-      setDocumentFormState!({
-        ...documentFormState!,
+      setDocumentFormState!((prevState) => ({
+        ...prevState,
         documentUploadIds: newValue,
-      });
+      }));
     } else {
       if (typeof value === 'function') {
         setLocalDocumentUploadIds(value);
@@ -181,14 +201,14 @@ export function IdentityDocumentForm({
     formData: { country, selectedDocument },
   });
 
-  // Sync state changes with session
+  // Sync state changes with session (with proper dependency array)
   useEffect(() => {
     updateSession({
       uploadedDocuments,
       formData: { country, selectedDocument },
       currentStep: 'document-upload',
     });
-  }, [uploadedDocuments, country, selectedDocument, updateSession]);
+  }, [uploadedDocuments, country, selectedDocument]); // Removed updateSession from dependencies since it's now memoized
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -440,6 +460,86 @@ export function IdentityDocumentForm({
 
   const uploadFileToServer = async (file: Blob, filename: string) => {
     return uploadOrUpdateFile(file, filename);
+  };
+
+  // Function to download file from server
+  const downloadFileFromServer = async (fileId: number, fileName: string) => {
+    try {
+      console.log('🔽 Starting download for fileId:', fileId, 'fileName:', fileName);
+      const downloadUrl = `${API_BASE}/api/Files/${fileId}/content?inline=false`;
+      console.log('🔽 Download URL:', downloadUrl);
+      
+      const response = await fetch(downloadUrl, {
+        method: 'GET',
+        headers: {
+          Accept: '*/*',
+        },
+      });
+
+      console.log('🔽 Download response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`Failed to download file: ${response.statusText}`);
+      }
+
+      // Get the blob from response
+      const blob = await response.blob();
+      console.log('🔽 Downloaded blob size:', blob.size, 'bytes');
+      
+      // Create a temporary URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName || `document-${fileId}`;
+      document.body.appendChild(a);
+      a.click();
+      
+      console.log('🔽 Download triggered for:', fileName);
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('❌ Error downloading file:', error);
+      alert(`Failed to download file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  // Function to download all files for a document (front and back)
+  const downloadDocumentFiles = async (docId: string) => {
+    console.log('📥 downloadDocumentFiles called for docId:', docId);
+    console.log('📥 Available documentUploadIds:', documentUploadIds);
+    
+    const fileIds = documentUploadIds[docId];
+    if (!fileIds) {
+      console.error('❌ No fileIds found for docId:', docId);
+      alert('No files found for this document');
+      return;
+    }
+
+    console.log('📥 Found fileIds:', fileIds);
+
+    const documentName = currentDocuments.find(
+      (docName) => docName.toLowerCase().replace(/\s+/g, "_") === docId
+    ) || docId.replace(/_/g, " ");
+
+    console.log('📥 Document name:', documentName);
+
+    // Download front side if exists
+    if (fileIds.front) {
+      console.log('📥 Downloading front file, ID:', fileIds.front);
+      await downloadFileFromServer(fileIds.front, `${documentName} - Front.jpg`);
+    }
+
+    // Download back side if exists (with a small delay to avoid browser blocking multiple downloads)
+    if (fileIds.back) {
+      console.log('📥 Downloading back file (after 500ms delay), ID:', fileIds.back);
+      setTimeout(() => {
+        downloadFileFromServer(fileIds.back!, `${documentName} - Back.jpg`);
+      }, 500);
+    }
   };
 
   // Get available countries from configuration
@@ -929,220 +1029,75 @@ export function IdentityDocumentForm({
       )}
 
       {/* Files Uploaded Section */}
-      {(uploadedFiles.length > 0 || uploadedDocuments.length > 0) && (
+      {(() => {
+        console.log('🔍 Checking Documents Uploaded section visibility:', {
+          uploadedFilesLength: uploadedFiles.length,
+          uploadedDocumentsLength: uploadedDocuments.length,
+          uploadedFiles,
+          uploadedDocuments
+        });
+        return (uploadedFiles.length > 0 || uploadedDocuments.length > 0);
+      })() && (
         <div className="flex flex-col items-start gap-4 self-stretch">
           {/* Section Header */}
           <div className="flex flex-col items-start gap-1 self-stretch">
             <div className="flex items-center gap-2 self-stretch">
               <div className="text-text-primary font-roboto text-base font-bold leading-[26px]">
-                Documents Uploaded ({Math.max(uploadedFiles.length, uploadedDocuments.length)})
+                Documents Uploaded
               </div>
             </div>
             <div className="self-stretch text-text-secondary font-roboto text-[13px] font-normal leading-5">
-              Click on any document to view the captured image.
+              Click on any document to download it.
             </div>
           </div>
 
-          {/* Uploaded Files Grid - Matches Figma Design */}
+          {/* Uploaded Files Grid - Uniform Card Design */}
           <div className="flex flex-wrap items-start gap-4 self-stretch">
-            {uploadedFiles.length > 0 ? (
-              uploadedFiles.map((file) => {
-                const docId = file.id.replace(/-\d+$/, "");
-                const isUploaded = uploadedDocuments.includes(docId);
-                const storedImage = localStorage.getItem(`document_${docId}_image`);
-                
-                return (
-                  <div
-                    key={file.id}
-                    className={`flex flex-1 min-w-0 max-w-[456px] p-4 flex-col justify-center items-start gap-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                      isUploaded 
-                        ? 'bg-green-100 border-2 border-green-300 hover:bg-green-200' 
-                        : 'bg-muted hover:bg-muted/80'
-                    }`}
-                    onClick={() => {
-                      if (storedImage) {
-                        // Create a modal to view the image
-                        const modal = document.createElement('div');
-                        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
-                        modal.innerHTML = `
-                          <div class="relative max-w-3xl max-h-[90vh] bg-white rounded-lg p-4">
-                            <button class="absolute top-2 right-2 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300" onclick="this.closest('.fixed').remove()">
-                              ×
-                            </button>
-                            <img src="${storedImage}" alt="${file.name}" class="max-w-full max-h-full object-contain" />
-                            <p class="text-center mt-2 text-sm text-gray-600">${file.name}</p>
-                          </div>
-                        `;
-                        document.body.appendChild(modal);
-                        modal.addEventListener('click', (e) => {
-                          if (e.target === modal) modal.remove();
-                        });
-                      } else {
-                        alert(`No image available for ${file.name}`);
-                      }
-                    }}
-                  >
-                    <div className="flex justify-between items-start self-stretch">
-                      <div className="flex items-center gap-2">
-                        <div className={`flex p-[7px] justify-center items-center gap-2 rounded border ${
-                          isUploaded ? 'border-green-500 bg-green-50' : 'border-border bg-background'
-                        }`}>
-                          {isUploaded ? (
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M13.5 4.5L6 12L2.5 8.5" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          ) : (
-                            getFileIcon()
-                          )}
-                        </div>
-                        <div className="flex flex-col justify-center items-start gap-[2px]">
-                          <div className={`font-figtree text-[13px] font-medium leading-normal ${
-                            isUploaded ? 'text-green-800' : 'text-text-primary'
-                          }`}>
-                            {file.name}
-                            {isUploaded && <span className="ml-2 text-xs text-green-600">✓ Uploaded</span>}
-                          </div>
-                          <div className={`font-figtree text-xs font-normal leading-5 ${
-                            isUploaded ? 'text-green-600' : 'text-text-muted'
-                          }`}>
-                            Size {file.size} {storedImage && '• Click to view'}
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent modal from opening
-                          removeUploadedFile(file.id);
-                        }}
-                        aria-label="Remove file"
-                        className="flex w-7 h-7 justify-center items-center gap-2.5 rounded-full bg-white/70 hover:bg-white transition-colors"
-                      >
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5"
-                            stroke="#676879"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              // Fallback: Show uploaded documents from uploadedDocuments array if uploadedFiles is empty
-              uploadedDocuments.map((docId) => {
-                const storedImage = localStorage.getItem(`document_${docId}_image`);
-                const displayName = docId.replace(/_/g, " ");
-                
-                return (
-                  <div
-                    key={docId}
-                    className="flex flex-1 min-w-0 max-w-[456px] p-4 flex-col justify-center items-start gap-2 rounded-lg cursor-pointer transition-all duration-200 bg-green-100 border-2 border-green-300 hover:bg-green-200"
-                    onClick={() => {
-                      if (storedImage) {
-                        // Create a modal to view the image
-                        const modal = document.createElement('div');
-                        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
-                        modal.innerHTML = `
-                          <div class="relative max-w-3xl max-h-[90vh] bg-white rounded-lg p-4">
-                            <button class="absolute top-2 right-2 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300" onclick="this.closest('.fixed').remove()">
-                              ×
-                            </button>
-                            <img src="${storedImage}" alt="${displayName}" class="max-w-full max-h-full object-contain" />
-                            <p class="text-center mt-2 text-sm text-gray-600">${displayName}</p>
-                          </div>
-                        `;
-                        document.body.appendChild(modal);
-                        modal.addEventListener('click', (e) => {
-                          if (e.target === modal) modal.remove();
-                        });
-                      } else {
-                        alert(`No image available for ${displayName}`);
-                      }
-                    }}
-                  >
-                    <div className="flex justify-between items-start self-stretch">
-                      <div className="flex items-center gap-2">
-                        <div className="flex p-[7px] justify-center items-center gap-2 rounded border border-green-500 bg-green-50">
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13.5 4.5L6 12L2.5 8.5" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </div>
-                        <div className="flex flex-col justify-center items-start gap-[2px]">
-                          <div className="font-figtree text-[13px] font-medium leading-normal text-green-800">
-                            {displayName} <span className="ml-2 text-xs text-green-600">✓ Uploaded</span>
-                          </div>
-                          <div className="font-figtree text-xs font-normal leading-5 text-green-600">
-                            Document captured {storedImage && '• Click to view'}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Submit Button and Progress - Show when documents are uploaded */}
-      {uploadedFiles.length > 0 && (
-        <div className="flex flex-col items-start gap-4 self-stretch pt-4 border-t border-border">
-          <button
-            onClick={() => {
-              const requiredIds = currentDocuments.map((docName) =>
-                docName.toLowerCase().replace(/\s+/g, "_"),
-              );
-              const allUploaded = requiredIds.every((id) => 
-                uploadedDocuments.includes(id)
-              );
+            {uploadedDocuments.map((docId) => {
+              const displayName = currentDocuments.find(
+                (docName) => docName.toLowerCase().replace(/\s+/g, "_") === docId
+              ) || docId.replace(/_/g, " ");
+              const fileIds = documentUploadIds[docId];
+              const hasFileIds = fileIds && (fileIds.front || fileIds.back);
               
-              if (allUploaded) {
-                onComplete?.();
-              } else {
-                // Show which documents are still missing
-                const missingDocs = requiredIds.filter(id => !uploadedDocuments.includes(id));
-                alert(`Please upload the following documents: ${missingDocs.map(id => id.replace(/_/g, ' ')).join(', ')}`);
-              }
-            }}
-            className="flex w-full px-6 py-3 justify-center items-center gap-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
-          >
-            Submit Documents
-          </button>
-          
-          {/* Upload Progress Indicator */}
-          <div className="flex flex-col gap-2 self-stretch">
-            <div className="text-text-secondary font-roboto text-sm">
-              {uploadedDocuments.length} of {currentDocuments.length} required documents uploaded
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {currentDocuments.map((docName) => {
-                const docId = docName.toLowerCase().replace(/\s+/g, "_");
-                const isUploaded = uploadedDocuments.includes(docId);
-                return (
-                  <div
-                    key={docId}
-                    className={`flex items-center gap-1 px-2 py-1 rounded text-xs ${
-                      isUploaded 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {isUploaded ? '✓' : '○'} {docName}
+              return (
+                <div
+                  key={docId}
+                  className="flex w-[180px] h-[180px] p-4 flex-col justify-between items-center gap-3 rounded-lg border-2 border-green-300 bg-green-50 cursor-pointer transition-all duration-200 hover:bg-green-100 hover:border-green-400 hover:shadow-md"
+                  onClick={() => {
+                    console.log('📥 Download clicked for document:', docId, 'File IDs:', fileIds);
+                    if (hasFileIds) {
+                      downloadDocumentFiles(docId);
+                    } else {
+                      alert(`No files available for ${displayName}`);
+                    }
+                  }}
+                >
+                  {/* Document Icon */}
+                  <div className="flex w-16 h-16 justify-center items-center rounded-full bg-green-500">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M14 2V8H20" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M12 18V12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M9 15L12 12L15 15" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-                );
-              })}
-            </div>
+                  
+                  {/* Document Name */}
+                  <div className="flex flex-col items-center gap-1 self-stretch">
+                    <div className="text-center font-figtree text-sm font-semibold leading-tight text-green-800 line-clamp-2">
+                      {displayName}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.5 4.5L6 12L2.5 8.5" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-xs font-medium text-green-600">Uploaded</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -1180,9 +1135,11 @@ export function IdentityDocumentForm({
             }
 
             // ensure uploadedDocuments contains docId
-            setUploadedDocuments((prevDocs) =>
-              prevDocs.includes(docId) ? prevDocs : [...prevDocs, docId],
-            );
+            setUploadedDocuments((prevDocs) => {
+              const newDocs = prevDocs.includes(docId) ? prevDocs : [...prevDocs, docId];
+              console.log('📄 Updated uploadedDocuments (Camera):', newDocs);
+              return newDocs;
+            });
 
             // Add uploaded file to the files list, but first remove previous instances of this docId
             const newFile: UploadedFile = {
@@ -1196,7 +1153,9 @@ export function IdentityDocumentForm({
               const filtered = prev.filter(
                 (f) => f.id.replace(/-\d+$/, "") !== docId,
               );
-              return [...filtered, newFile];
+              const newFiles = [...filtered, newFile];
+              console.log('📁 Updated uploadedFiles (Camera):', newFiles);
+              return newFiles;
             });
 
             setSelectedDocument("");
@@ -1240,9 +1199,11 @@ export function IdentityDocumentForm({
               [docId]: { front: frontId, back: backId },
             }));
 
-            setUploadedDocuments((prevDocs) =>
-              prevDocs.includes(docId) ? prevDocs : [...prevDocs, docId],
-            );
+            setUploadedDocuments((prevDocs) => {
+              const newDocs = prevDocs.includes(docId) ? prevDocs : [...prevDocs, docId];
+              console.log('📄 Updated uploadedDocuments:', newDocs);
+              return newDocs;
+            });
 
             const newFile: UploadedFile = {
               id: `${docId}-${Date.now()}`,
@@ -1254,7 +1215,9 @@ export function IdentityDocumentForm({
               const filtered = prev.filter(
                 (f) => f.id.replace(/-\d+$/, "") !== docId,
               );
-              return [...filtered, newFile];
+              const newFiles = [...filtered, newFile];
+              console.log('📁 Updated uploadedFiles:', newFiles);
+              return newFiles;
             });
 
             setSelectedDocument("");
