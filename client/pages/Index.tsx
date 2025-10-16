@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { IdentityVerificationPage } from "@/components/IdentityVerificationPage";
 import { ShortCodeResolveResponse } from "@shared/api";
 
 export default function Index() {
   const { shortCode } = useParams<{ shortCode?: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [templateVersionId, setTemplateVersionId] = useState<number>(1);
   const [userId, setUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,6 +17,43 @@ export default function Index() {
 
   const API_BASE =
     import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+
+  // Check for DigiLocker callback at root URL
+  useEffect(() => {
+    const code = searchParams.get("code");
+    const state = searchParams.get("state");
+    const jti = searchParams.get("jti");
+
+    // If this is a DigiLocker callback (has code and state), handle it
+    if (code && state) {
+      console.log("🔐 DigiLocker callback detected at root URL");
+      
+      try {
+        // Parse state to extract shortCode and submissionId
+        const [shortCodeFromState, submissionIdFromState] = state.split(":");
+        
+        if (!shortCodeFromState || shortCodeFromState === "unknown") {
+          console.error("❌ Invalid shortCode in DigiLocker state");
+          alert("Invalid DigiLocker callback. Please try again.");
+          return;
+        }
+
+        // Store DigiLocker data in sessionStorage
+        sessionStorage.setItem("digilocker_auth_code", code);
+        sessionStorage.setItem("digilocker_callback_state", state);
+        sessionStorage.setItem("digilocker_jti", jti || "");
+        sessionStorage.setItem("digilocker_callback_timestamp", Date.now().toString());
+
+        console.log("✅ DigiLocker data stored, redirecting to /form/" + shortCodeFromState);
+
+        // Redirect to the form page with the shortCode
+        navigate(`/form/${shortCodeFromState}`, { replace: true });
+      } catch (error) {
+        console.error("❌ Error processing DigiLocker callback:", error);
+        alert("Failed to process DigiLocker response. Please try again.");
+      }
+    }
+  }, [searchParams, navigate]);
 
   useEffect(() => {
     if (shortCode) {
