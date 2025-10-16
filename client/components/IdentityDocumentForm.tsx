@@ -63,7 +63,10 @@ export function IdentityDocumentForm({
     Record<string, { front?: number; back?: number }>
   >({});
   const [isDigilockerLoading, setIsDigilockerLoading] = useState(false);
-  const getBackString = "arcon"; //use submissionid or userid (dynamic, so that on redirect from digilocker, this id can be used to fetch previously filled form data)
+  
+  // Build state parameter with shortCode and submissionId for DigiLocker redirect
+  // Format: "shortCode:submissionId" - this allows us to redirect back to the form and fetch saved data
+  const getBackString = `${shortCode || 'unknown'}:${submissionId || 0}`;
 
   // call backend to get DigiLocker URL and redirect
   const handleDigilockerClick = async () => {
@@ -211,19 +214,33 @@ export function IdentityDocumentForm({
   }, [uploadedDocuments, country, selectedDocument]); // Removed updateSession from dependencies since it's now memoized
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const authCode = params.get("code");           // from DigiLocker
-    const state = params.get("state");             // "arcon" or your dynamic value
-    if (!authCode || !state) return;
+    // Check if we're returning from DigiLocker
+    const authCode = sessionStorage.getItem("digilocker_auth_code");
+    const callbackState = sessionStorage.getItem("digilocker_callback_state");
+    const timestamp = sessionStorage.getItem("digilocker_callback_timestamp");
+
+    // Only process if we have fresh DigiLocker data (within last 5 minutes)
+    const isFreshCallback = timestamp && (Date.now() - parseInt(timestamp)) < 5 * 60 * 1000;
+
+    if (!authCode || !callbackState || !isFreshCallback) return;
+
+    console.log("🔐 Processing DigiLocker callback data");
 
     const run = async () => {
       const codeVerifier = sessionStorage.getItem("digilocker_code_verifier") || "";
       const expectedState = sessionStorage.getItem("digilocker_state") || "";
 
-      if (expectedState && state !== expectedState) {
-        console.warn("DigiLocker state mismatch");
+      if (expectedState && callbackState !== expectedState) {
+        console.warn("⚠️ DigiLocker state mismatch");
         return;
       }
+
+      // Parse state to get submissionId for context
+      const [stateShortCode, stateSubmissionId] = callbackState.split(":");
+      console.log("📝 DigiLocker callback context:", {
+        shortCode: stateShortCode,
+        submissionId: stateSubmissionId,
+      });
 
       // Map your selected document id to the label DigiLocker expects
       // e.g. "aadhaar_card" -> "Aadhaar card"
@@ -232,6 +249,8 @@ export function IdentityDocumentForm({
           aadhaar_card: "Aadhaar card",
           passport: "Passport",
           pan_card: "PAN card",
+          driving_license: "Driving License",
+          voter_id: "Voter ID",
           // add others as needed
         };
         return map[id] ?? id.replace(/_/g, " ");
@@ -264,22 +283,27 @@ export function IdentityDocumentForm({
         }
 
         const data = await res.json().catch(() => ({}));
+        console.log("✅ DigiLocker document fetched successfully:", data);
+        
         // TODO: use `data` to mark the document as uploaded, store files, etc.
         // setUploadedDocuments([...]); setUploadedFiles([...]);
 
       } catch (e) {
-        console.error(e);
+        console.error("❌ Error fetching DigiLocker document:", e);
         alert("Could not fetch DigiLocker document. Please try again.");
       } finally {
-        // Clean URL (remove ?code&state for nicer UX)
-        const clean = new URL(window.location.href);
-        clean.search = "";
-        window.history.replaceState({}, "", clean.toString());
+        // Clean up DigiLocker session data after processing
+        sessionStorage.removeItem("digilocker_auth_code");
+        sessionStorage.removeItem("digilocker_callback_state");
+        sessionStorage.removeItem("digilocker_callback_timestamp");
+        sessionStorage.removeItem("digilocker_code_verifier");
+        sessionStorage.removeItem("digilocker_state");
+        console.log("🧹 DigiLocker session data cleaned up");
       }
     };
 
     run();
-  }, ["http://10.10.2.133:8086", selectedDocument]);
+  }, [selectedDocument]); // Re-run if selectedDocument changes
   // Load session state from URL if coming from QR scan
   useEffect(() => {
     const urlSession = extractSessionFromURL();
