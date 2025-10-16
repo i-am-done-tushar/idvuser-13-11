@@ -1147,6 +1147,7 @@ export function IdentityDocumentForm({
         selectedDocumentName={currentDocuments.find((docName) => 
           docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument
         ) || ""}
+        documentConfig={documentConfig}
         onSubmit={(capturedImageData) => {
           setShowCameraDialog(false);
           if (selectedDocument) {
