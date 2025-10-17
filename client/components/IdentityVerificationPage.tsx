@@ -322,23 +322,49 @@ export function IdentityVerificationPage({
 
             // Populate document section
             if (section.sectionType === "documents" && parsedValue) {
+              // New structure: { country, documents: [...] }
+              const documentsArray = parsedValue.documents || [];
+              
+              // Extract document names and rebuild documentUploadIds for UI compatibility
+              const uploadedDocIds: string[] = [];
+              const rebuiltDocumentUploadIds: Record<string, { front?: number; back?: number }> = {};
+              
+              documentsArray.forEach((doc: any) => {
+                const docName = doc.documentName;
+                
+                // Convert document name to docId format (lowercase with underscores)
+                const docId = docName.toLowerCase().replace(/\s+/g, "_");
+                uploadedDocIds.push(docId);
+                
+                // Rebuild documentUploadIds map for file downloads
+                rebuiltDocumentUploadIds[docId] = {
+                  front: doc.frontFileId,
+                  ...(doc.backFileId && { back: doc.backFileId }),
+                };
+              });
+              
               setDocumentFormState((prev) => ({
                 ...prev,
                 country: parsedValue.country || prev.country,
-                selectedDocument: parsedValue.selectedDocument || prev.selectedDocument,
-                uploadedDocuments: parsedValue.uploadedDocuments || prev.uploadedDocuments,
-                uploadedFiles: parsedValue.uploadedFiles || prev.uploadedFiles,
-                documentUploadIds: parsedValue.documentUploadIds || prev.documentUploadIds,
-                // Restore detailed document information
-                documentsDetails: parsedValue.documentsDetails || prev.documentsDetails,
+                // Populate uploadedDocuments with docIds (matches the format used during upload)
+                uploadedDocuments: uploadedDocIds,
+                // Rebuild documentUploadIds for download functionality
+                documentUploadIds: rebuiltDocumentUploadIds,
+                // Restore detailed document information from the new structure
+                documentsDetails: documentsArray,
               }));
               
-              // Mark document section as completed
-              if (parsedValue.documentsUploaded) {
+              // Mark document section as completed if any documents exist
+              if (documentsArray.length > 0) {
                 setIsIdentityDocumentCompleted(true);
               }
+              
               console.log("✅ Populated document information from submission");
-              console.log("📄 Restored documents details:", parsedValue.documentsDetails);
+              console.log("📄 Restored country:", parsedValue.country);
+              console.log("📄 Restored uploadedDocuments (docIds):", uploadedDocIds);
+              console.log("📄 Restored documentUploadIds:", rebuiltDocumentUploadIds);
+              console.log("📄 Restored documentsDetails:", documentsArray);
+              console.log(`📊 Total documents uploaded: ${documentsArray.length}`);
             }
 
             // Populate biometric section
@@ -409,14 +435,19 @@ export function IdentityVerificationPage({
     
     const completedSectionNames: string[] = [];
     let firstIncompleteSection: number | null = null;
+    const sectionsToExpand: Record<number, boolean> = {};
     
     sections.forEach((section, index) => {
       const sectionIndex = index + 1;
       if (completedSections[sectionIndex]) {
         completedSectionNames.push(section.name);
+        // Expand all completed sections
+        sectionsToExpand[sectionIndex] = true;
       } else if (firstIncompleteSection === null) {
         // Track the first incomplete section
         firstIncompleteSection = sectionIndex;
+        // Also expand the first incomplete section
+        sectionsToExpand[sectionIndex] = true;
       }
     });
     
@@ -429,7 +460,8 @@ export function IdentityVerificationPage({
       
       console.log(`🎯 Navigating to section ${targetSection} (first incomplete section)`);
       setCurrentStep(targetSection);
-      setExpandedSections(prev => ({ ...prev, [targetSection]: true }));
+      // Expand all completed sections plus the first incomplete one
+      setExpandedSections(sectionsToExpand);
       
       // Show a single summary toast
       setTimeout(() => {
