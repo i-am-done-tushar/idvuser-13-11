@@ -6,7 +6,7 @@ import { DocumentConfig } from "@shared/templates";
 interface CameraDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (capturedImageData?: string) => void;
+  onSubmit: (capturedImageData?: string, uploadedFileIds?: { front?: number; back?: number }) => void;
   previousFileIds?: { front?: number; back?: number };
   onUploaded?: (side: "front" | "back", id: number) => void;
   submissionId?: number | null;
@@ -289,9 +289,9 @@ export function CameraDialog({
         description: `Document${sidesUploaded > 1 ? 's' : ''} uploaded successfully.`,
       });
       
-      // Pass the front image data (or back if front not available)
+      // Pass the front image data (or back if front not available) AND the uploaded file IDs
       const imageData = frontCaptured?.dataUrl || backCaptured?.dataUrl;
-      onSubmit(imageData);
+      onSubmit(imageData, uploadedFileIds);
     }
   };
 

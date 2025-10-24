@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 import { DocumentConfig } from "@shared/templates";
@@ -31,6 +31,14 @@ interface IdentityDocumentFormProps {
     uploadedDocuments: string[];
     uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
     documentUploadIds: Record<string, { front?: number; back?: number }>;
+    documentsDetails: Array<{
+      documentName: string;
+      documentDefinitionId: number;
+      frontFileId: number;
+      backFileId?: number;
+      status: "uploaded" | "pending";
+      uploadedAt: string;
+    }>;
   };
   setDocumentFormState?: React.Dispatch<React.SetStateAction<{
     country: string;
@@ -38,7 +46,17 @@ interface IdentityDocumentFormProps {
     uploadedDocuments: string[];
     uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
     documentUploadIds: Record<string, { front?: number; back?: number }>;
+    documentsDetails: Array<{
+      documentName: string;
+      documentDefinitionId: number;
+      frontFileId: number;
+      backFileId?: number;
+      status: "uploaded" | "pending";
+      uploadedAt: string;
+    }>;
   }>>;
+  // Callback to trigger auto-save after document upload
+  onDocumentUploaded?: () => void;
 }
 
 export function IdentityDocumentForm({
@@ -50,6 +68,7 @@ export function IdentityDocumentForm({
   userId,
   documentFormState,
   setDocumentFormState,
+  onDocumentUploaded,
 }: IdentityDocumentFormProps) {
   // Use lifted state directly if available, otherwise local state
   const [localCountry, setLocalCountry] = useState("");
@@ -63,6 +82,9 @@ export function IdentityDocumentForm({
     Record<string, { front?: number; back?: number }>
   >({});
   const [isDigilockerLoading, setIsDigilockerLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   // Build state parameter with shortCode and submissionId for DigiLocker redirect
   // Format: "shortCode:submissionId" - this allows us to redirect back to the form and fetch saved data
@@ -194,6 +216,73 @@ export function IdentityDocumentForm({
       }
     }
   };
+
+  // Helper to add/update document details after upload
+  const addDocumentDetail = (
+    documentName: string,
+    documentDefinitionId: number,
+    frontFileId: number,
+    backFileId?: number
+  ) => {
+    if (!isUsingLiftedState) return; // Only use this with lifted state
+    
+    setDocumentFormState!((prevState) => {
+      const existingIndex = prevState.documentsDetails.findIndex(
+        (doc) => doc.documentName === documentName
+      );
+      
+      const newDetail = {
+        documentName,
+        documentDefinitionId,
+        frontFileId,
+        backFileId,
+        status: "uploaded" as const,
+        uploadedAt: new Date().toISOString(),
+      };
+      
+      let newDetails;
+      if (existingIndex >= 0) {
+        // Update existing document
+        newDetails = [...prevState.documentsDetails];
+        newDetails[existingIndex] = newDetail;
+      } else {
+        // Add new document
+        newDetails = [...prevState.documentsDetails, newDetail];
+      }
+      
+      console.log('📝 Updated documentsDetails:', newDetails);
+      
+      return {
+        ...prevState,
+        documentsDetails: newDetails,
+      };
+    });
+  };
+
+  // Auto-trigger POST request when documentsDetails changes (new document added)
+  const [previousDocsLength, setPreviousDocsLength] = useState(0);
+  
+  useEffect(() => {
+    if (!isUsingLiftedState || !documentFormState) return;
+    
+    const currentLength = documentFormState.documentsDetails.length;
+    
+    // Only trigger if length increased (new document added)
+    if (currentLength > previousDocsLength && currentLength > 0) {
+      console.log('🔔 documentsDetails changed! Length:', currentLength);
+      console.log('📋 Current documentsDetails:', documentFormState.documentsDetails);
+      
+      // Trigger POST request in background after short delay
+      setTimeout(() => {
+        console.log('⏰ Triggering auto-save after document upload...');
+        console.log('📤 Documents to be sent:', documentFormState.documentsDetails.map(doc => doc.documentName));
+        onDocumentUploaded?.();
+      }, 200);
+    }
+    
+    // Update previous length
+    setPreviousDocsLength(currentLength);
+  }, [documentFormState?.documentsDetails, isUsingLiftedState, onDocumentUploaded, previousDocsLength]);
 
   // Initialize session sync for cross-device functionality
   const { sessionState, updateSession } = useSessionSync({
@@ -568,6 +657,127 @@ export function IdentityDocumentForm({
     }
   };
 
+  // Function to delete a file from server
+  const deleteFileFromServer = async (fileId: number) => {
+    try {
+      console.log('🗑️ Deleting file ID:', fileId);
+      const deleteUrl = `${API_BASE}/api/Files/${fileId}`;
+      console.log('🗑️ Delete URL:', deleteUrl);
+      
+      const response = await fetch(deleteUrl, {
+        method: 'DELETE',
+        headers: {
+          Accept: '*/*',
+        },
+      });
+
+      console.log('🗑️ Delete response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete file: ${response.statusText}`);
+      }
+
+      console.log('✅ File deleted successfully:', fileId);
+      return true;
+    } catch (error) {
+      console.error('❌ Error deleting file:', error);
+      throw error;
+    }
+  };
+
+  // Function to handle document deletion
+  const handleDeleteDocument = async (docId: string) => {
+    const fileIds = documentUploadIds[docId];
+    if (!fileIds) {
+      console.error('❌ No fileIds found for docId:', docId);
+      alert('No files found for this document');
+      return;
+    }
+
+    const documentName = currentDocuments.find(
+      (docName) => docName.toLowerCase().replace(/\s+/g, "_") === docId
+    ) || docId.replace(/_/g, " ");
+
+    try {
+      setIsDeleting(true);
+      const deletePromises: Promise<boolean>[] = [];
+
+      // Delete front side if exists
+      if (fileIds.front) {
+        console.log('🗑️ Deleting front file, ID:', fileIds.front);
+        deletePromises.push(deleteFileFromServer(fileIds.front));
+      }
+
+      // Delete back side if exists
+      if (fileIds.back) {
+        console.log('🗑️ Deleting back file, ID:', fileIds.back);
+        deletePromises.push(deleteFileFromServer(fileIds.back));
+      }
+
+      // Wait for all deletions to complete
+      await Promise.all(deletePromises);
+
+      // Remove from uploaded documents list
+      setUploadedDocuments((prev) => prev.filter((id) => id !== docId));
+
+      // Remove from uploaded files list
+      setUploadedFiles((prev) => prev.filter((file) => {
+        const fileDocId = file.id.replace(/-\d+$/, "");
+        return fileDocId !== docId;
+      }));
+
+      // Remove from document upload IDs
+      setDocumentUploadIds((prev) => {
+        const newIds = { ...prev };
+        delete newIds[docId];
+        return newIds;
+      });
+
+      // Remove from documentsDetails array (if using lifted state) and trigger POST
+      if (isUsingLiftedState) {
+        setDocumentFormState!((prevState) => {
+          const newDetails = prevState.documentsDetails.filter(
+            (doc) => doc.documentName !== documentName
+          );
+          console.log('🗑️ Removed from documentsDetails:', documentName);
+          console.log('📋 Updated documentsDetails after deletion:', newDetails);
+          console.log('📊 Remaining documents count:', newDetails.length);
+          
+          // Schedule POST request to run after this state update completes
+          // Use queueMicrotask + setTimeout to ensure React has updated parent state
+          queueMicrotask(() => {
+            setTimeout(() => {
+              if (onDocumentUploaded) {
+                console.log('📤 POST request triggered after deleting:', documentName);
+                console.log('📋 Remaining documents to be sent:', newDetails.map(doc => doc.documentName));
+                onDocumentUploaded();
+              }
+            }, 150); // Delay to ensure parent state is updated
+          });
+          
+          return {
+            ...prevState,
+            documentsDetails: newDetails,
+          };
+        });
+      }
+
+      // Remove from localStorage
+      localStorage.removeItem(`document_${docId}_image`);
+
+      console.log('✅ Document deleted successfully:', documentName);
+      
+      console.log(`✅ ${documentName} deleted and backend will be updated with remaining documents`);
+    } catch (error) {
+      console.error('❌ Error deleting document:', error);
+      alert(`Failed to delete ${documentName}. Please try again.`);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+      setDocumentToDelete(null);
+    }
+  };
+
   // Get available countries from configuration
   const availableCountries = documentConfig.supportedCountries || [];
 
@@ -601,6 +811,28 @@ export function IdentityDocumentForm({
     }
 
     return null;
+  };
+
+  // Helper to get documentDefinitionId for current selected document
+  const getCurrentDocumentDefinitionId = (): number | null => {
+    if (!country || !selectedDocument) return null;
+    
+    // Get the human-readable document name
+    const documentName = currentDocuments.find(
+      (docName) => docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument
+    );
+    
+    if (!documentName) return null;
+    
+    // Try to get from config first
+    let documentDefinitionId = getDocumentDefinitionIdFromConfig(country, documentName);
+    
+    // Fallback to hardcoded IDs if not in config
+    if (!documentDefinitionId) {
+      documentDefinitionId = getDocumentDefinitionId(country, documentName);
+    }
+    
+    return documentDefinitionId ? parseInt(documentDefinitionId, 10) : null;
   };
 
   // Get current documents to display (titles only)
@@ -1089,7 +1321,7 @@ export function IdentityDocumentForm({
               return (
                 <div
                   key={docId}
-                  className="flex w-[180px] h-[180px] p-4 flex-col justify-between items-center gap-3 rounded-lg border-2 border-green-300 bg-green-50 cursor-pointer transition-all duration-200 hover:bg-green-100 hover:border-green-400 hover:shadow-md"
+                  className="relative flex w-[180px] h-[180px] p-4 flex-col justify-between items-center gap-3 rounded-lg border-2 border-green-300 bg-green-50 cursor-pointer transition-all duration-200 hover:bg-green-100 hover:border-green-400 hover:shadow-md"
                   onClick={() => {
                     console.log('📥 Download clicked for document:', docId, 'File IDs:', fileIds);
                     if (hasFileIds) {
@@ -1099,6 +1331,21 @@ export function IdentityDocumentForm({
                     }
                   }}
                 >
+                  {/* Delete Button - Top Right Corner */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent download when clicking delete
+                      setDocumentToDelete(docId);
+                      setShowDeleteConfirm(true);
+                    }}
+                    className="absolute top-2 right-2 flex w-7 h-7 justify-center items-center rounded-full bg-red-500 hover:bg-red-600 transition-colors shadow-md z-10"
+                    aria-label="Delete document"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.5 3.5L3.5 10.5M3.5 3.5L10.5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+
                   {/* Document Icon */}
                   <div className="flex w-16 h-16 justify-center items-center rounded-full bg-green-500">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1151,7 +1398,7 @@ export function IdentityDocumentForm({
           docName.toLowerCase().replace(/\s+/g, "_") === selectedDocument
         ) || ""}
         documentConfig={documentConfig}
-        onSubmit={(capturedImageData) => {
+        onSubmit={(capturedImageData, uploadedFileIds) => {
           setShowCameraDialog(false);
           if (selectedDocument) {
             const docId = selectedDocument;
@@ -1184,6 +1431,28 @@ export function IdentityDocumentForm({
               console.log('📁 Updated uploadedFiles (Camera):', newFiles);
               return newFiles;
             });
+
+            // Add document details for backend storage (if using lifted state)
+            // Use the fileIds passed from CameraDialog to ensure we have the correct uploaded IDs
+            const documentDefinitionId = getCurrentDocumentDefinitionId();
+            if (documentDefinitionId && uploadedFileIds?.front) {
+              const documentName = currentDocuments.find(
+                (docName) => docName.toLowerCase().replace(/\s+/g, "_") === docId
+              ) || docId.replace(/_/g, " ");
+              
+              addDocumentDetail(
+                documentName,
+                documentDefinitionId,
+                uploadedFileIds.front,
+                uploadedFileIds.back
+              );
+              console.log('✅ Added document detail (Camera):', {
+                documentName,
+                documentDefinitionId,
+                frontFileId: uploadedFileIds.front,
+                backFileId: uploadedFileIds.back,
+              });
+            }
 
             setSelectedDocument("");
             // call onComplete only when all required documents are uploaded
@@ -1247,6 +1516,27 @@ export function IdentityDocumentForm({
               return newFiles;
             });
 
+            // Add document details for backend storage (if using lifted state)
+            const documentDefinitionId = getCurrentDocumentDefinitionId();
+            if (documentDefinitionId && frontId) {
+              const documentName = currentDocuments.find(
+                (docName) => docName.toLowerCase().replace(/\s+/g, "_") === docId
+              ) || docId.replace(/_/g, " ");
+              
+              addDocumentDetail(
+                documentName,
+                documentDefinitionId,
+                frontId,
+                backId
+              );
+              console.log('✅ Added document detail (Upload Dialog):', {
+                documentName,
+                documentDefinitionId,
+                frontFileId: frontId,
+                backFileId: backId,
+              });
+            }
+
             setSelectedDocument("");
 
             const requiredIds = currentDocuments.map((docName) =>
@@ -1287,6 +1577,97 @@ export function IdentityDocumentForm({
             <p className="text-center text-base font-medium text-white/90 mt-4">
               Scan this QR code with your mobile device
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && documentToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="flex w-[440px] max-w-[90vw] flex-col items-start rounded-lg bg-white shadow-xl">
+            {/* Header */}
+            <div className="flex h-[58px] justify-between items-center self-stretch border-b border-[#D0D4E4] px-6">
+              <div className="flex items-center gap-3">
+                <div className="flex w-10 h-10 justify-center items-center rounded-full bg-red-100">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.33333 5V4.33333C8.33333 3.39991 8.33333 2.9332 8.51499 2.57668C8.67384 2.26308 8.92977 2.00715 9.24337 1.8483C9.59989 1.66663 10.0666 1.66663 11 1.66663H12.3333C13.2668 1.66663 13.7335 1.66663 14.09 1.8483C14.4036 2.00715 14.6595 2.26308 14.8184 2.57668C15 2.9332 15 3.39991 15 4.33333V5M16.6667 5L16.1991 13.0654C16.1296 14.3267 16.0949 14.9574 15.8203 15.4369C15.5802 15.8566 15.2188 16.1935 14.7822 16.4008C14.2875 16.6333 13.6561 16.6333 12.3933 16.6333H10.9401C9.67725 16.6333 9.04583 16.6333 8.55111 16.4008C8.11457 16.1935 7.75315 15.8566 7.51301 15.4369C7.23842 14.9574 7.20375 14.3267 7.13441 13.0654L6.66667 5M2.5 5H17.5M10.8333 9.16663V12.5M12.5 9.16663V12.5" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div className="text-[#172B4D] font-figtree text-xl font-bold leading-[30px]">
+                  Delete Document
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDocumentToDelete(null);
+                }}
+                disabled={isDeleting}
+                className="flex w-8 h-8 justify-center items-center gap-2.5 rounded-full bg-white hover:bg-gray-50 disabled:opacity-50"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 5L5 15M5 5L15 15" stroke="#676879" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex p-6 flex-col items-start gap-4 self-stretch">
+              <div className="text-[#172B4D] font-roboto text-base leading-6">
+                Are you sure you want to delete{" "}
+                <span className="font-semibold">
+                  {currentDocuments.find(
+                    (docName) => docName.toLowerCase().replace(/\s+/g, "_") === documentToDelete
+                  ) || documentToDelete.replace(/_/g, " ")}
+                </span>
+                ?
+              </div>
+              <div className="text-[#676879] font-roboto text-sm leading-5">
+                This will permanently delete both the front and back images of this document from the server. This action cannot be undone.
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex h-[68px] justify-end items-center gap-3 self-stretch border-t border-[#D0D4E4] bg-white px-6">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDocumentToDelete(null);
+                }}
+                disabled={isDeleting}
+                className="flex h-[38px] px-4 py-[11px] justify-center items-center gap-2 rounded border border-[#C3C6D4] bg-white hover:bg-gray-50 disabled:opacity-50"
+              >
+                <span className="text-[#172B4D] font-roboto text-[13px] font-medium">
+                  Cancel
+                </span>
+              </button>
+              <button
+                onClick={() => handleDeleteDocument(documentToDelete)}
+                disabled={isDeleting}
+                className="flex h-[38px] px-4 py-[11px] justify-center items-center gap-2 rounded bg-red-600 hover:bg-red-700 disabled:bg-red-400"
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span className="text-white font-roboto text-[13px] font-medium">
+                      Deleting...
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7.5 4.5V3.9C7.5 3.05992 7.5 2.63988 7.66349 2.31901C7.80615 2.03677 8.03677 1.80615 8.31901 1.66349C8.63988 1.5 9.05992 1.5 9.9 1.5H11.1C11.9401 1.5 12.3601 1.5 12.681 1.66349C12.9632 1.80615 13.1938 2.03677 13.3365 2.31901C13.5 2.63988 13.5 3.05992 13.5 3.9V4.5M15 4.5L14.5792 11.7588C14.5189 12.8803 14.4887 13.441 14.2382 13.8732C14.0172 14.2509 13.6869 14.5542 13.2903 14.7407C12.8387 15 12.2772 15 11.1543 15H9.84573C8.72282 15 8.16136 15 7.70971 14.7407C7.31312 14.5542 6.98282 14.2509 6.76181 13.8732C6.51134 13.441 6.48113 12.8803 6.42071 11.7588L6 4.5M2.25 4.5H15.75M9.75 8.25V11.25M11.25 8.25V11.25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="text-white font-roboto text-[13px] font-medium">
+                      Delete Document
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

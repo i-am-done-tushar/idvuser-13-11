@@ -36,8 +36,18 @@ interface DynamicSectionProps {
     uploadedDocuments: string[];
     uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
     documentUploadIds: Record<string, { front?: number; back?: number }>;
+    documentsDetails: Array<{
+      documentName: string;
+      documentDefinitionId: number;
+      frontFileId: number;
+      backFileId?: number;
+      status: "uploaded" | "pending";
+      uploadedAt: string;
+    }>;
   };
   setDocumentFormState?: (state: any) => void;
+  // Callback to trigger auto-save after document upload
+  onDocumentUploaded?: () => void;
   // Biometric form state
   biometricFormState?: {
     capturedImage: string | null;
@@ -69,6 +79,7 @@ export function DynamicSection({
   isFilled,
   documentFormState,
   setDocumentFormState,
+  onDocumentUploaded,
   biometricFormState,
   setBiometricFormState,
 }: DynamicSectionProps) {
@@ -159,6 +170,7 @@ export function DynamicSection({
               userId={userId}
               documentFormState={documentFormState}
               setDocumentFormState={setDocumentFormState}
+              onDocumentUploaded={onDocumentUploaded}
             />
           </div>
         );
