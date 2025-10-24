@@ -7,8 +7,8 @@ import { QRCodeDisplay } from "./QRCodeDisplay";
 import { useSessionSync } from "@/hooks/useSessionSync";
 import { extractSessionFromURL } from "@/lib/qr-utils";
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+const API_BASE = "https://idvapi-test.arconnet.com:1019";
+  // import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 
 interface UploadedFile {
   id: string;
@@ -74,7 +74,8 @@ export function IdentityDocumentForm({
       setIsDigilockerLoading(true);
 
       const res = await fetch(
-        `http://10.10.2.133:8086/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
+        // `http://10.10.2.133:8086/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
+        `http://localhost:62435/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
         { method: "GET", headers: { accept: "*/*" } }
       );
 
@@ -257,12 +258,14 @@ export function IdentityDocumentForm({
       };
 
       // You may already know these from your form context
-      const requestedDocType = toRequestedDocType(selectedDocument || "aadhaar_card");
+      const requestedDocType = toRequestedDocType(selectedDocument || "Aadhaar Card");
       const email = "admin@idv.local";         // or from logged-in user context
       const documentId = 1;                     // your internal doc def id
       const templateName = "template p";        // current template name
 
-      const url = new URL(`http://10.10.2.133:8086/api/IdentityVerification/fetch-document`);
+      // const url = new URL(`http://10.10.2.133:8086/api/IdentityVerification/fetch-document`);
+      const url = new URL(`http://localhost:62435/api/IdentityVerification/fetch-document`);
+
       url.searchParams.set("AuthCode", authCode);
       url.searchParams.set("CodeVerifier", codeVerifier);
       url.searchParams.set("RequestedDocType", requestedDocType);
