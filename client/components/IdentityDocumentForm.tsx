@@ -96,8 +96,8 @@ export function IdentityDocumentForm({
       setIsDigilockerLoading(true);
 
       const res = await fetch(
-        // `http://10.10.2.133:8086/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
-        `http://localhost:62435/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
+        `http://10.10.2.133:8086/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
+        // `http://localhost:62435/api/IdentityVerification/generate-auth-url?getBackString=${encodeURIComponent(getBackString)}`,
         { method: "GET", headers: { accept: "*/*" } }
       );
 
@@ -336,9 +336,9 @@ export function IdentityDocumentForm({
       // e.g. "aadhaar_card" -> "Aadhaar card"
       const toRequestedDocType = (id: string) => {
         const map: Record<string, string> = {
-          aadhaar_card: "Aadhaar card",
+          aadhaar_card: "Aadhar card",
           passport: "Passport",
-          pan_card: "PAN card",
+          pan_card: "Pan card",
           driving_license: "Driving License",
           voter_id: "Voter ID",
           // add others as needed
@@ -347,13 +347,13 @@ export function IdentityDocumentForm({
       };
 
       // You may already know these from your form context
-      const requestedDocType = toRequestedDocType(selectedDocument || "Aadhaar Card");
+      const requestedDocType = toRequestedDocType(selectedDocument || "Pan Card");
       const email = "admin@idv.local";         // or from logged-in user context
-      const documentId = 1;                     // your internal doc def id
+      const documentId = 3;                     // your internal doc def id
       const templateName = "template p";        // current template name
 
-      // const url = new URL(`http://10.10.2.133:8086/api/IdentityVerification/fetch-document`);
-      const url = new URL(`http://localhost:62435/api/IdentityVerification/fetch-document`);
+      const url = new URL(`http://10.10.2.133:8086/api/IdentityVerification/fetch-document`);
+      // const url = new URL(`http://localhost:62435/api/IdentityVerification/fetch-document`);
 
       url.searchParams.set("AuthCode", authCode);
       url.searchParams.set("CodeVerifier", codeVerifier);
@@ -396,6 +396,7 @@ export function IdentityDocumentForm({
 
     run();
   }, [selectedDocument]); // Re-run if selectedDocument changes
+  
   // Load session state from URL if coming from QR scan
   useEffect(() => {
     const urlSession = extractSessionFromURL();
