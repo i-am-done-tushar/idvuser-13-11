@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { CameraDialog } from "./CameraDialog";
 import { UploadDialog } from "./UploadDialog";
 import { DocumentConfig } from "@shared/templates";
@@ -273,7 +273,8 @@ export function IdentityDocumentForm({
       
       // Trigger POST request in background after short delay
       setTimeout(() => {
-        console.log('⏰ Triggering auto-save due to documentsDetails change...');
+        console.log('⏰ Triggering auto-save after document upload...');
+        console.log('📤 Documents to be sent:', documentFormState.documentsDetails.map(doc => doc.documentName));
         onDocumentUploaded?.();
       }, 200);
     }
@@ -729,13 +730,28 @@ export function IdentityDocumentForm({
         return newIds;
       });
 
-      // Remove from documentsDetails array (if using lifted state)
+      // Remove from documentsDetails array (if using lifted state) and trigger POST
       if (isUsingLiftedState) {
         setDocumentFormState!((prevState) => {
           const newDetails = prevState.documentsDetails.filter(
             (doc) => doc.documentName !== documentName
           );
           console.log('🗑️ Removed from documentsDetails:', documentName);
+          console.log('📋 Updated documentsDetails after deletion:', newDetails);
+          console.log('📊 Remaining documents count:', newDetails.length);
+          
+          // Schedule POST request to run after this state update completes
+          // Use queueMicrotask + setTimeout to ensure React has updated parent state
+          queueMicrotask(() => {
+            setTimeout(() => {
+              if (onDocumentUploaded) {
+                console.log('📤 POST request triggered after deleting:', documentName);
+                console.log('📋 Remaining documents to be sent:', newDetails.map(doc => doc.documentName));
+                onDocumentUploaded();
+              }
+            }, 150); // Delay to ensure parent state is updated
+          });
+          
           return {
             ...prevState,
             documentsDetails: newDetails,
@@ -748,17 +764,7 @@ export function IdentityDocumentForm({
 
       console.log('✅ Document deleted successfully:', documentName);
       
-      // Trigger auto-save to update backend after deletion
-      // Use setTimeout to ensure all state updates have completed
-      setTimeout(() => {
-        if (onDocumentUploaded) {
-          onDocumentUploaded();
-          console.log('📤 Auto-save triggered after document deletion');
-        }
-      }, 200); // Increased delay to ensure state updates complete
-      
-      // Show success message without alert (use toast if available)
-      console.log(`✅ ${documentName} deleted and backend updated`);
+      console.log(`✅ ${documentName} deleted and backend will be updated with remaining documents`);
     } catch (error) {
       console.error('❌ Error deleting document:', error);
       alert(`Failed to delete ${documentName}. Please try again.`);
