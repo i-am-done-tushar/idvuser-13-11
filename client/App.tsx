@@ -26,7 +26,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/form/:shortCode" element={<Index />} />
+          <Route path="/form" element={<Index />} />
           <Route
             path="/verification-progress"
             element={<VerificationProgressPage />}

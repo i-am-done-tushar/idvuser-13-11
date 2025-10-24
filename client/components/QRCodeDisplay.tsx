@@ -56,11 +56,11 @@ export function QRCodeDisplay({
         const dataUrl = await generateQRCodeDataURL(options);
         setQrCodeDataUrl(dataUrl);
 
-        // Generate display URL for user reference  
-        const envBaseUrl = import.meta.env.VITE_QR_BASE_URL || import.meta.env.VITE_FRONTEND_URL;
-        const displayBaseUrl = envBaseUrl || window.location.origin;
-        const url = `${displayBaseUrl}/form/${shortCode}`;
-        setVerificationUrl(url);
+  // Generate display URL for user reference (use query param to avoid long path segments)
+  const envBaseUrl = import.meta.env.VITE_QR_BASE_URL || import.meta.env.VITE_FRONTEND_URL;
+  const displayBaseUrl = envBaseUrl || window.location.origin;
+  const url = `${displayBaseUrl}/form?code=${encodeURIComponent(shortCode)}`;
+  setVerificationUrl(url);
       } catch (err) {
         console.error('Failed to generate QR code:', err);
         setError('Failed to generate QR code');

@@ -57,11 +57,11 @@ export default function DigilockerCallback() {
       sessionStorage.setItem("digilocker_callback_timestamp", Date.now().toString());
 
       console.log("✅ DigiLocker data stored in sessionStorage");
-      console.log(`🔀 Redirecting to: /form/${shortCodeFromState}`);
+  console.log(`🔀 Redirecting to: /form?code=${shortCodeFromState}`);
 
-      // Redirect to form page with the shortCode
-      // The form will detect the DigiLocker data in sessionStorage and process it
-      navigate(`/form/${shortCodeFromState}`, { replace: true });
+  // Redirect to form page with the shortCode in query string
+  // The form will detect the DigiLocker data in sessionStorage and process it
+  navigate(`/form?code=${encodeURIComponent(shortCodeFromState)}`, { replace: true });
     } catch (error) {
       console.error("❌ Error parsing DigiLocker callback state:", error);
       alert("Failed to process DigiLocker response. Please try again.");

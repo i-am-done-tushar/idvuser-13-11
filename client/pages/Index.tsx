@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { IdentityVerificationPage } from "@/components/IdentityVerificationPage";
 import { ShortCodeResolveResponse } from "@shared/api";
 
 export default function Index() {
-  const { shortCode } = useParams<{ shortCode?: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  // Read shortcode from query string: /form?code={shortcode}
+  const shortCode = searchParams.get("code") || undefined;
   const [templateVersionId, setTemplateVersionId] = useState<number>(1);
   const [userId, setUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -44,10 +45,10 @@ export default function Index() {
         sessionStorage.setItem("digilocker_jti", jti || "");
         sessionStorage.setItem("digilocker_callback_timestamp", Date.now().toString());
 
-        console.log("✅ DigiLocker data stored, redirecting to /form/" + shortCodeFromState);
+  console.log("✅ DigiLocker data stored, redirecting to /form?code=" + shortCodeFromState);
 
-        // Redirect to the form page with the shortCode
-        navigate(`/form/${shortCodeFromState}`, { replace: true });
+  // Redirect to the form page with the shortCode in query string
+  navigate(`/form?code=${encodeURIComponent(shortCodeFromState)}`, { replace: true });
       } catch (error) {
         console.error("❌ Error processing DigiLocker callback:", error);
         alert("Failed to process DigiLocker response. Please try again.");
@@ -56,11 +57,12 @@ export default function Index() {
   }, [searchParams, navigate]);
 
   useEffect(() => {
-    if (shortCode) {
-      // If we have a shortcode, resolve it to get template version ID
-      resolveShortCode(shortCode);
+    const code = searchParams.get("code");
+    if (code) {
+      // If we have a shortcode in query string, resolve it to get template version ID
+      resolveShortCode(code);
     }
-  }, [shortCode]);
+  }, [searchParams]);
 
   const resolveShortCode = async (code: string) => {
     setLoading(true);
@@ -91,13 +93,13 @@ export default function Index() {
   const handleShortCodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputShortCode.trim()) {
-      navigate(`/form/${inputShortCode.trim()}`);
+      navigate(`/form?code=${encodeURIComponent(inputShortCode.trim())}`);
     }
   };
 
   const handleTryDemo = () => {
     setInputShortCode(DEMO_SHORTCODE);
-    navigate(`/form/${DEMO_SHORTCODE}`);
+    navigate(`/form?code=${encodeURIComponent(DEMO_SHORTCODE)}`);
   };
 
   // If no shortcode in URL, show the shortcode input page
