@@ -119,10 +119,18 @@ export default function ProfilePage() {
                 <label className="text-sm text-text-muted">New Password</label>
                 <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password" />
                 <div className="mt-2 space-y-1">
-                  <div className={`text-sm ${validation.requirements.minLength ? "text-green-600" : "text-red-600"}">Minimum 8 characters</div>
-                  <div className={`text-sm ${validation.requirements.hasUppercase ? "text-green-600" : "text-red-600"}">Includes uppercase letter</div>
-                  <div className={`text-sm ${validation.requirements.hasNumber ? "text-green-600" : "text-red-600"}">Includes number</div>
-                  <div className={`text-sm ${validation.requirements.hasSpecialChar ? "text-green-600" : "text-red-600"}">Includes special character</div>
+                  <div className={`text-sm ${validation.requirements.minLength ? "text-green-600" : "text-red-600"}`}>
+                    Minimum 8 characters
+                  </div>
+                  <div className={`text-sm ${validation.requirements.hasUppercase ? "text-green-600" : "text-red-600"}`}>
+                    Includes uppercase letter
+                  </div>
+                  <div className={`text-sm ${validation.requirements.hasNumber ? "text-green-600" : "text-red-600"}`}>
+                    Includes number
+                  </div>
+                  <div className={`text-sm ${validation.requirements.hasSpecialChar ? "text-green-600" : "text-red-600"}`}>
+                    Includes special character
+                  </div>
                 </div>
               </div>
 
