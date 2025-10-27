@@ -51,17 +51,30 @@ export default function ProfilePage() {
   })();
 
   const [mfa, setMfa] = useState<any>(
-    storedMfa || { enabled: false, method: null, value: null, enforced: !!(stored && (stored as any).mfaEnforced) },
+    storedMfa || {
+      enabled: false,
+      method: null,
+      value: null,
+      enforced: !!(stored && (stored as any).mfaEnforced),
+    },
   );
 
   const [mfaSetupOpen, setMfaSetupOpen] = useState(false);
   const [mfaManageOpen, setMfaManageOpen] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<"email" | "phone">("email");
-  const [mfaContactValue, setMfaContactValue] = useState<string>((stored && (stored as any).email) || "");
+  const [selectedMethod, setSelectedMethod] = useState<"email" | "phone">(
+    "email",
+  );
+  const [mfaContactValue, setMfaContactValue] = useState<string>(
+    (stored && (stored as any).email) || "",
+  );
   const [verificationSent, setVerificationSent] = useState(false);
-  const [sentCodeExpiresAt, setSentCodeExpiresAt] = useState<number | null>(null);
+  const [sentCodeExpiresAt, setSentCodeExpiresAt] = useState<number | null>(
+    null,
+  );
   const [enteredCode, setEnteredCode] = useState("");
-  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(
+    null,
+  );
   const [confirmDisableOpen, setConfirmDisableOpen] = useState(false);
   const [confirmCode, setConfirmCode] = useState("");
 
@@ -137,7 +150,10 @@ export default function ProfilePage() {
     }
   }, [mfa]);
 
-  const sendVerificationCode = async (method: "email" | "phone", value: string) => {
+  const sendVerificationCode = async (
+    method: "email" | "phone",
+    value: string,
+  ) => {
     setVerificationStatus(null);
     setVerificationSent(false);
     try {
@@ -148,11 +164,19 @@ export default function ProfilePage() {
       sessionStorage.setItem("idv_mfa_verification", JSON.stringify(payload));
       setSentCodeExpiresAt(expiresAt);
       setVerificationSent(true);
-      toast.toast({ title: "Verification code sent", description: `A verification code was sent to your ${method === "email" ? "email" : "phone"}.` });
+      toast.toast({
+        title: "Verification code sent",
+        description: `A verification code was sent to your ${method === "email" ? "email" : "phone"}.`,
+      });
     } catch (err) {
       console.error(err);
       setVerificationStatus("network");
-      toast.toast({ title: "Network Error", description: "We couldn't send the verification code. Please try again.", variant: "destructive" });
+      toast.toast({
+        title: "Network Error",
+        description:
+          "We couldn't send the verification code. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -161,7 +185,8 @@ export default function ProfilePage() {
       const raw = sessionStorage.getItem("idv_mfa_verification");
       if (!raw) return { ok: false, reason: "no_code" };
       const payload = JSON.parse(raw);
-      if (Date.now() > payload.expiresAt) return { ok: false, reason: "expired" };
+      if (Date.now() > payload.expiresAt)
+        return { ok: false, reason: "expired" };
       if (payload.code !== code) return { ok: false, reason: "incorrect" };
       return { ok: true, payload };
     } catch (e) {
@@ -180,7 +205,11 @@ export default function ProfilePage() {
 
   const handleSendCodeForSetup = async () => {
     if (!mfaContactValue) {
-      toast.toast({ title: "Contact required", description: "Please provide an email or phone number.", variant: "destructive" });
+      toast.toast({
+        title: "Contact required",
+        description: "Please provide an email or phone number.",
+        variant: "destructive",
+      });
       return;
     }
     await sendVerificationCode(selectedMethod, mfaContactValue);
@@ -191,24 +220,44 @@ export default function ProfilePage() {
     if (!res.ok) {
       if (res.reason === "expired") {
         setVerificationStatus("expired");
-        toast.toast({ title: "Code expired", description: "Code expired. Please request a new code.", variant: "destructive" });
+        toast.toast({
+          title: "Code expired",
+          description: "Code expired. Please request a new code.",
+          variant: "destructive",
+        });
         return;
       }
       setVerificationStatus("incorrect");
-      toast.toast({ title: "Incorrect code", description: "Incorrect code. Please try again.", variant: "destructive" });
+      toast.toast({
+        title: "Incorrect code",
+        description: "Incorrect code. Please try again.",
+        variant: "destructive",
+      });
       return;
     }
 
-    setMfa({ enabled: true, method: selectedMethod, value: mfaContactValue, enforced: false });
+    setMfa({
+      enabled: true,
+      method: selectedMethod,
+      value: mfaContactValue,
+      enforced: false,
+    });
     setMfaSetupOpen(false);
     setVerificationSent(false);
     setEnteredCode("");
-    toast.toast({ title: "MFA configured", description: "MFA successfully configured for your account." });
+    toast.toast({
+      title: "MFA configured",
+      description: "MFA successfully configured for your account.",
+    });
   };
 
   const handleSendConfirmCode = async () => {
     if (!mfa.method || !mfa.value) {
-      toast.toast({ title: "No MFA method", description: "No MFA method configured.", variant: "destructive" });
+      toast.toast({
+        title: "No MFA method",
+        description: "No MFA method configured.",
+        variant: "destructive",
+      });
       return;
     }
     await sendVerificationCode(mfa.method, mfa.value);
@@ -218,23 +267,35 @@ export default function ProfilePage() {
     const res = verifyCode(confirmCode.trim());
     if (!res.ok) {
       if (res.reason === "expired") {
-        toast.toast({ title: "Code expired", description: "Code expired. Please request a new code.", variant: "destructive" });
+        toast.toast({
+          title: "Code expired",
+          description: "Code expired. Please request a new code.",
+          variant: "destructive",
+        });
         return;
       }
-      toast.toast({ title: "Incorrect code", description: "Incorrect code. Please try again.", variant: "destructive" });
+      toast.toast({
+        title: "Incorrect code",
+        description: "Incorrect code. Please try again.",
+        variant: "destructive",
+      });
       return;
     }
 
     setMfa({ enabled: false, method: null, value: null, enforced: false });
     setConfirmDisableOpen(false);
     setMfaManageOpen(false);
-    toast.toast({ title: "MFA disabled", description: "MFA has been disabled. You can re-enable it anytime to enhance your account security." });
+    toast.toast({
+      title: "MFA disabled",
+      description:
+        "MFA has been disabled. You can re-enable it anytime to enhance your account security.",
+    });
   };
 
   const handleChangeMfaMethod = () => {
     setMfaManageOpen(false);
     setSelectedMethod(mfa.method === "email" ? "phone" : "email");
-    setMfaContactValue(mfa.value || ((stored && (stored as any).email) || ""));
+    setMfaContactValue(mfa.value || (stored && (stored as any).email) || "");
     setVerificationSent(false);
     setEnteredCode("");
     setMfaSetupOpen(true);
@@ -281,25 +342,38 @@ export default function ProfilePage() {
 
         {/* MFA Section */}
         <div className="border-t pt-6 mb-6">
-          <h2 className="text-text-primary font-roboto text-[16px] font-semibold mb-2">MFA Configuration</h2>
+          <h2 className="text-text-primary font-roboto text-[16px] font-semibold mb-2">
+            MFA Configuration
+          </h2>
 
           {mfa.enforced ? (
-            <div className="text-text-primary">MFA Enabled by Administrator</div>
+            <div className="text-text-primary">
+              MFA Enabled by Administrator
+            </div>
           ) : mfa.enabled ? (
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-text-muted">Status</div>
-                <div className="text-text-primary font-medium">MFA enabled via {mfa.method === "email" ? "Email" : "Phone"}</div>
+                <div className="text-text-primary font-medium">
+                  MFA enabled via {mfa.method === "email" ? "Email" : "Phone"}
+                </div>
               </div>
               <div>
-                <Button variant="outline" onClick={() => setMfaManageOpen(true)}>Change or Disable MFA</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setMfaManageOpen(true)}
+                >
+                  Change or Disable MFA
+                </Button>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-3">
               <div className="flex-1">
                 <div className="text-sm text-text-muted">Status</div>
-                <div className="text-text-primary font-medium">MFA is not enabled for your account.</div>
+                <div className="text-text-primary font-medium">
+                  MFA is not enabled for your account.
+                </div>
               </div>
               <div>
                 <Button onClick={handleStartMfaSetup}>Enable MFA</Button>
@@ -396,7 +470,10 @@ export default function ProfilePage() {
         </Dialog>
 
         {/* MFA Setup Dialog */}
-        <Dialog open={mfaSetupOpen} onOpenChange={(open) => setMfaSetupOpen(open)}>
+        <Dialog
+          open={mfaSetupOpen}
+          onOpenChange={(open) => setMfaSetupOpen(open)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Configure MFA</DialogTitle>
@@ -404,14 +481,42 @@ export default function ProfilePage() {
 
             <div className="mt-4 space-y-4">
               <div>
-                <div className="text-sm text-text-muted mb-2">Select verification method</div>
+                <div className="text-sm text-text-muted mb-2">
+                  Select verification method
+                </div>
                 <div className="flex gap-4 items-center">
-                  <label className={`p-3 border rounded cursor-pointer ${selectedMethod === "email" ? "border-primary bg-primary/5" : "border-border"}`}>
-                    <input type="radio" name="mfa" checked={selectedMethod === "email"} onChange={() => { setSelectedMethod("email"); setMfaContactValue((stored && (stored as any).email) || "") }} className="mr-2" /> Email
+                  <label
+                    className={`p-3 border rounded cursor-pointer ${selectedMethod === "email" ? "border-primary bg-primary/5" : "border-border"}`}
+                  >
+                    <input
+                      type="radio"
+                      name="mfa"
+                      checked={selectedMethod === "email"}
+                      onChange={() => {
+                        setSelectedMethod("email");
+                        setMfaContactValue(
+                          (stored && (stored as any).email) || "",
+                        );
+                      }}
+                      className="mr-2"
+                    />{" "}
+                    Email
                   </label>
 
-                  <label className={`p-3 border rounded cursor-pointer ${selectedMethod === "phone" ? "border-primary bg-primary/5" : "border-border"}`}>
-                    <input type="radio" name="mfa" checked={selectedMethod === "phone"} onChange={() => { setSelectedMethod("phone"); setMfaContactValue("") }} className="mr-2" /> Phone (SMS)
+                  <label
+                    className={`p-3 border rounded cursor-pointer ${selectedMethod === "phone" ? "border-primary bg-primary/5" : "border-border"}`}
+                  >
+                    <input
+                      type="radio"
+                      name="mfa"
+                      checked={selectedMethod === "phone"}
+                      onChange={() => {
+                        setSelectedMethod("phone");
+                        setMfaContactValue("");
+                      }}
+                      className="mr-2"
+                    />{" "}
+                    Phone (SMS)
                   </label>
                 </div>
 
@@ -423,22 +528,56 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="text-sm text-text-muted">{selectedMethod === "email" ? "Email Address" : "Phone Number"}</label>
-                <Input value={mfaContactValue} onChange={(e) => setMfaContactValue(e.target.value)} placeholder={selectedMethod === "email" ? ((stored && (stored as any).email) || "you@domain.com") : "+91xxxxxxxxxx"} />
+                <label className="text-sm text-text-muted">
+                  {selectedMethod === "email"
+                    ? "Email Address"
+                    : "Phone Number"}
+                </label>
+                <Input
+                  value={mfaContactValue}
+                  onChange={(e) => setMfaContactValue(e.target.value)}
+                  placeholder={
+                    selectedMethod === "email"
+                      ? (stored && (stored as any).email) || "you@domain.com"
+                      : "+91xxxxxxxxxx"
+                  }
+                />
               </div>
 
               <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={handleSendCodeForSetup}>Send Code</Button>
-                {verificationSent && <div className="text-sm text-text-muted">Code sent. Expires in 3 minutes.</div>}
+                <Button variant="outline" onClick={handleSendCodeForSetup}>
+                  Send Code
+                </Button>
+                {verificationSent && (
+                  <div className="text-sm text-text-muted">
+                    Code sent. Expires in 3 minutes.
+                  </div>
+                )}
               </div>
 
               {verificationSent && (
                 <div>
-                  <label className="text-sm text-text-muted">Enter verification code</label>
-                  <Input value={enteredCode} onChange={(e) => setEnteredCode(e.target.value)} placeholder="6-digit code" />
+                  <label className="text-sm text-text-muted">
+                    Enter verification code
+                  </label>
+                  <Input
+                    value={enteredCode}
+                    onChange={(e) => setEnteredCode(e.target.value)}
+                    placeholder="6-digit code"
+                  />
                   <div className="flex justify-end gap-2 mt-3">
-                    <Button variant="outline" onClick={() => { setVerificationSent(false); setEnteredCode("") }}>Cancel</Button>
-                    <Button onClick={handleVerifyAndEnable}>Verify & Enable</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setVerificationSent(false);
+                        setEnteredCode("");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleVerifyAndEnable}>
+                      Verify & Enable
+                    </Button>
                   </div>
                 </div>
               )}
@@ -447,7 +586,10 @@ export default function ProfilePage() {
         </Dialog>
 
         {/* MFA Manage Dialog */}
-        <Dialog open={mfaManageOpen} onOpenChange={(open) => setMfaManageOpen(open)}>
+        <Dialog
+          open={mfaManageOpen}
+          onOpenChange={(open) => setMfaManageOpen(open)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Manage MFA</DialogTitle>
@@ -456,39 +598,75 @@ export default function ProfilePage() {
             <div className="mt-4 space-y-4">
               <div>
                 <div className="text-sm text-text-muted">Current method</div>
-                <div className="text-text-primary font-medium">{mfa.method === "email" ? "Email" : "Phone"} {mfa.value ? `(${mfa.value})` : ''}</div>
+                <div className="text-text-primary font-medium">
+                  {mfa.method === "email" ? "Email" : "Phone"}{" "}
+                  {mfa.value ? `(${mfa.value})` : ""}
+                </div>
               </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" onClick={handleChangeMfaMethod}>Change MFA Method</Button>
-                <Button onClick={() => { setConfirmDisableOpen(true); handleSendConfirmCode(); }}>Disable MFA</Button>
+                <Button variant="outline" onClick={handleChangeMfaMethod}>
+                  Change MFA Method
+                </Button>
+                <Button
+                  onClick={() => {
+                    setConfirmDisableOpen(true);
+                    handleSendConfirmCode();
+                  }}
+                >
+                  Disable MFA
+                </Button>
               </div>
 
               {confirmDisableOpen && (
                 <div className="mt-4 border p-4 rounded">
-                  <div className="text-sm text-text-muted mb-2">Disabling MFA will reduce your account security. Are you sure you want to continue?</div>
-                  <div className="text-sm text-text-muted mb-2">A confirmation code will be sent to your configured method. Enter it below to confirm.</div>
+                  <div className="text-sm text-text-muted mb-2">
+                    Disabling MFA will reduce your account security. Are you
+                    sure you want to continue?
+                  </div>
+                  <div className="text-sm text-text-muted mb-2">
+                    A confirmation code will be sent to your configured method.
+                    Enter it below to confirm.
+                  </div>
 
                   <div className="mb-2">
-                    <Button variant="outline" onClick={handleSendConfirmCode}>Send Confirmation Code</Button>
-                    <div className="text-sm text-text-muted mt-2">{verificationSent ? 'Code sent. Expires in 3 minutes.' : ''}</div>
+                    <Button variant="outline" onClick={handleSendConfirmCode}>
+                      Send Confirmation Code
+                    </Button>
+                    <div className="text-sm text-text-muted mt-2">
+                      {verificationSent
+                        ? "Code sent. Expires in 3 minutes."
+                        : ""}
+                    </div>
                   </div>
 
                   <div>
-                    <label className="text-sm text-text-muted">Enter confirmation code</label>
-                    <Input value={confirmCode} onChange={(e) => setConfirmCode(e.target.value)} placeholder="6-digit code" />
+                    <label className="text-sm text-text-muted">
+                      Enter confirmation code
+                    </label>
+                    <Input
+                      value={confirmCode}
+                      onChange={(e) => setConfirmCode(e.target.value)}
+                      placeholder="6-digit code"
+                    />
                   </div>
 
                   <div className="flex justify-end gap-2 mt-3">
-                    <Button variant="outline" onClick={() => setConfirmDisableOpen(false)}>Cancel</Button>
-                    <Button onClick={handleConfirmDisable}>Confirm Disable</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setConfirmDisableOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleConfirmDisable}>
+                      Confirm Disable
+                    </Button>
                   </div>
                 </div>
               )}
             </div>
           </DialogContent>
         </Dialog>
-
       </div>
     </div>
   );
