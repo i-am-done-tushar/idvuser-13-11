@@ -26,7 +26,6 @@ export function PasswordSetupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate password strength
     if (!isPasswordStrong) {
       toast({
         title: "Weak Password",
@@ -36,7 +35,6 @@ export function PasswordSetupPage() {
       return;
     }
 
-    // Validate passwords match
     if (!doesPasswordMatch) {
       toast({
         title: "Password Mismatch",
@@ -50,7 +48,6 @@ export function PasswordSetupPage() {
 
     try {
       // TODO: Integrate with backend to save password
-      // For now, just simulate a successful save
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       toast({
@@ -59,7 +56,6 @@ export function PasswordSetupPage() {
         duration: 3000,
       });
 
-      // Redirect to dashboard after success
       setTimeout(() => {
         navigate("/dashboard");
       }, 1000);
@@ -76,78 +72,255 @@ export function PasswordSetupPage() {
   };
 
   return (
-    <div className="flex w-full min-h-screen flex-col bg-page-background">
-      {/* Header */}
-      <div className="flex w-full h-11 items-center px-8 border-b border-[#D0D4E4] bg-white">
-        {/* Arcon Logo */}
-        <div className="flex items-center gap-2">
+    <div className="w-full h-screen bg-white flex">
+      {/* Left Panel - Decorative */}
+      <div className="hidden lg:flex lg:w-[607px] flex-col relative bg-white overflow-hidden">
+        {/* Background Blobs */}
+        <div className="absolute inset-0">
           <svg
-            width="64"
-            height="16"
-            viewBox="0 0 64 16"
+            className="absolute left-[190px] top-[214px] w-[279px] h-[123px] opacity-80"
+            width="404"
+            height="236"
+            viewBox="0 0 404 236"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M19.6451 6.27505C20.4605 5.29486 21.4477 4.80469 22.6065 4.80469C23.2074 4.80469 23.76 4.97008 24.2643 5.30072C24.7686 5.63143 25.1548 6.05658 25.4231 6.57622L25.5679 4.96414H27.6281V14.7073H25.5679L25.4231 13.0776C25.1548 13.5972 24.7686 14.0224 24.2643 14.353C23.76 14.6837 23.2074 14.8491 22.6065 14.8491C21.4477 14.8491 20.4605 14.359 19.6451 13.3787C18.8296 12.3867 18.4219 11.1998 18.4219 9.81804C18.4219 8.43624 18.8296 7.25524 19.6451 6.27505ZM21.3833 11.625C21.8339 12.1327 22.3812 12.3867 23.025 12.3867C23.6795 12.3867 24.2321 12.1387 24.6827 11.6426C25.1334 11.1348 25.3587 10.5266 25.3587 9.81804C25.3587 9.10947 25.1334 8.50713 24.6827 8.0111C24.2321 7.50326 23.6795 7.24938 23.025 7.24938C22.3812 7.24938 21.8339 7.50326 21.3833 8.0111C20.9327 8.50713 20.7073 9.10947 20.7073 9.81804C20.7073 10.5266 20.9327 11.1289 21.3833 11.625ZM29.5129 4.96414H31.573L31.734 6.36361C32.2598 5.38342 33.1343 4.89332 34.3575 4.89332C34.6686 4.89332 34.9369 4.91693 35.1622 4.96414L34.6954 7.35568C34.5667 7.33207 34.4755 7.3202 34.4219 7.3202C33.6707 7.3202 33.0431 7.57415 32.5387 8.08199C32.0344 8.57795 31.7823 9.42237 31.7823 10.6152V14.7073H29.5129V4.96414ZM37.3457 6.29279C38.2255 5.31253 39.2932 4.82243 40.5485 4.82243C41.2996 4.82243 42.0025 5.01729 42.657 5.40702C43.3115 5.78495 43.8534 6.29866 44.2825 6.94821L42.4156 8.31227C41.9542 7.67452 41.3319 7.35568 40.5485 7.35568C39.9262 7.35568 39.3951 7.59776 38.9551 8.08199C38.5153 8.56615 38.2953 9.15074 38.2953 9.83578C38.2953 10.5209 38.5153 11.1055 38.9551 11.5897C39.3951 12.0739 39.9262 12.316 40.5485 12.316C41.3319 12.316 41.9542 11.9972 42.4156 11.3597L44.2825 12.7237C43.8534 13.373 43.3115 13.887 42.657 14.2658C42.0025 14.6445 41.2996 14.8339 40.5485 14.8339C39.2932 14.8339 38.2255 14.3438 37.3457 13.3635C36.466 12.3833 36.0261 11.1964 36.0261 9.80278C36.0261 8.40912 36.466 7.27379 37.3457 6.29279ZM46.0871 14.7073V4.96414H48.3565V14.7073H46.0871ZM47.2213 3.5847C46.7283 3.5847 46.3241 3.37718 46.0089 2.96229C45.6936 2.5474 45.536 2.02491 45.536 1.3848C45.536 0.744685 45.6936 0.222192 46.0089 -0.192704C46.3241 -0.607596 46.7283 -0.815115 47.2213 -0.815115C47.7143 -0.815115 48.1185 -0.607596 48.4338 -0.192704C48.749 0.222192 48.9066 0.744685 48.9066 1.3848C48.9066 2.02491 48.749 2.5474 48.4338 2.96229C48.1185 3.37718 47.7143 3.5847 47.2213 3.5847ZM50.3646 14.7073V4.96414H52.4247L52.5695 6.41559C53.0454 5.40896 53.9146 4.90547 55.177 4.90547C56.2916 4.90547 57.1615 5.28999 57.7868 6.05918C58.4121 6.82836 58.7248 7.96859 58.7248 9.47989C58.7248 10.9673 58.4121 12.0999 57.7868 12.8776C57.1615 13.6553 56.2916 14.0441 55.177 14.0441C53.9146 14.0441 53.0454 13.5407 52.5695 12.5341L52.4247 14.7073H50.3646ZM52.6389 9.40968C52.6389 10.1648 52.8576 10.7769 53.2951 11.2461C53.7326 11.7152 54.3183 11.9498 55.052 11.9498C55.7856 11.9498 56.3713 11.7152 56.8088 11.2461C57.2463 10.7769 57.4651 10.1648 57.4651 9.40968C57.4651 8.65457 57.2463 8.04246 56.8088 7.57334C56.3713 7.10422 55.7856 6.86966 55.052 6.86966C54.3183 6.86966 53.7326 7.10422 53.2951 7.57334C52.8576 8.04246 52.6389 8.65457 52.6389 9.40968Z"
-              fill="#323238"
-            />
-            <path
-              d="M14.3486 12.736C14.6548 13.3353 14.2196 14.0465 13.5466 14.0465H3.02185C2.3453 14.0465 1.91028 13.3285 2.22355 12.7288L7.54372 2.54495C7.8823 1.89684 8.81128 1.901 9.14404 2.55212L14.3486 12.736Z"
-              stroke="#D83A52"
-              strokeWidth="2.42826"
-            />
-          </svg>
-        </div>
-
-        {/* Divider */}
-        <div className="w-[1px] h-5 bg-[#D0D4E4] mx-2" />
-
-        {/* Rippling Logo */}
-        <div className="flex items-center justify-center">
-          <svg
-            width="80"
-            height="23"
-            viewBox="0 0 80 23"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clipPath="url(#clip0_2641_13989)">
-              <path
-                d="M1.79875 10.2148C1.79875 8.97716 1.17188 7.95455 0 7.0957H2.72375C3.2039 7.46144 3.59293 7.93332 3.86041 8.47442C4.1279 9.01552 4.26659 9.61118 4.26563 10.2148C4.26659 10.8184 4.1279 11.4141 3.86041 11.9552C3.59293 12.4963 3.2039 12.9682 2.72375 13.3339C3.60813 13.7027 4.11125 14.6028 4.11125 15.8911V18.3457H1.645V15.8911C1.645 14.664 1.05938 13.8052 0.000625 13.3345C1.1725 12.4751 1.79875 11.4524 1.79875 10.2148ZM7.14375 10.2148C7.14375 8.97716 6.51688 7.95455 5.345 7.0957H8.06938C8.54941 7.46151 8.93832 7.93341 9.20569 8.47451C9.47307 9.01561 9.61166 9.61123 9.61063 10.2148C9.61166 10.8184 9.47307 11.414 9.20569 11.9551C8.93832 12.4962 8.54941 12.9681 8.06938 13.3339C8.95313 13.7027 9.45688 14.6028 9.45688 15.8911V18.3457H6.99V15.8911C6.99 14.664 6.40375 13.8052 5.345 13.3345C6.51688 12.4751 7.14375 11.4524 7.14375 10.2148ZM12.49 10.2148C12.49 8.97716 11.8631 7.95455 10.6913 7.0957H13.415C13.8951 7.46144 14.2842 7.93332 14.5517 8.47442C14.8191 9.01552 14.9578 9.61118 14.9569 10.2148C14.9578 10.8184 14.8191 11.4141 14.5517 11.9552C14.2842 12.4963 13.8951 12.9682 13.415 13.3339C14.2994 13.7027 14.8025 14.6028 14.8025 15.8911V18.3457H12.3356V15.8911C12.3356 14.664 11.75 13.8052 10.6913 13.3345C11.8631 12.4751 12.49 11.4524 12.49 10.2148ZM22.47 16.3017H20.6V9.14093H25.195C27.405 9.14093 28.4944 9.95977 28.4944 11.2993C28.4944 12.2094 27.96 12.8945 26.9631 13.2426C27.9906 13.3958 28.4531 13.9377 28.4531 14.9097V16.3005H26.5619V14.9916C26.5619 14.1727 26.1506 13.8477 25.3438 13.8477H22.47V16.3017ZM22.47 11.5989V12.7563H24.8663C25.3188 12.7563 25.6581 12.5577 25.6581 12.1768C25.6581 11.796 25.3188 11.5989 24.8663 11.5989H22.47ZM30.5238 16.3017V9.14093H34.2944C36.2038 9.14093 37.1906 10.075 37.1906 11.6486C37.1906 13.2222 36.2038 14.1494 34.2944 14.1494H32.4119V16.3017H30.5238ZM32.4119 11.5989V12.7563H34.0594C34.7206 12.7563 35.0763 12.4525 35.0763 11.6749C35.0763 10.8973 34.7206 10.5989 34.0594 10.5989H32.4119V11.5989ZM39.7119 16.3017V9.14093H41.6V14.5239H46.5119V16.3017H39.7119ZM48.0075 16.3017V9.14093H52.0906C54.1263 9.14093 55.45 10.3701 55.45 12.2277C55.45 14.0854 54.1263 15.3146 52.0906 15.3146H49.8956V16.3017H48.0075ZM49.8956 10.7681V13.6926H51.9313C52.9788 13.6926 53.5294 13.0725 53.5294 12.2222C53.5294 11.372 52.9788 10.7681 51.9313 10.7681H49.8956ZM57.1406 16.3017V9.14093H61.2188C63.2544 9.14093 64.5781 10.3701 64.5781 12.2277C64.5781 14.0854 63.2544 15.3146 61.2188 15.3146H59.0244V16.3017H57.1406ZM59.0244 10.7681V13.6926H61.0581C62.1056 13.6926 62.6562 13.0725 62.6562 12.2222C62.6562 11.372 62.1056 10.7681 61.0581 10.7681H59.0244Z"
-                fill="black"
-              />
+            <g opacity="0.8">
+              <g filter="url(#filter0_f_blob1)">
+                <ellipse
+                  cx="250.058"
+                  cy="117.553"
+                  rx="85.3719"
+                  ry="45.8769"
+                  transform="rotate(-12.3921 250.058 117.553)"
+                  fill="#F8E4E8"
+                  fillOpacity="0.5"
+                />
+              </g>
+              <g filter="url(#filter1_f_blob1)">
+                <ellipse
+                  cx="142.087"
+                  cy="112.195"
+                  rx="88.956"
+                  ry="49.0935"
+                  transform="rotate(-12.3921 142.087 112.195)"
+                  fill="#E0EFFE"
+                  fillOpacity="0.5"
+                />
+              </g>
             </g>
             <defs>
-              <clipPath id="clip0_2641_13989">
-                <rect width="79.6875" height="22.5" fill="white" />
-              </clipPath>
+              <filter
+                id="filter0_f_blob1"
+                x="96.9561"
+                y="0"
+                width="306.205"
+                height="235.107"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="34.5659"
+                  result="effect1_foregroundBlur_blob1"
+                />
+              </filter>
+              <filter
+                id="filter1_f_blob1"
+                x="0.000492096"
+                y="6.01343"
+                width="284.173"
+                height="212.364"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="27.2791"
+                  result="effect1_foregroundBlur_blob1"
+                />
+              </filter>
             </defs>
           </svg>
+
+          <div className="absolute left-[-96px] top-0 w-[677px] h-[643px]">
+            <svg
+              className="absolute left-[335px] top-[301px] w-[342px] h-[342px]"
+              width="802"
+              height="697"
+              viewBox="0 0 802 697"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g filter="url(#filter0_f_blob2)">
+                <circle cx="401" cy="401" r="171" fill="#BCD2E8" />
+              </g>
+              <defs>
+                <filter
+                  id="filter0_f_blob2"
+                  x="0"
+                  y="0"
+                  width="802"
+                  height="802"
+                  filterUnits="userSpaceOnUse"
+                  colorInterpolationFilters="sRGB"
+                >
+                  <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="BackgroundImageFix"
+                    result="shape"
+                  />
+                  <feGaussianBlur
+                    stdDeviation="115"
+                    result="effect1_foregroundBlur_blob2"
+                  />
+                </filter>
+              </defs>
+            </svg>
+            <svg
+              className="absolute left-0 top-0 w-[465px] h-[397px]"
+              width="529"
+              height="557"
+              viewBox="0 0 529 557"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g filter="url(#filter0_f_blob3)">
+                <ellipse
+                  cx="136.5"
+                  cy="198.5"
+                  rx="232.5"
+                  ry="198.5"
+                  fill="#E0EFFE"
+                />
+              </g>
+              <defs>
+                <filter
+                  id="filter0_f_blob3"
+                  x="-256"
+                  y="-160"
+                  width="785"
+                  height="717"
+                  filterUnits="userSpaceOnUse"
+                  colorInterpolationFilters="sRGB"
+                >
+                  <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="BackgroundImageFix"
+                    result="shape"
+                  />
+                  <feGaussianBlur
+                    stdDeviation="80"
+                    result="effect1_foregroundBlur_blob3"
+                  />
+                </filter>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        {/* Illustration - Placeholder for identity verification graphic */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="relative w-[252px] h-[318px]">
+            {/* Card backgrounds */}
+            <div
+              className="absolute w-[252px] h-[318px] rounded-3xl border border-black/10 bg-gradient-to-br from-[#E0EFFE] via-[#F3CFFF] to-[#F3CFFF]"
+              style={{ transform: "rotate(6.554deg)" }}
+            />
+            <div className="absolute w-[252px] h-[318px] rounded-3xl border border-black/10 bg-white backdrop-blur-[7.5px]" />
+
+            {/* Success checkmark */}
+            <svg
+              className="absolute right-[-36px] top-4 w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM17.2071 9.70711C17.5976 9.31658 17.5976 8.68342 17.2071 8.29289C16.8166 7.90237 16.1834 7.90237 15.7929 8.29289L10.5 13.5858L8.20711 11.2929C7.81658 10.9024 7.18342 10.9024 6.79289 11.2929C6.40237 11.6834 6.40237 12.3166 6.79289 12.7071L9.79289 15.7071C10.1834 16.0976 10.8166 16.0976 11.2071 15.7071L17.2071 9.70711Z"
+                fill="#258750"
+              />
+            </svg>
+
+            {/* Blue bar inside card */}
+            <div className="absolute left-8 top-14 w-[185px] h-[130px] rounded-2xl bg-[#E0EFFE]" />
+          </div>
+        </div>
+
+        {/* Bottom Text */}
+        <div className="absolute bottom-[130px] left-1/2 -translate-x-1/2 w-[461px]">
+          <div className="flex flex-col items-center gap-6">
+            <h2 className="text-[#323238] text-center font-roboto text-[32px] font-bold leading-[120%]">
+              Secure your account.
+            </h2>
+            <p className="text-[#676879] text-center font-roboto text-[13px] font-medium leading-[20px]">
+              Create a strong password to protect your verified identity.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-1 items-center justify-center p-8">
-        <div className="flex w-full max-w-4xl justify-center items-center">
-          <div className="flex w-full max-w-[512px] flex-col gap-8 rounded-2xl bg-white p-8 shadow-sm border border-[#E8EBF5]">
-            {/* Header */}
-            <div className="flex flex-col gap-2">
-              <h1 className="text-[#172B4D] font-roboto text-[28px] font-bold leading-tight">
-                Set Your Password
-              </h1>
-              <p className="text-[#676879] font-roboto text-sm font-normal leading-normal">
-                Create a strong password to secure your account
-              </p>
-            </div>
+      {/* Right Panel - Form */}
+      <div className="flex-1 flex flex-col bg-white">
+        {/* Header with Logo */}
+        <div className="flex items-center justify-center h-14 gap-[33.246px] pt-[84px] pb-6">
+          <svg
+            className="w-[124px] h-[25.176px]"
+            width="126"
+            height="27"
+            viewBox="0 0 126 27"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M37.0043 10.1061C38.6231 8.32663 40.5827 7.43677 42.8831 7.43677C44.0759 7.43677 45.1729 7.73702 46.1739 8.33728C47.175 8.93766 47.9418 9.70947 48.4743 10.6528L48.7618 7.72625H52.8515V25.4143H48.7618L48.4743 22.4556C47.9418 23.3989 47.175 24.1708 46.1739 24.771C45.1729 25.3714 44.0759 25.6715 42.8831 25.6715C40.5827 25.6715 38.6231 24.7818 37.0043 23.0022C35.3855 21.2013 34.5762 19.0465 34.5762 16.5381C34.5762 14.0296 35.3855 11.8856 37.0043 10.1061ZM40.4548 19.8185C41.3495 20.7403 42.4358 21.2013 43.7138 21.2013C45.0131 21.2013 46.1101 20.7511 47.0045 19.8505C47.8992 18.9286 48.3465 17.8245 48.3465 16.5381C48.3465 15.2518 47.8992 14.1583 47.0045 13.2577C46.1101 12.3358 45.0131 11.8749 43.7138 11.8749C42.4358 11.8749 41.3495 12.3358 40.4548 13.2577C39.5603 14.1583 39.113 15.2518 39.113 16.5381C39.113 17.8245 39.5603 18.918 40.4548 19.8185ZM56.593 7.72625H60.6826L61.0021 10.2669C62.0458 8.48741 63.7818 7.59767 66.2099 7.59767C66.8277 7.59767 67.3601 7.64053 67.8074 7.72625L66.8808 12.0679C66.6252 12.025 66.4442 12.0035 66.3378 12.0035C64.8467 12.0035 63.6007 12.4645 62.5996 13.3865C61.5985 14.2868 61.098 15.8198 61.098 17.9852V25.4143H56.593V7.72625ZM72.1419 10.1383C73.8884 8.35871 76.0078 7.46897 78.4999 7.46897C79.9908 7.46897 81.386 7.82274 82.6853 8.53026C83.9846 9.21636 85.0603 10.1489 85.9122 11.3282L82.2061 13.8045C81.2902 12.6467 80.0548 12.0679 78.4999 12.0679C77.2645 12.0679 76.2101 12.5074 75.3368 13.3865C74.4636 14.2654 74.0269 15.3267 74.0269 16.5703C74.0269 17.8352 74.4636 18.9072 75.3368 19.7863C76.2101 20.6653 77.2645 21.1048 78.4999 21.1048C80.14 21.1048 81.3966 20.4616 82.27 19.1752L86.008 21.6836C85.1774 22.9058 84.1018 23.8813 82.7811 24.6102C81.4606 25.3392 80.0335 25.7037 78.4999 25.7037C76.0078 25.7037 73.8778 24.8139 72.1099 23.0344C70.3633 21.2335 69.49 19.0787 69.49 16.5703C69.49 14.0618 70.374 11.9178 72.1419 10.1383ZM90.5504 10.1383C92.2971 8.35871 94.4163 7.46897 96.9085 7.46897C99.4005 7.46897 101.531 8.36948 103.298 10.1704C105.088 11.95 105.982 14.0832 105.982 16.5703C105.982 19.0787 105.098 21.2227 103.33 23.0022C101.541 24.8032 99.4005 25.7037 96.9085 25.7037C94.4163 25.7037 92.2864 24.8139 90.5185 23.0344C88.7718 21.2335 87.8986 19.0787 87.8986 16.5703C87.8986 14.0618 88.7826 11.9178 90.5504 10.1383ZM92.4355 16.5703C92.4355 17.8352 92.8721 18.9072 93.7454 19.7863C94.6188 20.6653 95.673 21.1048 96.9085 21.1048C98.1652 21.1048 99.2301 20.6653 100.103 19.7863C100.977 18.9072 101.413 17.8352 101.413 16.5703C101.413 15.3267 100.977 14.2654 100.103 13.3865C99.2301 12.5074 98.1652 12.0679 96.9085 12.0679C95.673 12.0679 94.6188 12.5074 93.7454 13.3865C92.8721 14.2654 92.4355 15.3267 92.4355 16.5703ZM108.855 25.4143V7.72625H112.944L113.232 10.2991C113.743 9.44142 114.414 8.75533 115.245 8.24079C116.097 7.70482 117.055 7.43677 118.12 7.43677C120.25 7.43677 121.933 8.1765 123.168 9.65584C124.425 11.1352 125.053 13.3757 125.053 16.3773V25.4143H120.58V16.3773C120.58 14.898 120.229 13.7831 119.526 13.0327C118.844 12.2609 117.992 11.8749 116.97 11.8749C115.926 11.8749 115.064 12.2609 114.382 13.0327C113.7 13.7831 113.36 14.898 113.36 16.3773V25.4143H108.855Z"
+              fill="#323238"
+            />
+            <path
+              d="M26.425 21.7199C27.0492 22.8369 26.2417 24.213 24.9622 24.213H3.93975C2.65324 24.213 1.84661 22.8233 2.48474 21.7062L13.1115 3.10326C13.7582 1.97113 15.3932 1.97882 16.0293 3.11699L26.425 21.7199Z"
+              stroke="#D83A52"
+              strokeWidth="4.5177"
+            />
+          </svg>
+        </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Form Container */}
+        <div className="flex-1 flex items-center justify-center px-4 pb-20">
+          <div className="w-full max-w-[360px]">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              {/* Heading */}
+              <div className="flex flex-col justify-center items-center gap-0">
+                <h1 className="text-[#172B4D] text-center font-roboto text-[28px] font-extrabold leading-[42px]">
+                  Set Your Password
+                </h1>
+                <p className="text-[#676879] text-center font-roboto text-[14px] font-normal leading-[22px]">
+                  Create a strong password to secure your account
+                </p>
+              </div>
+
               {/* New Password Field */}
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
+                  className="text-[#323238] font-roboto text-[13px] font-medium leading-normal"
                 >
                   New Password
                 </label>
@@ -157,7 +330,7 @@ export function PasswordSetupPage() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full h-[54px] px-3 py-[15px] border border-[#C3C6D4] rounded bg-white text-[#323238] font-roboto text-base leading-5 placeholder:text-[#676879] focus:outline-none focus:ring-2 focus:ring-[#0073EA] focus:border-transparent"
                     placeholder="Enter a strong password"
                     disabled={isLoading}
                   />
@@ -212,10 +385,10 @@ export function PasswordSetupPage() {
               )}
 
               {/* Confirm Password Field */}
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700"
+                  className="text-[#323238] font-roboto text-[13px] font-medium leading-normal"
                 >
                   Confirm Password
                 </label>
@@ -225,10 +398,10 @@ export function PasswordSetupPage() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
+                    className={`w-full h-[54px] px-3 py-[15px] border rounded bg-white text-[#323238] font-roboto text-base leading-5 placeholder:text-[#676879] focus:outline-none focus:ring-2 focus:border-transparent ${
                       confirmPassword && !doesPasswordMatch
                         ? "border-red-300 focus:ring-red-500"
-                        : "border-gray-300 focus:ring-indigo-500"
+                        : "border-[#C3C6D4] focus:ring-[#0073EA]"
                     }`}
                     placeholder="Confirm your password"
                     disabled={isLoading}
@@ -287,49 +460,42 @@ export function PasswordSetupPage() {
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-colors ${
+                className={`w-full h-12 px-4 py-[11px] rounded bg-[#0073EA] flex items-center justify-center gap-2 transition-colors ${
                   canSubmit
-                    ? "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
-                    : "bg-gray-400 cursor-not-allowed"
+                    ? "hover:bg-[#0062c7] cursor-pointer"
+                    : "opacity-50 cursor-not-allowed"
                 }`}
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="animate-spin h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Setting Password...
-                  </span>
-                ) : (
-                  "Set Password"
-                )}
+                <span className="text-white font-roboto text-base font-bold leading-normal">
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Setting Password...
+                    </span>
+                  ) : (
+                    "Set Password"
+                  )}
+                </span>
               </button>
             </form>
-
-            {/* Additional Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
-                <span className="font-semibold">💡 Tip:</span> Use a unique
-                password that you haven't used elsewhere. This helps keep your
-                account secure.
-              </p>
-            </div>
           </div>
         </div>
       </div>
