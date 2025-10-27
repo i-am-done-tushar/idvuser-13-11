@@ -128,6 +128,118 @@ export default function ProfilePage() {
     }
   };
 
+  // Persist MFA settings
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("idv_mfa_settings", JSON.stringify(mfa));
+    } catch (e) {
+      // ignore
+    }
+  }, [mfa]);
+
+  const sendVerificationCode = async (method: "email" | "phone", value: string) => {
+    setVerificationStatus(null);
+    setVerificationSent(false);
+    try {
+      await new Promise((r) => setTimeout(r, 700));
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = Date.now() + 3 * 60 * 1000;
+      const payload = { code, expiresAt, method, value };
+      sessionStorage.setItem("idv_mfa_verification", JSON.stringify(payload));
+      setSentCodeExpiresAt(expiresAt);
+      setVerificationSent(true);
+      toast.toast({ title: "Verification code sent", description: `A verification code was sent to your ${method === "email" ? "email" : "phone"}.` });
+    } catch (err) {
+      console.error(err);
+      setVerificationStatus("network");
+      toast.toast({ title: "Network Error", description: "We couldn't send the verification code. Please try again.", variant: "destructive" });
+    }
+  };
+
+  const verifyCode = (code: string) => {
+    try {
+      const raw = sessionStorage.getItem("idv_mfa_verification");
+      if (!raw) return { ok: false, reason: "no_code" };
+      const payload = JSON.parse(raw);
+      if (Date.now() > payload.expiresAt) return { ok: false, reason: "expired" };
+      if (payload.code !== code) return { ok: false, reason: "incorrect" };
+      return { ok: true, payload };
+    } catch (e) {
+      return { ok: false, reason: "error" };
+    }
+  };
+
+  const handleStartMfaSetup = () => {
+    setSelectedMethod("email");
+    setMfaContactValue((stored && (stored as any).email) || "");
+    setVerificationSent(false);
+    setEnteredCode("");
+    setVerificationStatus(null);
+    setMfaSetupOpen(true);
+  };
+
+  const handleSendCodeForSetup = async () => {
+    if (!mfaContactValue) {
+      toast.toast({ title: "Contact required", description: "Please provide an email or phone number.", variant: "destructive" });
+      return;
+    }
+    await sendVerificationCode(selectedMethod, mfaContactValue);
+  };
+
+  const handleVerifyAndEnable = () => {
+    const res = verifyCode(enteredCode.trim());
+    if (!res.ok) {
+      if (res.reason === "expired") {
+        setVerificationStatus("expired");
+        toast.toast({ title: "Code expired", description: "Code expired. Please request a new code.", variant: "destructive" });
+        return;
+      }
+      setVerificationStatus("incorrect");
+      toast.toast({ title: "Incorrect code", description: "Incorrect code. Please try again.", variant: "destructive" });
+      return;
+    }
+
+    setMfa({ enabled: true, method: selectedMethod, value: mfaContactValue, enforced: false });
+    setMfaSetupOpen(false);
+    setVerificationSent(false);
+    setEnteredCode("");
+    toast.toast({ title: "MFA configured", description: "MFA successfully configured for your account." });
+  };
+
+  const handleSendConfirmCode = async () => {
+    if (!mfa.method || !mfa.value) {
+      toast.toast({ title: "No MFA method", description: "No MFA method configured.", variant: "destructive" });
+      return;
+    }
+    await sendVerificationCode(mfa.method, mfa.value);
+  };
+
+  const handleConfirmDisable = () => {
+    const res = verifyCode(confirmCode.trim());
+    if (!res.ok) {
+      if (res.reason === "expired") {
+        toast.toast({ title: "Code expired", description: "Code expired. Please request a new code.", variant: "destructive" });
+        return;
+      }
+      toast.toast({ title: "Incorrect code", description: "Incorrect code. Please try again.", variant: "destructive" });
+      return;
+    }
+
+    setMfa({ enabled: false, method: null, value: null, enforced: false });
+    setConfirmDisableOpen(false);
+    setMfaManageOpen(false);
+    toast.toast({ title: "MFA disabled", description: "MFA has been disabled. You can re-enable it anytime to enhance your account security." });
+  };
+
+  const handleChangeMfaMethod = () => {
+    setMfaManageOpen(false);
+    setSelectedMethod(mfa.method === "email" ? "phone" : "email");
+    setMfaContactValue(mfa.value || ((stored && (stored as any).email) || ""));
+    setVerificationSent(false);
+    setEnteredCode("");
+    setMfaSetupOpen(true);
+  };
+
   return (
     <div className="w-full min-h-screen bg-page-background p-6 lg:p-8">
       <div className="max-w-3xl mx-auto bg-white border border-border rounded-lg shadow-sm p-6">
