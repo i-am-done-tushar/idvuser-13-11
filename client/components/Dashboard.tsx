@@ -198,68 +198,74 @@ export function Dashboard() {
         {/* Content */}
         <div className="flex-1 overflow-auto">
           <div className="w-full px-4 lg:px-8 py-6 gap-6 flex flex-col">
-            {/* Page Title and Description */}
-            <div className="flex flex-col gap-2">
-              <h1 className="text-text-primary font-roboto text-[22px] font-bold leading-[30px]">
-                {getPageTitle()}
-              </h1>
-              <p className="text-text-muted font-roboto text-[13px] font-normal leading-[15px]">
-                {getPageDescription()}
-              </p>
-            </div>
+            {activeSection === "ongoing" ? (
+              <OngoingVerificationSection />
+            ) : (
+              <>
+                {/* Page Title and Description */}
+                <div className="flex flex-col gap-2">
+                  <h1 className="text-text-primary font-roboto text-[22px] font-bold leading-[30px]">
+                    {getPageTitle()}
+                  </h1>
+                  <p className="text-text-muted font-roboto text-[13px] font-normal leading-[15px]">
+                    {getPageDescription()}
+                  </p>
+                </div>
 
-            {/* Dashboard Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {dashboardCards.map((card) => (
-                <DashboardCard
-                  key={card.id}
-                  title={card.title}
-                  description={card.description}
-                  count={card.count}
-                  color={card.color}
-                  icon={
-                    card.id === "ongoing" ? (
-                      <svg
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6 text-[#0073EA]"
-                      >
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                      </svg>
-                    ) : card.id === "expired" ? (
-                      <svg
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6 text-[#D83A52]"
-                      >
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                      </svg>
-                    ) : card.id === "verified" ? (
-                      <svg
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6 text-[#258750]"
-                      >
-                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6 text-[#FF9800]"
-                      >
-                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12h-8v-2h8v2zm0-3h-8V9h8v2zm0-3h-8V6h8v2z" />
-                      </svg>
-                    )
-                  }
-                  onClick={
-                    card.id !== "contact"
-                      ? () => handleNavigation(card.id)
-                      : undefined
-                  }
-                />
-              ))}
-            </div>
+                {/* Dashboard Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {dashboardCards.map((card) => (
+                    <DashboardCard
+                      key={card.id}
+                      title={card.title}
+                      description={card.description}
+                      count={card.count}
+                      color={card.color}
+                      icon={
+                        card.id === "ongoing" ? (
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6 text-[#0073EA]"
+                          >
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                          </svg>
+                        ) : card.id === "expired" ? (
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6 text-[#D83A52]"
+                          >
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                          </svg>
+                        ) : card.id === "verified" ? (
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6 text-[#258750]"
+                          >
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                          </svg>
+                        ) : (
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6 text-[#FF9800]"
+                          >
+                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12h-8v-2h8v2zm0-3h-8V9h8v2zm0-3h-8V6h8v2z" />
+                          </svg>
+                        )
+                      }
+                      onClick={
+                        card.id !== "contact"
+                          ? () => handleNavigation(card.id)
+                          : undefined
+                      }
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
