@@ -3,6 +3,8 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardCard } from "./DashboardCard";
 import { OngoingVerificationSection } from "./OngoingVerificationSection";
 import { ExpiredVerificationSection } from "./ExpiredVerificationSection";
+import { VerifiedCredentialsSection } from "./VerifiedCredentialsSection";
+import { ContactAdminSection } from "./ContactAdminSection";
 
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -219,6 +221,10 @@ export function Dashboard() {
               <OngoingVerificationSection userName={currentUserName} />
             ) : activeSection === "expired" ? (
               <ExpiredVerificationSection userName={currentUserName} />
+            ) : activeSection === "verified" ? (
+              <VerifiedCredentialsSection userName={currentUserName} />
+            ) : activeSection === "contact" ? (
+              <ContactAdminSection />
             ) : (
               <>
                 {/* Page Title and Description */}
