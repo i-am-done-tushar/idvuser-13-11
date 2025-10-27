@@ -72,7 +72,7 @@ export function PasswordSetupPage() {
   };
 
   return (
-    <div className="w-screen h-screen bg-white flex overflow-hidden">
+    <div className="w-screen min-h-screen bg-white flex">
       {/* Left Panel - Decorative */}
       <div className="hidden lg:flex lg:w-[607px] flex-col relative bg-white overflow-hidden">
         {/* Background Blobs */}
