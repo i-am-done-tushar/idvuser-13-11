@@ -53,7 +53,8 @@ export function OngoingVerificationSection() {
           Ongoing Verifications
         </h1>
         <p className="text-text-muted font-roboto text-[13px] font-normal leading-[15px]">
-          All pending and ongoing verifications are displayed below. Track the progress of each verification.
+          All pending and ongoing verifications are displayed below. Track the
+          progress of each verification.
         </p>
       </div>
 
