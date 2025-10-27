@@ -11,12 +11,20 @@ interface VerifiedItem {
   consentExpiry?: string;
 }
 
+import { useState } from "react";
+
 export function VerifiedCredentialsSection({
   userName,
 }: {
   userName?: string;
 }) {
   const name = userName ?? "Sahil Angad";
+
+  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
+
+  const toggle = (id: string) => {
+    setExpandedMap((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const verifiedItems: VerifiedItem[] = [
     {
