@@ -36,6 +36,7 @@ const App = () => (
             path="/verification-success"
             element={<VerificationSuccessPage />}
           />
+          <Route path="/password-setup" element={<PasswordSetupPage />} />
           <Route path="/auth/login" element={<AuthLoginPage />} />
           <Route path="/auth/otp" element={<AuthOtpPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
