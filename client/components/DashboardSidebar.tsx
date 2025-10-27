@@ -22,18 +22,18 @@ export function DashboardSidebar({
   return (
     <>
       {/* Mobile Overlay */}
-      {!isOpen && (
+      {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-30 lg:hidden"
           onClick={onClose}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Mobile Sidebar */}
       <div
-        className={`fixed lg:relative lg:flex lg:flex-col lg:h-screen lg:w-64 bg-white border-r border-border transition-all duration-300 z-40 ${
+        className={`fixed lg:hidden left-0 top-0 h-screen w-64 bg-white border-r border-border transition-all duration-300 z-40 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 w-64 flex-shrink-0`}
+        }`}
       >
         {/* Header with Close Button */}
         <div className="flex items-center justify-between h-14 px-6 border-b border-border lg:hidden">
