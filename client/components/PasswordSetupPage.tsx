@@ -74,7 +74,7 @@ export function PasswordSetupPage() {
   return (
     <div className="w-screen min-h-screen bg-white flex">
       {/* Left Panel - Decorative */}
-      <div className="hidden lg:flex lg:w-[607px] flex-col relative bg-white overflow-hidden flex-shrink-0">
+      <div className="hidden lg:flex lg:w-[607px] flex-col relative bg-white overflow-hidden flex-shrink-0 h-full">
         {/* Background Blobs */}
         <div className="absolute inset-0">
           <svg
