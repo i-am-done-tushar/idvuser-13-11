@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardCard } from "./DashboardCard";
 import { OngoingVerificationSection } from "./OngoingVerificationSection";
+import { ExpiredVerificationSection } from "./ExpiredVerificationSection";
 
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
