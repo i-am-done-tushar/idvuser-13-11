@@ -365,6 +365,101 @@ export default function ProfilePage() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* MFA Setup Dialog */}
+        <Dialog open={mfaSetupOpen} onOpenChange={(open) => setMfaSetupOpen(open)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Configure MFA</DialogTitle>
+            </DialogHeader>
+
+            <div className="mt-4 space-y-4">
+              <div>
+                <div className="text-sm text-text-muted mb-2">Select verification method</div>
+                <div className="flex gap-4 items-center">
+                  <label className={`p-3 border rounded cursor-pointer ${selectedMethod === "email" ? "border-primary bg-primary/5" : "border-border"}`}>
+                    <input type="radio" name="mfa" checked={selectedMethod === "email"} onChange={() => { setSelectedMethod("email"); setMfaContactValue((stored && (stored as any).email) || "") }} className="mr-2" /> Email
+                  </label>
+
+                  <label className={`p-3 border rounded cursor-pointer ${selectedMethod === "phone" ? "border-primary bg-primary/5" : "border-border"}`}>
+                    <input type="radio" name="mfa" checked={selectedMethod === "phone"} onChange={() => { setSelectedMethod("phone"); setMfaContactValue("") }} className="mr-2" /> Phone (SMS)
+                  </label>
+                </div>
+
+                <p className="text-sm text-text-muted mt-2">
+                  {selectedMethod === "email"
+                    ? "You will receive a verification code on your registered email each time you log in."
+                    : "You will receive a one-time password (OTP) via SMS for each login attempt."}
+                </p>
+              </div>
+
+              <div>
+                <label className="text-sm text-text-muted">{selectedMethod === "email" ? "Email Address" : "Phone Number"}</label>
+                <Input value={mfaContactValue} onChange={(e) => setMfaContactValue(e.target.value)} placeholder={selectedMethod === "email" ? ((stored && (stored as any).email) || "you@domain.com") : "+91xxxxxxxxxx"} />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={handleSendCodeForSetup}>Send Code</Button>
+                {verificationSent && <div className="text-sm text-text-muted">Code sent. Expires in 3 minutes.</div>}
+              </div>
+
+              {verificationSent && (
+                <div>
+                  <label className="text-sm text-text-muted">Enter verification code</label>
+                  <Input value={enteredCode} onChange={(e) => setEnteredCode(e.target.value)} placeholder="6-digit code" />
+                  <div className="flex justify-end gap-2 mt-3">
+                    <Button variant="outline" onClick={() => { setVerificationSent(false); setEnteredCode("") }}>Cancel</Button>
+                    <Button onClick={handleVerifyAndEnable}>Verify & Enable</Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* MFA Manage Dialog */}
+        <Dialog open={mfaManageOpen} onOpenChange={(open) => setMfaManageOpen(open)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Manage MFA</DialogTitle>
+            </DialogHeader>
+
+            <div className="mt-4 space-y-4">
+              <div>
+                <div className="text-sm text-text-muted">Current method</div>
+                <div className="text-text-primary font-medium">{mfa.method === "email" ? "Email" : "Phone"} {mfa.value ? `(${mfa.value})` : ''}</div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleChangeMfaMethod}>Change MFA Method</Button>
+                <Button onClick={() => { setConfirmDisableOpen(true); handleSendConfirmCode(); }}>Disable MFA</Button>
+              </div>
+
+              {confirmDisableOpen && (
+                <div className="mt-4 border p-4 rounded">
+                  <div className="text-sm text-text-muted mb-2">Disabling MFA will reduce your account security. Are you sure you want to continue?</div>
+                  <div className="text-sm text-text-muted mb-2">A confirmation code will be sent to your configured method. Enter it below to confirm.</div>
+
+                  <div className="mb-2">
+                    <Button variant="outline" onClick={handleSendConfirmCode}>Send Confirmation Code</Button>
+                    <div className="text-sm text-text-muted mt-2">{verificationSent ? 'Code sent. Expires in 3 minutes.' : ''}</div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-text-muted">Enter confirmation code</label>
+                    <Input value={confirmCode} onChange={(e) => setConfirmCode(e.target.value)} placeholder="6-digit code" />
+                  </div>
+
+                  <div className="flex justify-end gap-2 mt-3">
+                    <Button variant="outline" onClick={() => setConfirmDisableOpen(false)}>Cancel</Button>
+                    <Button onClick={handleConfirmDisable}>Confirm Disable</Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
       </div>
     </div>
   );
