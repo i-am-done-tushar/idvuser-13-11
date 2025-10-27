@@ -200,9 +200,9 @@ export function Dashboard() {
         <div className="flex-1 overflow-auto">
           <div className="w-full px-4 lg:px-8 py-6 gap-6 flex flex-col">
             {activeSection === "ongoing" ? (
-              <OngoingVerificationSection />
+              <OngoingVerificationSection userName={currentUserName} />
             ) : activeSection === "expired" ? (
-              <ExpiredVerificationSection />
+              <ExpiredVerificationSection userName={currentUserName} />
             ) : (
               <>
                 {/* Page Title and Description */}
