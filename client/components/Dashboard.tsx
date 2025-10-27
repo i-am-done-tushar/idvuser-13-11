@@ -220,6 +220,8 @@ export function Dashboard() {
               <OngoingVerificationSection userName={currentUserName} />
             ) : activeSection === "expired" ? (
               <ExpiredVerificationSection userName={currentUserName} />
+            ) : activeSection === "verified" ? (
+              <VerifiedCredentialsSection userName={currentUserName} />
             ) : (
               <>
                 {/* Page Title and Description */}
