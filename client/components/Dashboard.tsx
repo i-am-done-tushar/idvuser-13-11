@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardCard } from "./DashboardCard";
+import { OngoingVerificationSection } from "./OngoingVerificationSection";
 
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
