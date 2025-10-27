@@ -11,7 +11,11 @@ interface VerifiedItem {
   consentExpiry?: string;
 }
 
-export function VerifiedCredentialsSection({ userName }: { userName?: string }) {
+export function VerifiedCredentialsSection({
+  userName,
+}: {
+  userName?: string;
+}) {
   const name = userName ?? "Sahil Angad";
 
   const verifiedItems: VerifiedItem[] = [
@@ -21,27 +25,41 @@ export function VerifiedCredentialsSection({ userName }: { userName?: string }) 
       documentType: "Aadhaar Card",
       verifiedAt: new Date().toISOString(),
       expiryDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 45).toISOString(), // 45 days
-      data: { "Aadhaar Number": "**** **** 1234", "Name": name },
-      consentGivenAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-      consentExpiry: new Date(Date.now() + 1000 * 60 * 60 * 24 * 350).toISOString(),
+      data: { "Aadhaar Number": "**** **** 1234", Name: name },
+      consentGivenAt: new Date(
+        Date.now() - 1000 * 60 * 60 * 24 * 10,
+      ).toISOString(),
+      consentExpiry: new Date(
+        Date.now() + 1000 * 60 * 60 * 24 * 350,
+      ).toISOString(),
     },
     {
       id: "v2",
       userName: name,
       documentType: "PAN Card",
-      verifiedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+      verifiedAt: new Date(
+        Date.now() - 1000 * 60 * 60 * 24 * 200,
+      ).toISOString(),
       expiryDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 20).toISOString(), // 20 days -> warning
-      data: { "PAN": "ABCDE1234F", "Name": name },
-      consentGivenAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 300).toISOString(),
-      consentExpiry: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10).toISOString(),
+      data: { PAN: "ABCDE1234F", Name: name },
+      consentGivenAt: new Date(
+        Date.now() - 1000 * 60 * 60 * 24 * 300,
+      ).toISOString(),
+      consentExpiry: new Date(
+        Date.now() + 1000 * 60 * 60 * 24 * 10,
+      ).toISOString(),
     },
     {
       id: "v3",
       userName: name,
       documentType: "Passport",
-      verifiedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 400).toISOString(),
-      data: { "Passport No": "N1234567", "Name": name },
-      consentGivenAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 400).toISOString(),
+      verifiedAt: new Date(
+        Date.now() - 1000 * 60 * 60 * 24 * 400,
+      ).toISOString(),
+      data: { "Passport No": "N1234567", Name: name },
+      consentGivenAt: new Date(
+        Date.now() - 1000 * 60 * 60 * 24 * 400,
+      ).toISOString(),
     },
   ];
 
