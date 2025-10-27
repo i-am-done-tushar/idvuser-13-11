@@ -223,6 +223,8 @@ export function Dashboard() {
               <ExpiredVerificationSection userName={currentUserName} />
             ) : activeSection === "verified" ? (
               <VerifiedCredentialsSection userName={currentUserName} />
+            ) : activeSection === "contact" ? (
+              <ContactAdminSection />
             ) : (
               <>
                 {/* Page Title and Description */}
