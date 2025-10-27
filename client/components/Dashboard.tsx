@@ -134,7 +134,7 @@ export function Dashboard() {
     <div className="w-full h-screen bg-page-background flex flex-row">
       {/* Desktop Sidebar - Left Side, Full Height */}
       {/* Desktop Sidebar - Left Side, Full Height */}
-      <div className="hidden lg:flex lg:w-64 bg-white border-r border-border flex-shrink-0 h-screen flex-col z-10">
+      <div className="hidden lg:flex lg:w-64 bg-white border-r border-border flex-shrink-0 h-screen flex-col z-10 lg:pt-14">
         <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-auto">
           {navItems.map((item) => (
             <button
@@ -158,9 +158,9 @@ export function Dashboard() {
       </div>
 
       {/* Right Section - Header + Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden lg:pt-14">
         {/* Header */}
-        <div className="relative z-50 flex w-full h-14 items-center justify-between px-4 lg:px-8 border-b border-border bg-white gap-4 flex-shrink-0">
+        <div className="lg:fixed lg:top-0 lg:left-0 lg:right-0 lg:z-50 relative z-50 flex w-full h-14 items-center justify-between px-4 lg:px-8 border-b border-border bg-white gap-4 flex-shrink-0">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setSidebarOpen(true)}
