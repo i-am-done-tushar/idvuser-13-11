@@ -279,7 +279,7 @@ export function PasswordSetupPage() {
       </div>
 
       {/* Right Panel - Form */}
-      <div className="flex-1 flex flex-col bg-white">
+      <div className="flex-1 flex flex-col bg-white min-h-screen">
         {/* Header with Logo */}
         <div className="flex items-center justify-center h-14 gap-[33.246px] pt-[84px] pb-6">
           <svg
