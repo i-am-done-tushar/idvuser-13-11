@@ -112,7 +112,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-page-background flex flex-col lg:flex-row">
+    <div className="w-full min-h-screen bg-page-background flex flex-col">
       {/* Header */}
       <div className="flex w-full h-14 items-center justify-between px-4 lg:px-8 border-b border-border bg-white gap-4 flex-shrink-0">
         {/* Mobile Menu Button */}
@@ -151,7 +151,7 @@ export function Dashboard() {
               fill="#323238"
             />
             <path
-              d="M14.3486 12.736C14.6548 13.3353 14.2196 14.0465 13.5466 14.0465H3.02185C2.3453 14.0465 1.91028 13.3285 2.22355 12.7288L7.54372 2.54495C7.8823 1.89684 8.81128 1.901 9.14404 2.55212L14.3486 12.736Z"
+              d="M26.425 21.7199C27.0492 22.8369 26.2417 24.213 24.9622 24.213H3.93975C2.65324 24.213 1.84661 22.8233 2.48474 21.7062L13.1115 3.10326C13.7582 1.97113 15.3932 1.97882 16.0293 3.11699L26.425 21.7199Z"
               stroke="#D83A52"
               strokeWidth="2.42826"
             />
@@ -168,80 +168,107 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Sidebar */}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-row overflow-hidden">
+        {/* Content */}
+        <div className="flex-1 overflow-auto">
+          <div className="w-full px-4 lg:px-8 py-6 gap-6 flex flex-col">
+            {/* Page Title and Description */}
+            <div className="flex flex-col gap-2">
+              <h1 className="text-text-primary font-roboto text-[22px] font-bold leading-[30px]">
+                {getPageTitle()}
+              </h1>
+              <p className="text-text-muted font-roboto text-[13px] font-normal leading-[15px]">
+                {getPageDescription()}
+              </p>
+            </div>
+
+            {/* Dashboard Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {dashboardCards.map((card) => (
+                <DashboardCard
+                  key={card.id}
+                  title={card.title}
+                  description={card.description}
+                  count={card.count}
+                  color={card.color}
+                  icon={
+                    card.id === "ongoing" ? (
+                      <svg
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        className="w-6 h-6 text-[#0073EA]"
+                      >
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                      </svg>
+                    ) : card.id === "expired" ? (
+                      <svg
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        className="w-6 h-6 text-[#D83A52]"
+                      >
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                      </svg>
+                    ) : card.id === "verified" ? (
+                      <svg
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        className="w-6 h-6 text-[#258750]"
+                      >
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        className="w-6 h-6 text-[#FF9800]"
+                      >
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12h-8v-2h8v2zm0-3h-8V9h8v2zm0-3h-8V6h8v2z" />
+                      </svg>
+                    )
+                  }
+                  onClick={
+                    card.id !== "contact"
+                      ? () => handleNavigation(card.id)
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar - Right Side */}
+        <div className="hidden lg:flex lg:w-64 bg-white border-l border-border flex-shrink-0 h-full flex-col">
+          <nav className="flex-1 px-4 py-6 flex flex-col gap-2 overflow-auto">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => item.onClick()}
+                className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg transition-all text-left ${
+                  item.isActive
+                    ? "bg-[#0073EA]/10 text-[#0073EA] border border-[#0073EA]/20"
+                    : "text-text-primary hover:bg-page-background"
+                }`}
+              >
+                <span className="flex items-center justify-center w-5 h-5 flex-shrink-0">
+                  {item.icon}
+                </span>
+                <span className="font-roboto text-sm font-medium leading-normal">
+                  {item.label}
+                </span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Mobile Sidebar */}
       <DashboardSidebar
         items={navItems}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="w-full px-4 lg:px-8 py-6 gap-6 flex flex-col">
-          {/* Page Title and Description */}
-          <div className="flex flex-col gap-2">
-            <h1 className="text-text-primary font-roboto text-[22px] font-bold leading-[30px]">
-              {getPageTitle()}
-            </h1>
-            <p className="text-text-muted font-roboto text-[13px] font-normal leading-[15px]">
-              {getPageDescription()}
-            </p>
-          </div>
-
-          {/* Dashboard Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dashboardCards.map((card) => (
-              <DashboardCard
-                key={card.id}
-                title={card.title}
-                description={card.description}
-                count={card.count}
-                color={card.color}
-                icon={
-                  card.id === "ongoing" ? (
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      className="w-6 h-6 text-[#0073EA]"
-                    >
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                    </svg>
-                  ) : card.id === "expired" ? (
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      className="w-6 h-6 text-[#D83A52]"
-                    >
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                    </svg>
-                  ) : card.id === "verified" ? (
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      className="w-6 h-6 text-[#258750]"
-                    >
-                      <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      className="w-6 h-6 text-[#FF9800]"
-                    >
-                      <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12h-8v-2h8v2zm0-3h-8V9h8v2zm0-3h-8V6h8v2z" />
-                    </svg>
-                  )
-                }
-                onClick={
-                  card.id !== "contact"
-                    ? () => handleNavigation(card.id)
-                    : undefined
-                }
-              />
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
