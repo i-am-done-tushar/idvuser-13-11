@@ -15,6 +15,8 @@ import { AuthOtpPage } from "./components/AuthOtpPage";
 import { Dashboard } from "./components/Dashboard";
 import { PasswordSetupPage } from "./components/PasswordSetupPage";
 
+//1st change
+
 import { createBrowserRouter } from "react-router-dom";
 
 const queryClient = new QueryClient();
