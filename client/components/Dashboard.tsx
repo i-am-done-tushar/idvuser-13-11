@@ -4,6 +4,7 @@ import { DashboardCard } from "./DashboardCard";
 import { OngoingVerificationSection } from "./OngoingVerificationSection";
 import { ExpiredVerificationSection } from "./ExpiredVerificationSection";
 import { VerifiedCredentialsSection } from "./VerifiedCredentialsSection";
+import { ContactAdminSection } from "./ContactAdminSection";
 
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
