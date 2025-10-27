@@ -10,6 +10,7 @@ import { ContactAdminSection } from "./ContactAdminSection";
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("verified");
+  const navigate = useNavigate();
 
   // Current dashboard user - use a single name so all verification cards show the same user
   const currentUserName = "Sahil Angad";
