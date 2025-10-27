@@ -1,4 +1,7 @@
 {
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "*"
+  },
   "name": "fusion-starter",
   "private": true,
   "type": "module",

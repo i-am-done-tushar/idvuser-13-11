@@ -13,6 +13,7 @@ import { VerificationSuccessPage } from "./components/VerificationSuccessPage";
 import { AuthLoginPage } from "./components/AuthLoginPage";
 import { AuthOtpPage } from "./components/AuthOtpPage";
 import { Dashboard } from "./components/Dashboard";
+import { PasswordSetupPage } from "./components/PasswordSetupPage";
 
 import { createBrowserRouter } from "react-router-dom";
 
@@ -35,6 +36,7 @@ const App = () => (
             path="/verification-success"
             element={<VerificationSuccessPage />}
           />
+          <Route path="/password-setup" element={<PasswordSetupPage />} />
           <Route path="/auth/login" element={<AuthLoginPage />} />
           <Route path="/auth/otp" element={<AuthOtpPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
