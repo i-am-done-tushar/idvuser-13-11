@@ -208,11 +208,18 @@ export function Dashboard() {
 
           {/* Profile Button */}
           <div className="flex items-center gap-1 ml-auto">
-            <button onClick={() => navigate('/profile')} className="flex items-center gap-2 focus:outline-none">
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex items-center gap-2 focus:outline-none"
+            >
               <div className="flex w-8 h-8 justify-center items-center rounded-full bg-[#F65F7C]">
-                <span className="text-white font-roboto text-xs font-medium">OS</span>
+                <span className="text-white font-roboto text-xs font-medium">
+                  OS
+                </span>
               </div>
-              <span className="hidden md:inline text-text-primary font-roboto text-sm">Profile</span>
+              <span className="hidden md:inline text-text-primary font-roboto text-sm">
+                Profile
+              </span>
             </button>
           </div>
         </div>
