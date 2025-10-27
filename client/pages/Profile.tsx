@@ -273,10 +273,39 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-6">
           <Button variant="outline" onClick={() => setIsDialogOpen(true)}>
             Change Password
           </Button>
+        </div>
+
+        {/* MFA Section */}
+        <div className="border-t pt-6 mb-6">
+          <h2 className="text-text-primary font-roboto text-[16px] font-semibold mb-2">MFA Configuration</h2>
+
+          {mfa.enforced ? (
+            <div className="text-text-primary">MFA Enabled by Administrator</div>
+          ) : mfa.enabled ? (
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-text-muted">Status</div>
+                <div className="text-text-primary font-medium">MFA enabled via {mfa.method === "email" ? "Email" : "Phone"}</div>
+              </div>
+              <div>
+                <Button variant="outline" onClick={() => setMfaManageOpen(true)}>Change or Disable MFA</Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <div className="text-sm text-text-muted">Status</div>
+                <div className="text-text-primary font-medium">MFA is not enabled for your account.</div>
+              </div>
+              <div>
+                <Button onClick={handleStartMfaSetup}>Enable MFA</Button>
+              </div>
+            </div>
+          )}
         </div>
 
         <Dialog
