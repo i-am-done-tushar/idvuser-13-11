@@ -72,9 +72,9 @@ export function PasswordSetupPage() {
   };
 
   return (
-    <div className="w-full h-screen bg-white flex">
+    <div className="w-full h-screen bg-white flex overflow-hidden">
       {/* Left Panel - Decorative */}
-      <div className="hidden lg:flex lg:w-[607px] flex-col relative bg-white overflow-hidden">
+      <div className="hidden lg:flex lg:w-[607px] flex-col relative bg-white overflow-hidden flex-shrink-0 h-full">
         {/* Background Blobs */}
         <div className="absolute inset-0">
           <svg
@@ -303,7 +303,7 @@ export function PasswordSetupPage() {
         </div>
 
         {/* Form Container */}
-        <div className="flex-1 flex items-center justify-center px-4 pb-20">
+        <div className="flex-1 flex items-center justify-center px-4 py-8">
           <div className="w-full max-w-[360px]">
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               {/* Heading */}
