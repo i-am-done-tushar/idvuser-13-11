@@ -16,10 +16,13 @@ export async function generateQRCodeDataURL(options: QRCodeOptions): Promise<str
     // Use environment variable for base URL or fallback to window.location.origin
     const envBaseUrl = import.meta.env.VITE_QR_BASE_URL || import.meta.env.VITE_FRONTEND_URL;
     const baseUrl = envBaseUrl || window.location.origin;
-    const verificationUrl = `${baseUrl}/form/${options.shortCode}`;
-    
-    // Add query parameters for state preservation
+    // Build verification URL using query parameter for shortcode to avoid long path segment limits
+    // /form?code={shortCode}
+    const baseFormPath = `${baseUrl}/form`;
+
     const urlParams = new URLSearchParams();
+    // Put shortcode as first param
+    urlParams.set('code', options.shortCode);
     if (options.templateVersionId) {
       urlParams.set('templateVersionId', options.templateVersionId.toString());
     }
@@ -32,10 +35,8 @@ export async function generateQRCodeDataURL(options: QRCodeOptions): Promise<str
     if (options.currentStep) {
       urlParams.set('step', options.currentStep);
     }
-    
-    const finalUrl = urlParams.toString() ? 
-      `${verificationUrl}?${urlParams.toString()}` : 
-      verificationUrl;
+
+    const finalUrl = `${baseFormPath}?${urlParams.toString()}`;
 
     // Generate QR code with options for better mobile scanning
     const qrCodeDataUrl = await QRCode.toDataURL(finalUrl, {
