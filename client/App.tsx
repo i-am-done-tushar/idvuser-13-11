@@ -13,6 +13,7 @@ import { VerificationSuccessPage } from "./components/VerificationSuccessPage";
 import { AuthLoginPage } from "./components/AuthLoginPage";
 import { AuthOtpPage } from "./components/AuthOtpPage";
 import { Dashboard } from "./components/Dashboard";
+import Profile from "./pages/Profile";
 import { PasswordSetupPage } from "./components/PasswordSetupPage";
 
 //1st change
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/auth/login" element={<AuthLoginPage />} />
           <Route path="/auth/otp" element={<AuthOtpPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

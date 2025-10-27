@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardCard } from "./DashboardCard";
 import { OngoingVerificationSection } from "./OngoingVerificationSection";
@@ -9,6 +10,7 @@ import { ContactAdminSection } from "./ContactAdminSection";
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("verified");
+  const navigate = useNavigate();
 
   // Current dashboard user - use a single name so all verification cards show the same user
   const currentUserName = "Sahil Angad";
@@ -204,13 +206,21 @@ export function Dashboard() {
             </svg>
           </div>
 
-          {/* Admin Badge */}
+          {/* Profile Button */}
           <div className="flex items-center gap-1 ml-auto">
-            <div className="flex w-8 h-8 justify-center items-center rounded-full bg-[#F65F7C]">
-              <span className="text-white font-roboto text-xs font-medium">
-                OS
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex items-center gap-2 focus:outline-none"
+            >
+              <div className="flex w-8 h-8 justify-center items-center rounded-full bg-[#F65F7C]">
+                <span className="text-white font-roboto text-xs font-medium">
+                  OS
+                </span>
+              </div>
+              <span className="hidden md:inline text-text-primary font-roboto text-sm">
+                Profile
               </span>
-            </div>
+            </button>
           </div>
         </div>
 
