@@ -212,28 +212,6 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Top Navigation under header (desktop) */}
-        <div className="hidden lg:flex w-full border-b border-border bg-white">
-          <nav className="w-full px-4 lg:px-8 py-3 flex items-center gap-3">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => item.onClick()}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                  item.isActive
-                    ? "bg-[#0073EA]/10 text-[#0073EA] border border-[#0073EA]/20"
-                    : "text-text-primary hover:bg-page-background"
-                }`}
-              >
-                <span className="flex items-center justify-center w-4 h-4 flex-shrink-0">
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-
         {/* Content */}
         <div className="flex-1 overflow-auto">
           <div className="w-full px-4 lg:px-8 py-6 gap-6 flex flex-col">
