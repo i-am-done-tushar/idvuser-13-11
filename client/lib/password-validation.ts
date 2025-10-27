@@ -70,6 +70,9 @@ export function isPasswordValid(password: string): boolean {
   );
 }
 
-export function passwordsMatch(password: string, confirmPassword: string): boolean {
+export function passwordsMatch(
+  password: string,
+  confirmPassword: string,
+): boolean {
   return password === confirmPassword && password.length > 0;
 }
