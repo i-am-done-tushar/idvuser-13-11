@@ -22,7 +22,9 @@ import {
 import { truncate } from "fs";
 
 // ---- single source of truth for API base ----
-const API_BASE = "https://idvapi-test.arconnet.com:1019";
+// const API_BASE = "https://idvapi-test.arconnet.com:1019";
+const API_BASE = "http://10.10.2.133:8080";
+
   // import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 
 // 🚀 DEVELOPMENT FLAG - Set to false to enable OTP verification
@@ -264,7 +266,7 @@ export function IdentityVerificationPage({
       try {
         console.log("Fetching submission values for submissionId:", submissionId);
         const response = await fetch(
-          `${API_BASE}/api/submissions/${submissionId}/values`,
+          `${API_BASE}/api/UserTemplateSubmissionValues/submissions/${submissionId}/values`,
           {
             method: "GET",
             headers: {

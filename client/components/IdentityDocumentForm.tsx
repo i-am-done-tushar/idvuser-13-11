@@ -7,7 +7,9 @@ import { QRCodeDisplay } from "./QRCodeDisplay";
 import { useSessionSync } from "@/hooks/useSessionSync";
 import { extractSessionFromURL } from "@/lib/qr-utils";
 
-const API_BASE = "https://idvapi-test.arconnet.com:1019";
+// const API_BASE = "https://idvapi-test.arconnet.com:1019";
+const API_BASE = "http://10.10.2.133:8080";
+
   // import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 
 interface UploadedFile {
@@ -347,8 +349,10 @@ export function IdentityDocumentForm({
       };
 
       // You may already know these from your form context
-      const requestedDocType = toRequestedDocType(selectedDocument || "Pan Card");
-      const email = "admin@idv.local";         // or from logged-in user context
+      // const requestedDocType = toRequestedDocType(selectedDocument || "Pan Card");
+      const requestedDocType = toRequestedDocType("PAN Verification Record");
+
+      const email = "pranathi.narsupalli@arconnet.com";         // or from logged-in user context
       const documentId = 3;                     // your internal doc def id
       const templateName = "template p";        // current template name
 

@@ -15,7 +15,9 @@ export default function Index() {
 
   const DEMO_SHORTCODE = "Ad-5fCStWvEJoqVbxLtt26bnAqpE8-lie1RD1JYlXh2l4faiZGjFOr5O_WtRZrJuYfYzF-b2GiM_2Al2hRWKRS9EBPfoFd40G11bugUEJIEIChk9LtrWLmmit8zkyDyF24-drMfaQk5Zyl2RnZVmmMKKiitrRQcCcNMftj6E-c7KxWN0MPuuFtJ5NAwlZAb-i669e9_iz2h8_y7umUfoxzRu7HPqYZBfEufgYwcV8Hnag55i1MPKlztQgLqYdasYDL5HEmGwSr24fdOluLlnIiN8MS6VJatd";
 
-  const API_BASE = "https://idvapi-test.arconnet.com:1019";
+  // const API_BASE = "https://idvapi-test.arconnet.com:1019";
+  const API_BASE = "http://10.10.2.133:8080";
+
     // import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 
   // Check for DigiLocker callback at root URL
