@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { validatePassword, isPasswordValid, passwordsMatch } from "@/lib/password-validation";
+import {
+  validatePassword,
+  isPasswordValid,
+  passwordsMatch,
+} from "@/lib/password-validation";
 import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
 import { useToast } from "@/hooks/use-toast";
 
@@ -116,8 +120,16 @@ export function PasswordSetupPage() {
                 colorInterpolationFilters="sRGB"
               >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                <feGaussianBlur stdDeviation="34.5659" result="effect1_foregroundBlur_blob1" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="34.5659"
+                  result="effect1_foregroundBlur_blob1"
+                />
               </filter>
               <filter
                 id="filter1_f_blob1"
@@ -129,8 +141,16 @@ export function PasswordSetupPage() {
                 colorInterpolationFilters="sRGB"
               >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                <feGaussianBlur stdDeviation="27.2791" result="effect1_foregroundBlur_blob1" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="27.2791"
+                  result="effect1_foregroundBlur_blob1"
+                />
               </filter>
             </defs>
           </svg>
@@ -158,8 +178,16 @@ export function PasswordSetupPage() {
                   colorInterpolationFilters="sRGB"
                 >
                   <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                  <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                  <feGaussianBlur stdDeviation="115" result="effect1_foregroundBlur_blob2" />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="BackgroundImageFix"
+                    result="shape"
+                  />
+                  <feGaussianBlur
+                    stdDeviation="115"
+                    result="effect1_foregroundBlur_blob2"
+                  />
                 </filter>
               </defs>
             </svg>
@@ -172,7 +200,13 @@ export function PasswordSetupPage() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <g filter="url(#filter0_f_blob3)">
-                <ellipse cx="136.5" cy="198.5" rx="232.5" ry="198.5" fill="#E0EFFE" />
+                <ellipse
+                  cx="136.5"
+                  cy="198.5"
+                  rx="232.5"
+                  ry="198.5"
+                  fill="#E0EFFE"
+                />
               </g>
               <defs>
                 <filter
@@ -185,8 +219,16 @@ export function PasswordSetupPage() {
                   colorInterpolationFilters="sRGB"
                 >
                   <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                  <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                  <feGaussianBlur stdDeviation="80" result="effect1_foregroundBlur_blob3" />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="BackgroundImageFix"
+                    result="shape"
+                  />
+                  <feGaussianBlur
+                    stdDeviation="80"
+                    result="effect1_foregroundBlur_blob3"
+                  />
                 </filter>
               </defs>
             </svg>
@@ -299,7 +341,12 @@ export function PasswordSetupPage() {
                     disabled={isLoading}
                   >
                     {showPassword ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -308,8 +355,18 @@ export function PasswordSetupPage() {
                         />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -323,7 +380,9 @@ export function PasswordSetupPage() {
               </div>
 
               {/* Password Strength Indicator */}
-              {password && <PasswordStrengthIndicator strength={passwordStrength} />}
+              {password && (
+                <PasswordStrengthIndicator strength={passwordStrength} />
+              )}
 
               {/* Confirm Password Field */}
               <div className="flex flex-col gap-2">
@@ -354,7 +413,12 @@ export function PasswordSetupPage() {
                     disabled={isLoading}
                   >
                     {showConfirmPassword ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -363,8 +427,18 @@ export function PasswordSetupPage() {
                         />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -376,7 +450,9 @@ export function PasswordSetupPage() {
                   </button>
                 </div>
                 {confirmPassword && !doesPasswordMatch && (
-                  <p className="text-sm text-red-600">Passwords do not match.</p>
+                  <p className="text-sm text-red-600">
+                    Passwords do not match.
+                  </p>
                 )}
               </div>
 
@@ -385,14 +461,27 @@ export function PasswordSetupPage() {
                 type="submit"
                 disabled={!canSubmit}
                 className={`w-full h-12 px-4 py-[11px] rounded bg-[#0073EA] flex items-center justify-center gap-2 transition-colors ${
-                  canSubmit ? "hover:bg-[#0062c7] cursor-pointer" : "opacity-50 cursor-not-allowed"
+                  canSubmit
+                    ? "hover:bg-[#0062c7] cursor-pointer"
+                    : "opacity-50 cursor-not-allowed"
                 }`}
               >
                 <span className="text-white font-roboto text-base font-bold leading-normal">
                   {isLoading ? (
                     <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <svg
+                        className="animate-spin h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
                         <path
                           className="opacity-75"
                           fill="currentColor"
