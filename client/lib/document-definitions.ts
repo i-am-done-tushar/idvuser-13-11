@@ -29,8 +29,8 @@ export const getDocumentDefinitionId = (country: string, documentName: string): 
       "passport": "7579ebab-673f-401e-9395-075e9addf4a7", // PASSPORT_IND
       "indian_passport": "7579ebab-673f-401e-9395-075e9addf4a7", // PASSPORT_IND
       "pan_card": "7579ebab-673f-401e-9395-075e9addf4a7", // PAN_IND
-      "driving_license": "7579ebab-673f-401e-9395-075e9addf4a7", // DL_IND
-      "driver_license": "7579ebab-673f-401e-9395-075e9addf4a7", // DL_IND
+      "driving_license": "ffb98e04-4477-418b-b17e-e4e718d7f694", // DL_IND
+      "driver_license": "ffb98e04-4477-418b-b17e-e4e718d7f694", // DL_IND
     };
     
     const documentId = documentMapping[normalizedDoc];
