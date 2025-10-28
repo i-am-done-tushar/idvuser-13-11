@@ -1,176 +1,554 @@
-import { useEffect, useRef, useState } from "react";
-import { HowItWorksDialog } from "./HowItWorksDialog";
+import { useEffect, useRef, useState, useCallback } from "react";
+import * as faceapi from "face-api.js";
+import * as tf from "@tensorflow/tfjs";
 import { useToast } from "@/hooks/use-toast";
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+interface FaceGuideOval {
+  cx: number;
+  cy: number;
+  rOuter: number;
+  rInner: number;
+  w: number;
+  h: number;
+}
+
+interface PartialSegmentBlob {
+  blob: Blob;
+  startTime: number;
+  endTime: number;
+  duration: number;
+}
+
+interface SegmentSubPart {
+  blob: Blob;
+  startTime: number;
+  endTime: number;
+  duration: number;
+}
 
 interface CameraSelfieStepProps {
   onComplete?: () => void;
   submissionId?: number | null;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE || "";
+const TOTAL_DURATION = 10;
+const TOTAL_SEGMENTS = 3;
+const MAX_HEAD_TURN_ATTEMPTS = 2;
+const FACE_MISMATCH_THRESHOLD = 3;
+
+type VerificationDirection = "left" | "right" | "up" | "down";
+type RecordingState = "inactive" | "recording" | "paused";
+
 export function CameraSelfieStep({ onComplete, submissionId }: CameraSelfieStepProps) {
   const { toast } = useToast();
-  const [cameraError, setCameraError] = useState(false);
-  const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
-  const [selfieCaptured, setSelfieCaptured] = useState(false);
-  const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadSuccessful, setUploadSuccessful] = useState(false);
-  // store the uploaded file id so we can delete it if the user re-uploads
-  const [uploadedFileId, setUploadedFileId] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
+  const brightnessCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Ask for camera access on mount
+  // UI State
+  const [cameraError, setCameraError] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [dashedCircleAlignMessage, setDashedCircleAlignMessage] = useState("");
+  const [brightnessMessage, setBrightnessMessage] = useState("");
+  const [distanceMessage, setDistanceMessage] = useState("");
+  const [ovalAlignMessage, setOvalAlignMessage] = useState("");
+  const [recordingMessage, setRecordingMessage] = useState("");
+  const [verificationMessage, setVerificationMessage] = useState("");
+  const [headTurnAttemptStatus, setHeadTurnAttemptStatus] = useState("");
+  const [mobileStatusMessage, setMobileStatusMessage] = useState("");
+  const [showSuccessScreen, setShowSuccessScreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
+
+  // Camera & Stream
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [isFaceDetected, setIsFaceDetected] = useState(false);
+  const streamRef = useRef<MediaStream | null>(null);
+  const videoElementRef = useRef<HTMLVideoElement | null>(null);
+  const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Recording State
+  const [isRecording, setIsRecording] = useState(false);
+  const [currentSegment, setCurrentSegment] = useState(0);
+  const [segmentDurations, setSegmentDurations] = useState<number[]>([]);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [segmentSecondsRecorded, setSegmentSecondsRecorded] = useState(0);
+
+  // Face Detection & Verification
+  const referenceFaceDescriptorRef = useRef<Float32Array | null>(null);
+  const lastLandmarksRef = useRef<faceapi.FaceLandmarks68 | null>(null);
+  const lastBoxRef = useRef<faceapi.Box | null>(null);
+  const ovalRef = useRef<FaceGuideOval>({
+    cx: 0,
+    cy: 0,
+    rOuter: 0,
+    rInner: 0,
+    w: 0,
+    h: 0,
+  });
+
+  // Recording internals
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksPerSegmentRef = useRef<Record<number, Blob[]>>({});
+  const completedSegmentsRef = useRef<Blob[]>([]);
+  const timerIntervalRef = useRef<number | null>(null);
+  const rafIdRef = useRef<number | null>(null);
+  const frameCountRef = useRef(0);
+
+  // Head turn verification
+  const [showHeadTurnPrompt, setShowHeadTurnPrompt] = useState(false);
+  const [headTurnDirection, setHeadTurnDirection] = useState<VerificationDirection | null>(null);
+  const [isVerifyingHeadTurn, setIsVerifyingHeadTurn] = useState(false);
+  const headTurnAttemptsRef = useRef(0);
+  const headRecordedChunksRef = useRef<Blob[]>([]);
+  const headMediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+  // Verification state
+  const verificationDoneForSegmentRef = useRef<Record<number, boolean>>({});
+  const headTurnAttemptsPerSegmentRef = useRef<Record<number, number>>({});
+  const partialSegmentBlobsPerSegmentRef = useRef<
+    Record<number, PartialSegmentBlob[]>
+  >({});
+  const firstVerificationDirectionRef = useRef<VerificationDirection | null>(null);
+  const secondVerificationDirectionRef = useRef<VerificationDirection | null>(null);
+
+  // Brightness & quality
+  const currentBrightnessRef = useRef(100);
+  const insideOvalFramesRef = useRef(0);
+  const fillBufferRef = useRef<number[]>([]);
+
+  // Face mismatch detection
+  const faceMismatchCounterRef = useRef(0);
+
+  const showMessage = useCallback(
+    (setter: (msg: string) => void, msg: string) => {
+      setter(msg);
+    },
+    []
+  );
+
+  // Check mobile on resize
   useEffect(() => {
-    async function initCamera() {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Initialize camera and face-api models
+  useEffect(() => {
+    const init = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" },
-        });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-        setCameraError(false);
+        // Setup TensorFlow
+        await tf.setBackend("webgl");
+        await tf.ready();
+
+        // Load face-api models
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri("/assets/weights"),
+          faceapi.nets.faceLandmark68Net.loadFromUri("/assets/weights"),
+          faceapi.nets.faceRecognitionNet.loadFromUri("/assets/weights"),
+          faceapi.nets.faceExpressionNet.loadFromUri("/assets/weights"),
+        ]);
+
+        await startCamera();
+        generateSegmentDurations();
       } catch (err) {
-        console.error("Error accessing camera:", err);
+        console.error("Initialization failed:", err);
         setCameraError(true);
       }
-    }
+    };
 
-    initCamera();
+    init();
 
     return () => {
-      // Stop camera when unmounting
-      if (videoRef.current?.srcObject) {
-        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-        tracks.forEach((track) => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
       }
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     };
   }, []);
 
-  // Capture frame from video
-  const captureSelfie = () => {
-    if (!videoRef.current) return;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx?.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-    // Convert to JPEG format (API only accepts JPEG and PDF)
-    const selfieDataUrl = canvas.toDataURL("image/jpeg", 0.9);
-    console.log("Selfie captured:", selfieDataUrl);
-
-    // Set the captured image and freeze the camera view
-    setCapturedImageUrl(selfieDataUrl);
-    setSelfieCaptured(true);
-  };
-
-  // Confirm the captured selfie and upload to server
-  const uploadSelfie = async () => {
-    if (!capturedImageUrl) return;
-
-    try {
-      setUploading(true);
-
-      // Convert data URL to blob
-      const response = await fetch(capturedImageUrl);
-      const blob = await response.blob();
-
-      const DOCUMENT_DEFINITION_ID = "f71639c4-111c-46e1-b11f-c6d1ab5dc4d0";
-
-      const formData = new FormData();
-      formData.append("File", blob, "selfie.jpg");
-      formData.append("DocumentDefinitionId", DOCUMENT_DEFINITION_ID);
-      formData.append("Bucket", "string");
-      const submissionIdToUse = submissionId?.toString();
-      console.log("CameraSelfieStep: Using UserTemplateSubmissionId:", submissionIdToUse);
-      formData.append("UserTemplateSubmissionId", submissionIdToUse);
-
-      // Always use POST for uploads, never PUT
-      const url = `${API_BASE}/api/Files/upload`;
-      const uploadResponse = await fetch(url, { method: "POST", body: formData });
-
-      if (uploadResponse.ok) {
-        const result = await uploadResponse.json().catch(() => ({}));
-        const returnedId =
-          (result &&
-            result.file &&
-            typeof result.file.id === "number" &&
-            result.file.id) ||
-          (typeof result.id === "number" && result.id) ||
-          (result &&
-            result.mapping &&
-            typeof result.mapping.fileId === "number" &&
-            result.mapping.fileId) ||
-          null;
-        if (returnedId) {
-          setUploadedFileId(returnedId);
-        }
-
-        // Mark upload as successful
-        setUploadSuccessful(true);
-
-        toast({
-          title: "Selfie Uploaded",
-          description: "Your selfie has been uploaded successfully!",
-        });
-
-        onComplete?.();
-      } else {
-        throw new Error("POST failed");
-      }
-    } catch (error) {
-      console.error("Error uploading selfie:", error);
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload selfie. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  // Retake the selfie (clear captured image and show live video again)
-  const retakeSelfie = () => {
-    setCapturedImageUrl(null);
-    setSelfieCaptured(false);
-    setUploadSuccessful(false); // Reset upload status when retaking
-  };
-
-  // Retry initializing camera without reloading the page
-  const handleRetry = async () => {
-    setSelfieCaptured(false);
-    setCapturedImageUrl(null);
-    setCameraError(false);
-
-    // Stop existing tracks if any
-    if (videoRef.current?.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-      tracks.forEach((t) => t.stop());
-      // Clear the srcObject so video element can be reattached to new stream
-      try {
-        (videoRef.current as HTMLVideoElement).srcObject = null;
-      } catch {}
-    }
-
+  const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
+        video: {
+          facingMode: "user",
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          frameRate: { ideal: 30, max: 30 },
+        },
+        audio: false,
       });
+
+      streamRef.current = stream;
+
       if (videoRef.current) {
+        videoElementRef.current = videoRef.current;
         videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+
+        const setupOverlay = () => {
+          if (overlayRef.current && videoRef.current) {
+            const w = videoRef.current.videoWidth || 640;
+            const h = videoRef.current.videoHeight || 480;
+
+            overlayRef.current.width = w;
+            overlayRef.current.height = h;
+            overlayCanvasRef.current = overlayRef.current;
+
+            ovalRef.current = {
+              w: w * 0.5,
+              h: h * 0.6,
+              cx: w / 2,
+              cy: h / 2,
+              rOuter: Math.min(w, h) * 0.35,
+              rInner: Math.min(w, h) * 0.35 * 0.7,
+            };
+
+            if (!brightnessCanvasRef.current) {
+              brightnessCanvasRef.current = document.createElement("canvas");
+              brightnessCanvasRef.current.width = w;
+              brightnessCanvasRef.current.height = h;
+            }
+          }
+        };
+
+        setupOverlay();
+        videoRef.current.addEventListener("loadedmetadata", setupOverlay);
+
+        setIsCameraOn(true);
+        startDetectionLoop();
       }
-      setCameraError(false);
-    } catch (err) {
-      console.error("Error accessing camera on retry:", err);
+    } catch (err: any) {
+      console.error("Camera initialization failed:", err);
       setCameraError(true);
+
+      if (err.name === "NotAllowedError") {
+        showMessage(
+          (msg) => setCameraError(true),
+          "❌ Camera permission denied."
+        );
+      } else if (err.name === "NotFoundError") {
+        showMessage(
+          (msg) => setCameraError(true),
+          "⚠️ No camera found on this device."
+        );
+      }
     }
+  };
+
+  const startDetectionLoop = () => {
+    const options = new faceapi.TinyFaceDetectorOptions();
+
+    const loop = async () => {
+      if (!isCameraOn || !videoElementRef.current) return;
+
+      frameCountRef.current++;
+
+      // Detect faces periodically
+      if (frameCountRef.current % 1 === 0) {
+        try {
+          const detection = await faceapi
+            .detectSingleFace(videoElementRef.current, options)
+            .withFaceLandmarks();
+
+          if (detection) {
+            lastLandmarksRef.current = detection.landmarks;
+            lastBoxRef.current = detection.detection.box;
+
+            // Check face alignment
+            const box = detection.detection.box;
+            const landmarks = detection.landmarks;
+            const fillPct = (box.height / ovalRef.current.h) * 100;
+
+            fillBufferRef.current.push(fillPct);
+            if (fillBufferRef.current.length > 5) fillBufferRef.current.shift();
+
+            const smoothedFill =
+              fillBufferRef.current.reduce((a, b) => a + b, 0) /
+              fillBufferRef.current.length;
+            const lowerBound = 55,
+              upperBound = 80;
+
+            let sizeOK = false;
+
+            if (smoothedFill < lowerBound) {
+              showMessage(
+                setDistanceMessage,
+                "📏 Please move closer to the camera."
+              );
+            } else if (smoothedFill > upperBound) {
+              showMessage(
+                setDistanceMessage,
+                "📏 Please move slightly farther away."
+              );
+            } else {
+              sizeOK = true;
+              showMessage(setDistanceMessage, "");
+            }
+
+            const faceInside = areLandmarksFullyInsideOval(landmarks);
+
+            if (sizeOK && faceInside) {
+              insideOvalFramesRef.current++;
+
+              if (insideOvalFramesRef.current >= 3) {
+                showMessage(
+                  setStatusMessage,
+                  "✅ Perfect! Stay still inside the dashed circle."
+                );
+                setIsFaceDetected(true);
+
+                if (!isRecording) {
+                  startRecordingSession();
+                }
+              }
+            } else {
+              insideOvalFramesRef.current = 0;
+              setIsFaceDetected(false);
+            }
+          } else {
+            setIsFaceDetected(false);
+            insideOvalFramesRef.current = 0;
+          }
+        } catch (err) {
+          console.error("Detection error:", err);
+        }
+      }
+
+      drawFaceGuideOverlay(currentBrightnessRef.current);
+      rafIdRef.current = requestAnimationFrame(loop);
+    };
+
+    rafIdRef.current = requestAnimationFrame(loop);
+  };
+
+  const areLandmarksFullyInsideOval = (landmarks: faceapi.FaceLandmarks68) => {
+    const { cx, cy, rOuter } = ovalRef.current;
+    const detectionRadius = rOuter * 1.2;
+
+    return landmarks.positions.every((point) => {
+      const dx = point.x - cx;
+      const dy = point.y - cy;
+      return Math.sqrt(dx * dx + dy * dy) <= detectionRadius;
+    });
+  };
+
+  const drawFaceGuideOverlay = (brightness: number) => {
+    if (!overlayCanvasRef.current) return;
+
+    const ctx = overlayCanvasRef.current.getContext("2d");
+    if (!ctx) return;
+
+    const w = overlayCanvasRef.current.width;
+    const h = overlayCanvasRef.current.height;
+    const { cx, cy, rOuter } = ovalRef.current;
+    const biggerRadius = rOuter * 1.2;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Background
+    if (brightness < 60) {
+      ctx.fillStyle = "white";
+    } else if (brightness > 180) {
+      ctx.fillStyle = "black";
+    } else {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    }
+    ctx.fillRect(0, 0, w, h);
+
+    // Punch out transparent circle
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(cx, cy, biggerRadius, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+
+    // Outer circle stroke
+    const outerStrokeColor =
+      isRecording && isFaceDetected ? "#16a34a" : "#ffffff";
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, biggerRadius, 0, 2 * Math.PI);
+    ctx.setLineDash([]);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = outerStrokeColor;
+    ctx.stroke();
+
+    // Inner dashed circle
+    ctx.beginPath();
+    ctx.arc(cx, cy, rOuter, 0, 2 * Math.PI);
+    ctx.setLineDash([8, 6]);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#ffffff";
+    ctx.stroke();
+
+    // Instruction text
+    ctx.font = "18px Arial";
+    ctx.fillStyle = "#ffffffff";
+    ctx.textAlign = "center";
+    ctx.fillText("Align your face within the white circles", cx, cy + biggerRadius + 20);
+  };
+
+  const generateSegmentDurations = () => {
+    const firstVal = Math.floor(Math.random() * 2) + 2;
+    const secondVal = Math.floor(Math.random() * 3) + 2;
+    const lastVal = Math.max(TOTAL_DURATION - (firstVal + secondVal), 1);
+    setSegmentDurations([firstVal, secondVal, lastVal]);
+  };
+
+  const startRecordingSession = async () => {
+    if (!isFaceDetected) {
+      showMessage(
+        setStatusMessage,
+        "🙋 Please align your face inside the circle first."
+      );
+      return;
+    }
+
+    try {
+      const detection = await faceapi
+        .detectSingleFace(
+          videoElementRef.current!,
+          new faceapi.TinyFaceDetectorOptions()
+        )
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+
+      if (detection?.descriptor) {
+        referenceFaceDescriptorRef.current = detection.descriptor;
+      }
+    } catch (err) {
+      console.error("Error capturing reference face:", err);
+    }
+
+    setCurrentSegment(1);
+    setIsRecording(true);
+    completedSegmentsRef.current = [];
+    verificationDoneForSegmentRef.current = {};
+    headTurnAttemptsPerSegmentRef.current = {};
+    partialSegmentBlobsPerSegmentRef.current = {};
+
+    startSegmentRecording(0);
+  };
+
+  const startSegmentRecording = async (resumeSecondsRecorded = 0) => {
+    if (!streamRef.current) {
+      showMessage(setStatusMessage, "⚠️ Camera not initialized.");
+      return;
+    }
+
+    if (currentSegment <= 0) {
+      setCurrentSegment(1);
+      return;
+    }
+
+    let options: MediaRecorderOptions | undefined;
+
+    if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
+      options = { mimeType: "video/webm;codecs=vp9" };
+    } else if (MediaRecorder.isTypeSupported("video/webm")) {
+      options = { mimeType: "video/webm" };
+    } else if (MediaRecorder.isTypeSupported("video/mp4")) {
+      options = { mimeType: "video/mp4", videoBitsPerSecond: 100000 };
+    }
+
+    const mediaRecorder = new MediaRecorder(streamRef.current, options);
+    mediaRecorderRef.current = mediaRecorder;
+
+    recordedChunksPerSegmentRef.current[currentSegment] = [];
+
+    const segmentTarget = segmentDurations[currentSegment - 1];
+
+    setSegmentSecondsRecorded(resumeSecondsRecorded);
+    setTimeRemaining(segmentTarget - resumeSecondsRecorded);
+
+    showMessage(
+      setRecordingMessage,
+      `🎥 Recording segment ${currentSegment}... (${segmentTarget - resumeSecondsRecorded}s left)`
+    );
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0 && isFaceDetected) {
+        if (!recordedChunksPerSegmentRef.current[currentSegment]) {
+          recordedChunksPerSegmentRef.current[currentSegment] = [];
+        }
+        recordedChunksPerSegmentRef.current[currentSegment].push(e.data);
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      const chunks =
+        recordedChunksPerSegmentRef.current[currentSegment] || [];
+
+      if (chunks.length > 0) {
+        const blob = new Blob(chunks, {
+          type: options?.mimeType || "video/webm",
+        });
+        completedSegmentsRef.current.push(blob);
+      }
+
+      if (currentSegment < TOTAL_SEGMENTS) {
+        setCurrentSegment(currentSegment + 1);
+        setTimeout(() => startSegmentRecording(0), 600);
+      } else {
+        finishRecording();
+      }
+    };
+
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+
+    timerIntervalRef.current = window.setInterval(() => {
+      setSegmentSecondsRecorded((prev) => {
+        const newTime = prev + 1;
+        setTimeRemaining(segmentTarget - newTime);
+
+        if (newTime >= segmentTarget) {
+          clearInterval(timerIntervalRef.current!);
+          if (
+            mediaRecorder.state === "recording" ||
+            mediaRecorder.state === "paused"
+          ) {
+            mediaRecorder.stop();
+          }
+        }
+
+        return newTime;
+      });
+    }, 1000);
+
+    mediaRecorder.start(1000);
+  };
+
+  const finishRecording = () => {
+    setIsRecording(false);
+    showMessage(
+      setRecordingMessage,
+      "✅ All segments complete. Thank you!"
+    );
+    setShowSuccessScreen(true);
+
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+
+    // Download completed blobs
+    downloadAllBlobs();
+  };
+
+  const downloadAllBlobs = () => {
+    completedSegmentsRef.current.forEach((blob, idx) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `segment_${idx + 1}.webm`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Call onComplete
+    onComplete?.();
   };
 
   return (
@@ -194,12 +572,12 @@ export function CameraSelfieStep({ onComplete, submissionId }: CameraSelfieStepP
               />
             </svg>
             <div className="text-text-primary font-roboto text-base font-bold leading-3">
-              Capture Selfie
+              Capture Selfie Video
             </div>
           </div>
           <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
             <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
-              Take a live selfie to confirm you are the person in the ID
+              Record a short video to confirm you are the person in the ID
               document. Make sure you're in a well-lit area and your face is
               clearly visible.
             </div>
@@ -208,193 +586,98 @@ export function CameraSelfieStep({ onComplete, submissionId }: CameraSelfieStepP
 
         {/* Main Content Section */}
         <div className="flex p-2 sm:p-4 flex-col justify-center items-center self-stretch border-t border-border bg-background">
-          <div className="flex w-full max-w-[956px] p-2 flex-col lg:flex-row items-center gap-4 lg:gap-6">
-            {/* Left Section - Camera Capture */}
-            <div className="flex w-full lg:flex-1 flex-col justify-center items-center">
-              <div className="flex w-full max-w-[440px] min-h-[300px] lg:min-h-[380px] pt-4 flex-col items-center gap-2 rounded-t-lg border-t-[1.5px] border-r-[1.5px] border-l-[1.5px] border-dashed border-step-inactive-border bg-background">
-                <div className="flex flex-col justify-center items-center gap-7 flex-1 self-stretch rounded-t border-[1.5px] border-dashed border-step-inactive-border bg-background">
-                  <div className="flex flex-col justify-center items-center gap-2 flex-1 self-stretch rounded-lg bg-background px-4">
-                    {cameraError ? (
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="w-[126px] h-[52px] relative">
-                          <div className="w-full text-text-primary text-center font-roboto text-[13px] font-medium">
-                            Camera not detected.
-                          </div>
-                        </div>
-                        <div className="w-full max-w-[284px] text-text-muted text-center font-roboto text-[13px] font-normal leading-5">
-                          Please check your device or close other apps using the
-                          camera.
-                        </div>
-                      </div>
-                    ) : selfieCaptured && capturedImageUrl ? (
-                      // Show captured image when selfie is taken
-                      <div className="flex flex-col items-center gap-3 w-full">
-                        <img
-                          src={capturedImageUrl}
-                          alt="Captured selfie"
-                          className="w-full max-w-[350px] rounded-lg"
-                        />
-                        <div className="text-text-primary text-center font-roboto text-[13px] font-medium">
-                          Selfie Captured
-                        </div>
-                        <div className="text-text-muted text-center font-roboto text-[12px] font-normal">
-                          Review your photo and confirm or retake if needed
-                        </div>
-                      </div>
-                    ) : (
-                      // Show live video feed
-                      <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        className="w-full max-w-[350px] rounded-lg"
-                      />
-                    )}
-                  </div>
+          <div className="flex w-full max-w-[956px] p-2 flex-col items-center gap-4">
+            {showSuccessScreen ? (
+              <div className="flex flex-col items-center justify-center gap-4 p-8 rounded-lg border border-green-500 bg-green-50">
+                <div className="text-2xl font-bold text-green-700">
+                  ✅ Recording Complete!
+                </div>
+                <div className="text-center text-green-600">
+                  Your video has been successfully recorded and will be
+                  uploaded. Thank you for completing the verification process.
                 </div>
               </div>
-
-              {/* Retry & Capture Buttons */}
-              <div className="flex w-full max-w-[440px] p-2 pr-4 flex-row items-center gap-2 rounded-b bg-[#F6F7FB] justify-end">
-                {selfieCaptured && capturedImageUrl ? (
-                  // Show retake and upload buttons when selfie is captured
-                  <div className="flex gap-2">
-                    <button
-                      onClick={retakeSelfie}
-                      disabled={uploading}
-                      className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50"
-                    >
-                      <span className="text-white font-roboto text-[13px] font-medium">
-                        Retake
-                      </span>
-                    </button>
-                    <button
-                      onClick={uploadSelfie}
-                      disabled={uploading || uploadSuccessful}
-                      className={`flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded transition-colors disabled:opacity-50 ${
-                        uploadSuccessful
-                          ? "bg-green-500 hover:bg-green-600"
-                          : "bg-primary hover:bg-primary/90"
-                      }`}
-                    >
-                      {uploadSuccessful && (
-                        <svg
-                          className="w-4 h-4 mr-1"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M6.21967 9.86236L7.71968 11.3624C8.01255 11.6552 8.48745 11.6552 8.78032 11.3624L12.1553 7.98736C12.4482 7.69447 12.4482 7.2196 12.1553 6.9267C11.8624 6.63381 11.3876 6.63381 11.0947 6.9267L8.25 9.77138L7.28033 8.80171C6.98744 8.50883 6.51256 8.50883 6.21967 8.80171C5.92678 9.09458 5.92678 9.56948 6.21967 9.86236Z"
-                            fill="white"
-                          />
-                        </svg>
-                      )}
-                      <span className="text-white font-roboto text-[13px] font-medium">
-                        {uploading
-                          ? "Uploading..."
-                          : uploadSuccessful
-                            ? "Uploaded"
-                            : "Upload"}
-                      </span>
-                    </button>
+            ) : (
+              <div className="flex w-full flex-col gap-4">
+                {/* Video Feed */}
+                <div className="flex w-full justify-center">
+                  <div className="flex w-full max-w-[440px] min-h-[380px] flex-col items-center gap-2 rounded-lg border-[1.5px] border-dashed border-step-inactive-border bg-background overflow-hidden">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                    <canvas
+                      ref={overlayRef}
+                      className="absolute w-full max-w-[440px] h-[380px]"
+                    />
                   </div>
-                ) : (
-                  // Show retry and capture buttons when no selfie is captured
-                  <>
-                    <button
-                      onClick={handleRetry}
-                      className="flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded bg-primary hover:bg-primary/90 transition-colors"
-                    >
-                      <span className="text-white font-roboto text-[13px] font-medium">
-                        Retry
+                </div>
+
+                {/* Status Messages */}
+                <div className="w-full max-w-[440px] mx-auto">
+                  {statusMessage && (
+                    <div className="text-sm p-2 rounded bg-blue-50 text-blue-700">
+                      {statusMessage}
+                    </div>
+                  )}
+                  {recordingMessage && (
+                    <div className="text-sm p-2 rounded bg-green-50 text-green-700">
+                      {recordingMessage}
+                    </div>
+                  )}
+                  {dashedCircleAlignMessage && (
+                    <div className="text-sm p-2 rounded bg-yellow-50 text-yellow-700">
+                      {dashedCircleAlignMessage}
+                    </div>
+                  )}
+                  {brightnessMessage && (
+                    <div className="text-sm p-2 rounded bg-orange-50 text-orange-700">
+                      {brightnessMessage}
+                    </div>
+                  )}
+                  {distanceMessage && (
+                    <div className="text-sm p-2 rounded bg-purple-50 text-purple-700">
+                      {distanceMessage}
+                    </div>
+                  )}
+                  {verificationMessage && (
+                    <div className="text-sm p-2 rounded bg-red-50 text-red-700">
+                      {verificationMessage}
+                    </div>
+                  )}
+                </div>
+
+                {/* Recording Progress */}
+                {isRecording && (
+                  <div className="w-full max-w-[440px] mx-auto">
+                    <div className="flex justify-between text-xs text-gray-600 mb-1">
+                      <span>
+                        Segment {currentSegment}/{TOTAL_SEGMENTS}
                       </span>
-                    </button>
-
-                    <button
-                      onClick={captureSelfie}
-                      disabled={cameraError}
-                      className={`flex h-8 py-[9px] px-3 justify-center items-center gap-1 rounded ${
-                        cameraError
-                          ? "bg-primary opacity-50"
-                          : "bg-primary hover:bg-primary/90"
-                      }`}
-                    >
-                      <span className="text-white font-roboto text-[13px] font-medium">
-                        Capture Selfie
-                      </span>
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div className="flex lg:hidden w-full h-4 flex-row justify-center items-center gap-2">
-              <div className="flex-1 h-0 border-t border-border"></div>
-              <div className="text-text-muted font-roboto text-[13px] font-normal px-2">
-                or
-              </div>
-              <div className="flex-1 h-0 border-t border-border"></div>
-            </div>
-            <div className="hidden lg:flex h-24 flex-col justify-center items-center gap-1">
-              <div className="w-0 h-[34px] border-l border-border"></div>
-              <div className="text-text-muted font-roboto text-[13px] font-normal">
-                or
-              </div>
-              <div className="w-0 h-[34px] border-l border-border"></div>
-            </div>
-
-            {/* Right Section - QR Code */}
-            <div className="flex w-full lg:flex-1 flex-col justify-center items-center">
-              <div className="flex w-full max-w-[440px] min-h-[300px] lg:min-h-[380px] flex-col items-center gap-2">
-                <div className="flex pt-4 flex-col justify-between items-center flex-1 self-stretch rounded-t-lg border-[1.5px] border-dashed border-step-inactive-border">
-                  <div className="flex flex-col justify-center items-center gap-2 flex-1 px-4">
-                    <div className="flex flex-col lg:flex-row justify-center items-center gap-4">
-                      <img
-                        className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 flex-shrink-0"
-                        src="https://api.builder.io/api/v1/image/assets/TEMP/7e3be353453f139a4c9f40e2de6ea62b3ab16235?width=256"
-                        alt="QR Code"
+                      <span>{timeRemaining}s remaining</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-green-500 h-2 rounded-full transition-all"
+                        style={{
+                          width: `${
+                            ((segmentSecondsRecorded /
+                              segmentDurations[currentSegment - 1]) *
+                              100) %
+                            100
+                          }%`,
+                        }}
                       />
-                      <div className="flex flex-col justify-center items-center gap-2">
-                        <div className="flex w-full max-w-[214px] flex-col items-center gap-3">
-                          <div className="w-full text-center font-roboto text-[13px] font-normal leading-5">
-                            <span className="text-text-muted">
-                              Continue on another device by scanning the QR code
-                              or opening
-                            </span>
-                            <span className="text-primary">
-                              {" "}
-                              https://id.xyz/verify
-                            </span>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-
-              {/* How does this work */}
-              <div className="flex w-full max-w-[440px] h-12 p-4 items-center gap-2 rounded-b bg-[#F6F7FB]">
-                <div className="flex w-full justify-end items-center gap-1">
-                  <button
-                    onClick={() => setShowHowItWorksDialog(true)}
-                    className="text-primary font-roboto text-xs font-normal leading-5 hover:underline"
-                  >
-                    How does this work?
-                  </button>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
-
-      <HowItWorksDialog
-        isOpen={showHowItWorksDialog}
-        onClose={() => setShowHowItWorksDialog(false)}
-      />
     </div>
   );
 }
