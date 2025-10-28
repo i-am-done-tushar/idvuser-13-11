@@ -381,8 +381,11 @@ export function PasswordSetupPage() {
               </div>
 
               {/* Password Strength Indicator */}
-              {password && (
-                <PasswordStrengthIndicator strength={passwordStrength} />
+              {password && showPasswordStrength && (
+                <PasswordStrengthIndicator
+                  strength={passwordStrength}
+                  onDismiss={() => setShowPasswordStrength(false)}
+                />
               )}
 
               {/* Confirm Password Field */}
