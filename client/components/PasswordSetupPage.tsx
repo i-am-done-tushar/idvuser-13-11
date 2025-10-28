@@ -330,7 +330,10 @@ export function PasswordSetupPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setShowPasswordStrength(true);
+                    }}
                     className="w-full h-[54px] px-3 py-[15px] border border-[#C3C6D4] rounded bg-white text-[#323238] font-roboto text-base leading-5 placeholder:text-[#676879] focus:outline-none focus:ring-2 focus:ring-[#0073EA] focus:border-transparent"
                     placeholder="Enter a strong password"
                     disabled={isLoading}
