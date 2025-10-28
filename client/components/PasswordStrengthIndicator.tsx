@@ -2,175 +2,179 @@ import { PasswordStrength } from "@/lib/password-validation";
 
 interface PasswordStrengthIndicatorProps {
   strength: PasswordStrength;
+  onDismiss?: () => void;
 }
 
 export function PasswordStrengthIndicator({
   strength,
+  onDismiss,
 }: PasswordStrengthIndicatorProps) {
   return (
-    <div className="space-y-3">
-      {/* Strength Bar */}
-      <div className="space-y-1">
-        <div className="flex justify-between items-center">
-          <label className="text-sm font-medium text-gray-700">
-            Password Strength
-          </label>
-          <span
-            className={`text-sm font-medium ${
-              strength.color === "bg-red-500"
-                ? "text-red-600"
-                : strength.color === "bg-yellow-500"
-                  ? "text-yellow-600"
-                  : strength.color === "bg-blue-500"
-                    ? "text-blue-600"
-                    : "text-green-600"
-            }`}
-          >
-            {strength.label}
+    <div
+      className="flex flex-col items-start gap-2 p-2 rounded bg-[#F6F7FB] cursor-pointer transition-opacity hover:opacity-90"
+      onClick={onDismiss}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onDismiss?.();
+        }
+      }}
+      aria-label="Password requirements (click to dismiss)"
+    >
+      <p className="text-xs font-medium text-[#323238] leading-normal">
+        Password must contain:
+      </p>
+
+      <div className="flex flex-col items-start gap-1">
+        <div className="flex items-center gap-1">
+          {strength.requirements.minLength ? (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5.5 10L8.5 13L14.5 7"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.1693 5.83594L5.83594 14.1693M5.83594 5.83594L14.1693 14.1693"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          <span className="text-xs font-normal leading-5 text-[#676879]">
+            At least 8 characters
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-          <div
-            className={`h-2 rounded-full transition-all duration-300 ${strength.color}`}
-            style={{ width: `${(strength.score + 1) * 25}%` }}
-          />
+
+        <div className="flex items-center gap-1">
+          {strength.requirements.hasUppercase ? (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5.5 10L8.5 13L14.5 7"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.1693 5.83594L5.83594 14.1693M5.83594 5.83594L14.1693 14.1693"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          <span className="text-xs font-normal leading-5 text-[#676879]">
+            One uppercase letter
+          </span>
         </div>
-      </div>
 
-      {/* Requirements Checklist */}
-      <div className="space-y-2 bg-gray-50 p-3 rounded-md">
-        <p className="text-xs font-semibold text-gray-600 uppercase">
-          Requirements
-        </p>
-        <ul className="space-y-2">
-          <li className="flex items-center gap-2 text-sm">
-            <div
-              className={`w-4 h-4 rounded flex items-center justify-center ${
-                strength.requirements.minLength ? "bg-green-500" : "bg-gray-300"
-              }`}
+        <div className="flex items-center gap-1">
+          {strength.requirements.hasNumber ? (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              {strength.requirements.minLength && (
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
-            </div>
-            <span
-              className={
-                strength.requirements.minLength
-                  ? "text-gray-700"
-                  : "text-gray-500"
-              }
+              <path
+                d="M5.5 10L8.5 13L14.5 7"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              At least 8 characters
-            </span>
-          </li>
+              <path
+                d="M14.1693 5.83594L5.83594 14.1693M5.83594 5.83594L14.1693 14.1693"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          <span className="text-xs font-normal leading-5 text-[#676879]">
+            One number
+          </span>
+        </div>
 
-          <li className="flex items-center gap-2 text-sm">
-            <div
-              className={`w-4 h-4 rounded flex items-center justify-center ${
-                strength.requirements.hasUppercase
-                  ? "bg-green-500"
-                  : "bg-gray-300"
-              }`}
+        <div className="flex items-center gap-1">
+          {strength.requirements.hasSpecialChar ? (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              {strength.requirements.hasUppercase && (
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
-            </div>
-            <span
-              className={
-                strength.requirements.hasUppercase
-                  ? "text-gray-700"
-                  : "text-gray-500"
-              }
+              <path
+                d="M5.5 10L8.5 13L14.5 7"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-5 h-5 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              At least 1 uppercase letter
-            </span>
-          </li>
-
-          <li className="flex items-center gap-2 text-sm">
-            <div
-              className={`w-4 h-4 rounded flex items-center justify-center ${
-                strength.requirements.hasNumber ? "bg-green-500" : "bg-gray-300"
-              }`}
-            >
-              {strength.requirements.hasNumber && (
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
-            </div>
-            <span
-              className={
-                strength.requirements.hasNumber
-                  ? "text-gray-700"
-                  : "text-gray-500"
-              }
-            >
-              At least 1 number
-            </span>
-          </li>
-
-          <li className="flex items-center gap-2 text-sm">
-            <div
-              className={`w-4 h-4 rounded flex items-center justify-center ${
-                strength.requirements.hasSpecialChar
-                  ? "bg-green-500"
-                  : "bg-gray-300"
-              }`}
-            >
-              {strength.requirements.hasSpecialChar && (
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
-            </div>
-            <span
-              className={
-                strength.requirements.hasSpecialChar
-                  ? "text-gray-700"
-                  : "text-gray-500"
-              }
-            >
-              At least 1 special character (!@#$%^&*...)
-            </span>
-          </li>
-        </ul>
+              <path
+                d="M14.1693 5.83594L5.83594 14.1693M5.83594 5.83594L14.1693 14.1693"
+                stroke="#676879"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          <span className="text-xs font-normal leading-5 text-[#676879]">
+            One special character
+          </span>
+        </div>
       </div>
     </div>
   );

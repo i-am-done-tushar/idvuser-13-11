@@ -17,6 +17,7 @@ export function PasswordSetupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordStrength, setShowPasswordStrength] = useState(true);
 
   const passwordStrength = validatePassword(password);
   const isPasswordStrong = isPasswordValid(password);
@@ -329,7 +330,10 @@ export function PasswordSetupPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setShowPasswordStrength(true);
+                    }}
                     className="w-full h-[54px] px-3 py-[15px] border border-[#C3C6D4] rounded bg-white text-[#323238] font-roboto text-base leading-5 placeholder:text-[#676879] focus:outline-none focus:ring-2 focus:ring-[#0073EA] focus:border-transparent"
                     placeholder="Enter a strong password"
                     disabled={isLoading}
@@ -380,8 +384,11 @@ export function PasswordSetupPage() {
               </div>
 
               {/* Password Strength Indicator */}
-              {password && (
-                <PasswordStrengthIndicator strength={passwordStrength} />
+              {password && showPasswordStrength && (
+                <PasswordStrengthIndicator
+                  strength={passwordStrength}
+                  onDismiss={() => setShowPasswordStrength(false)}
+                />
               )}
 
               {/* Confirm Password Field */}
