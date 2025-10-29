@@ -109,7 +109,7 @@ const OngoingVerificationSection = ({ cards }: { cards: OngoingCard[] }) => {
           </span>
         </div>
       </div>
-      <div className="flex px-4 pb-4 items-start gap-6 w-full overflow-x-auto">
+      <div className="flex px-4 pb-4 items-start gap-6 w-full overflow-hidden">
         <div className="flex items-start gap-6 min-w-full">
           {cards.map((card) => (
             <div key={card.id} className="flex-1 min-w-[280px] max-w-[400px]">
@@ -140,7 +140,7 @@ const ExpiredVerificationSection = ({ cards }: { cards: ExpiredCard[] }) => {
           </span>
         </div>
       </div>
-      <div className="flex px-4 pb-4 items-start gap-6 w-full overflow-x-auto">
+      <div className="flex px-4 pb-4 items-start gap-6 w-full overflow-hidden">
         <div className="flex items-start gap-6 min-w-full">
           {cards.map((card) => (
             <div key={card.id} className="flex-1 min-w-[280px] max-w-[400px]">
@@ -170,7 +170,7 @@ const VerifiedCredentialsSection = ({ cards }: { cards: VerifiedCard[] }) => {
           </span>
         </div>
       </div>
-      <div className="flex px-4 pb-4 items-start gap-6 w-full overflow-x-auto">
+      <div className="flex px-4 pb-4 items-start gap-6 w-full overflow-hidden">
         <div className="flex items-start gap-6 min-w-full">
           {cards.map((card) => (
             <div key={card.id} className="flex-1 min-w-[280px] max-w-[400px]">
