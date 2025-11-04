@@ -196,7 +196,12 @@ export function Dashboard() {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("home");
 
-  const navItems = [
+  const navItems: Array<{
+    id: string;
+    label: string;
+    icon: (isActive: boolean) => JSX.Element;
+    onClick?: () => void;
+  }> = [
     {
       id: "home",
       label: "Home",
@@ -239,6 +244,7 @@ export function Dashboard() {
           />
         </svg>
       ),
+      onClick: () => navigate("/ongoing-verification"),
     },
     {
       id: "expired",
@@ -342,7 +348,10 @@ export function Dashboard() {
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveNav(item.id)}
+                onClick={() => {
+                  setActiveNav(item.id);
+                  item.onClick?.();
+                }}
                 className={`flex h-[38px] items-center gap-2 self-stretch rounded ${
                   isActive ? "bg-[#E6F1FD] pl-1 pr-2.25" : "pl-3 pr-2.25"
                 }`}
