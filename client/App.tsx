@@ -49,6 +49,10 @@ const App = () => (
             path="/ongoing-verification"
             element={<OngoingVerificationPage />}
           />
+          <Route
+            path="/expired-verification"
+            element={<ExpiredVerificationPage />}
+          />
           <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
