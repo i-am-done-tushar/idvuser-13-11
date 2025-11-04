@@ -1,7 +1,7 @@
 import { TemplateVersionSection } from "@shared/api";
 import { PersonalInformationForm } from "./PersonalInformationForm";
 import { IdentityDocumentForm } from "./IdentityDocumentForm";
-import { CameraSelfieStep } from "./CameraSelfieStep";
+import CameraSelfieStep from "./CameraSelfieStep";
 import { LockedStepComponent } from "./LockedStepComponent";
 import { FormData } from "@shared/templates";
 
@@ -304,7 +304,7 @@ export function DesktopDynamicSection({
                     <div className="flex w-full flex-col items-center gap-2">
                       <CameraSelfieStep
                         onComplete={onSelfieComplete || (() => {})}
-                        submissionId={submissionId}
+                        userId={submissionId}
                       />
                     </div>
                   </div>

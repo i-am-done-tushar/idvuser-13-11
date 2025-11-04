@@ -7,8 +7,8 @@ import { QRCodeDisplay } from "./QRCodeDisplay";
 import { useSessionSync } from "@/hooks/useSessionSync";
 import { extractSessionFromURL } from "@/lib/qr-utils";
 
-const API_BASE = "https://idvapi-test.arconnet.com:1019";
-// const API_BASE = "http://10.10.2.133:8080";
+// const API_BASE = "https://idvapi-test.arconnet.com:1019";
+const API_BASE = "http://10.10.2.133:8080";
 
   // import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 

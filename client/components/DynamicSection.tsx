@@ -2,7 +2,7 @@ import { useState } from "react";
 import { TemplateVersionSection } from "@shared/api";
 import { PersonalInformationForm } from "./PersonalInformationForm";
 import { IdentityDocumentForm } from "./IdentityDocumentForm";
-import { CameraSelfieStep } from "./CameraSelfieStep";
+import  CameraSelfieStep from "./CameraSelfieStep";
 import { LockedStepComponent } from "./LockedStepComponent";
 import { FormData } from "@shared/templates";
 
@@ -214,7 +214,7 @@ export function DynamicSection({
 
             <div className="flex p-3 flex-col justify-center items-center self-stretch bg-background">
               <div className="flex w-full flex-col items-center gap-2">
-                <CameraSelfieStep onComplete={onSelfieComplete || (() => {})} submissionId={submissionId} />
+                <CameraSelfieStep onComplete={onSelfieComplete || (() => {})} userId={submissionId} />
               </div>
             </div>
           </>
