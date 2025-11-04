@@ -292,7 +292,10 @@ export function OngoingVerificationPage() {
               </h2>
               <div className="flex items-start gap-5 self-stretch flex-wrap">
                 {notStartedVerifications.map((item) => (
-                  <div key={item.id} className="flex-1 min-w-[320px] max-w-[400px]">
+                  <div
+                    key={item.id}
+                    className="flex-1 min-w-[320px] max-w-[400px]"
+                  >
                     <OngoingVerificationCard
                       title={item.title}
                       documentType={item.documentType}
@@ -311,7 +314,10 @@ export function OngoingVerificationPage() {
               </h2>
               <div className="flex items-start gap-5 self-stretch flex-wrap">
                 {inProgressVerifications.map((item) => (
-                  <div key={item.id} className="flex-1 min-w-[320px] max-w-[400px]">
+                  <div
+                    key={item.id}
+                    className="flex-1 min-w-[320px] max-w-[400px]"
+                  >
                     <OngoingVerificationCard
                       title={item.title}
                       documentType={item.documentType}

@@ -44,7 +44,10 @@ const App = () => (
           <Route path="/auth/login" element={<AuthLoginPage />} />
           <Route path="/auth/otp" element={<AuthOtpPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/ongoing-verification" element={<OngoingVerificationPage />} />
+          <Route
+            path="/ongoing-verification"
+            element={<OngoingVerificationPage />}
+          />
           <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
