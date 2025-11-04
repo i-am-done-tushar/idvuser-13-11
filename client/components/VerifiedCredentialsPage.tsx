@@ -269,7 +269,10 @@ export function VerifiedCredentialsPage() {
           <div className="flex px-4 flex-col items-start gap-2.5 flex-1 self-stretch">
             <div className="flex items-start gap-5 self-stretch flex-wrap">
               {verifiedCredentials.map((item) => (
-                <div key={item.id} className="flex-1 min-w-[320px] max-w-[400px]">
+                <div
+                  key={item.id}
+                  className="flex-1 min-w-[320px] max-w-[400px]"
+                >
                   <VerifiedCredentialCard
                     title={item.title}
                     documentType={item.documentType}
