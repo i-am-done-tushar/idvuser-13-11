@@ -181,6 +181,8 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
   const segmentRetryRef = useRef<number>(0);
   const MAX_SEGMENT_RETRIES = 3;
 
+  const startedAtRef = useRef<number>(0);
+
   /* ------------------ UI states (Angular bindings) ------------------ */
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isFaceDetected, setIsFaceDetected] = useState(false);
@@ -2153,6 +2155,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
 
   const _startSegmentRecording = useCallback(
     async (resumeSecondsRecorded = 0) => {
+      console.log("Starting segment recording from", resumeSecondsRecorded, "seconds");
       // Re-entry guards
       if (isStartingSegmentRef.current) {
         logService.log("warn", "[SEG] Start ignored: already starting.");
@@ -2249,108 +2252,13 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
         // Session-safe helper: ignore callbacks from stale sessions
         const isStale = () => mySessionId !== segmentSessionIdRef.current;
 
-        // rec.onstart = () => {
-        //   if (isStale()) return;
-        //   recordingFlagRef.current = 1;
-        //   isRecordingRef.current = true;
-        //   const target = segmentDurationsRef.current[currentSegmentRef.current - 1];
-        //   const remaining = target - segmentSecondsRecordedRef.current;
-        //   setTimeRemaining(Math.max(remaining, 0));
-        //   showMessage(
-        //     "recordingMessage",
-        //     `🎬 Recording segment ${currentSegmentRef.current}... (${Math.max(remaining, 0)}s left)`
-        //   );
-        //   logService.log("info", `[SEG] Started. Session=${mySessionId}`);
-        // };
-
-        // rec.ondataavailable = (event) => {
-        //   if (isStale()) return;
-        //   if (event.data && event.data.size > 0) {
-        //     recordedChunksPerSegmentRef.current[currentSegmentRef.current] ??= [];
-        //     recordedChunksPerSegmentRef.current[currentSegmentRef.current].push(event.data);
-        //   }
-        // };
-
-        // rec.onstop = async () => {
-        //   if (isStale()) return;
-
-        //   recordingFlagRef.current = 0;
-        //   isRecordingRef.current = false;
-
-        //   const chunks = recordedChunksPerSegmentRef.current[currentSegmentRef.current] || [];
-        //   const hasValidChunks = chunks.length > 0;
-        //   const target = segmentDurationsRef.current[currentSegmentRef.current - 1];
-        //   const hasEnoughTime = segmentSecondsRecordedRef.current >= target;
-
-        //   // If we stopped intentionally for restart (face loss), stash partial and return
-        //   if (stoppingForRestartRef.current) {
-        //     stoppingForRestartRef.current = false;
-        //     const sessionDuration = segmentSecondsRecordedRef.current - currentSessionStartTimeRef.current;
-        //     if (hasValidChunks && sessionDuration > 0) {
-        //       const blob = new Blob(chunks, { type: options?.mimeType ?? "video/webm" });
-        //       partialSegmentBlobsPerSegmentRef.current[currentSegmentRef.current] ??= [];
-        //       partialSegmentBlobsPerSegmentRef.current[currentSegmentRef.current].push({
-        //         blob,
-        //         startTime: currentSessionStartTimeRef.current,
-        //         endTime: segmentSecondsRecordedRef.current,
-        //         duration: sessionDuration,
-        //       });
-        //     }
-        //     // Do NOT auto-restart here; the caller (_restartCurrentSegmentDueToFaceLoss) controls it.
-        //     logService.log("info", `[SEG] Stopped for restart. Session=${mySessionId}`);
-        //     return;
-        //   }
-
-
-        //   // Normal stop: either complete or retry bounded times
-        //   if (isFaceDetected && isSegmentValidRef.current && hasEnoughTime && hasValidChunks) {
-        //     const blob = new Blob(chunks, { type: options?.mimeType ?? "video/webm" });
-        //     completedSegmentsRef.current.push(blob);
-        //     logService.log("info", `[SEG] ✅ Segment ${currentSegmentRef.current} saved. Session=${mySessionId}`);
-
-        //     if (_shouldVerifyAfterSegment(currentSegmentRef.current)) {
-        //       await _performVerificationForCurrentSegment();
-        //       return;
-        //     }
-
-        //     _downloadAllBlobs(); // keep your behavior
-        //     await _onSegmentComplete();
-        //     return;
-        //   }
-
-        //   // Bounded retries to prevent loops
-        //   if (segmentRetryRef.current < MAX_SEGMENT_RETRIES) {
-        //     segmentRetryRef.current += 1;
-        //     logService.log(
-        //       "warn",
-        //       `[SEG] Incomplete/invalid segment; retry ${segmentRetryRef.current}/${MAX_SEGMENT_RETRIES}.`
-        //     );
-        //     // Small debounce to avoid tight loops
-        //     setTimeout(() => {
-        //       if (!isStale()) _startSegmentRecording(segmentSecondsRecordedRef.current);
-        //     }, 600);
-        //   } else {
-        //     showMessage(
-        //       "statusMessage",
-        //       "⚠️ Couldn’t complete the segment reliably. Please re-align and try again."
-        //     );
-        //     logService.log("error", "[SEG] Max retries hit; aborting this segment.");
-        //   }
-        // };
-        // rec.start();
-
-        // setTimeout(() => {
-        //   rec.stop();
-        // }, 5000);
         rec.onstart = () => {
           if (isStale()) return;
           recordingFlagRef.current = 1;
           isRecordingRef.current = true;
-
           const target = segmentDurationsRef.current[currentSegmentRef.current - 1];
           const remaining = target - segmentSecondsRecordedRef.current;
           setTimeRemaining(Math.max(remaining, 0));
-
           showMessage(
             "recordingMessage",
             `🎬 Recording segment ${currentSegmentRef.current}... (${Math.max(remaining, 0)}s left)`
@@ -2366,103 +2274,198 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
           }
         };
 
-        // ✅ Minimal onstop: just build a blob from whatever we have and download it.
-        //    No partial stashing, no verification, no retries, no flushing of refs/arrays.
-        rec.onstop = () => {
+        rec.onstop = async () => {
           if (isStale()) return;
 
           recordingFlagRef.current = 0;
           isRecordingRef.current = false;
 
           const chunks = recordedChunksPerSegmentRef.current[currentSegmentRef.current] || [];
-          if (chunks.length === 0) {
-            logService.log("warn", "[SEG] No data available to download.");
-            return;
-          }
-
-          const blob = new Blob(chunks, { type: options?.mimeType ?? "video/webm" });
-
-          // Optional: keep it for later if you want, but we do NOT clear arrays.
-          completedSegmentsRef.current.push(blob);
-
-          // Generate a readable filename (no cleanup of any state)
-          const filename = `segment_${currentSegmentRef.current}_${new Date()
-            .toISOString()
-            .replace(/[:.]/g, "-")}.webm`;
-
-          const a = document.createElement("a");
-          a.style.display = "none";
-          a.href = URL.createObjectURL(blob);
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(() => {
-            URL.revokeObjectURL(a.href);
-            document.body.removeChild(a);
-          }, 100);
-
-          showMessage("recordingMessage", `✅ Downloaded ${filename}`);
-          logService.log("info", `[SEG] Downloaded ${filename}`);
-        };
-
-        rec.start();
-
-        // however you want to stop it (example: 5s)
-        setTimeout(() => {
-          if (rec.state === "recording") rec.stop();
-        }, 5000);
-
-        // Session-owned timer
-        if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current);
-        timerIntervalRef.current = window.setInterval(async () => {
-          if (isStale()) {
-            try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
-            return;
-          }
-
-          if (!isRecordingRef.current || !mediaRecorderRef.current) {
-            try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
-            return;
-          }
-
-          // Pause/resume based on face
-          if (!isFaceDetected) {
-            if (mediaRecorderRef.current.state === "recording") {
-              mediaRecorderRef.current.pause();
-              showMessage("recordingMessage", "⏸️ Paused (face not detected)");
-            }
-            return;
-          } else if (mediaRecorderRef.current.state === "paused") {
-            mediaRecorderRef.current.resume();
-            showMessage("recordingMessage", "▶️ Resumed");
-          }
-
-          // Time accounting & different-face check
+          const hasValidChunks = chunks.length > 0;
           const target = segmentDurationsRef.current[currentSegmentRef.current - 1];
-          if (segmentSecondsRecordedRef.current < target) {
-            segmentSecondsRecordedRef.current += 1;
-            setTimeRemaining(Math.max(target - segmentSecondsRecordedRef.current, 0));
+          const hasEnoughTime = segmentSecondsRecordedRef.current >= target;
 
-            if (await _checkDifferentFace()) {
-              isSegmentValidRef.current = false;
-              showMessage(
-                "verificationMessage",
-                "❌ Different face detected for several seconds! Restarting from scratch..."
-              );
-              try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
-              _resetAll();
-              _restartCurrentSegmentDueToFaceLoss();
-              if (mediaRecorderRef.current?.state !== "inactive") mediaRecorderRef.current?.stop();
+          // If we stopped intentionally for restart (face loss), stash partial and return
+          if (stoppingForRestartRef.current) {
+            stoppingForRestartRef.current = false;
+            const sessionDuration = segmentSecondsRecordedRef.current - currentSessionStartTimeRef.current;
+            if (hasValidChunks && sessionDuration > 0) {
+              const blob = new Blob(chunks, { type: options?.mimeType ?? "video/webm" });
+              partialSegmentBlobsPerSegmentRef.current[currentSegmentRef.current] ??= [];
+              partialSegmentBlobsPerSegmentRef.current[currentSegmentRef.current].push({
+                blob,
+                startTime: currentSessionStartTimeRef.current,
+                endTime: segmentSecondsRecordedRef.current,
+                duration: sessionDuration,
+              });
+            }
+            // Do NOT auto-restart here; the caller (_restartCurrentSegmentDueToFaceLoss) controls it.
+            logService.log("info", `[SEG] Stopped for restart. Session=${mySessionId}`);
+            return;
+          }
+
+
+          // Normal stop: either complete or retry bounded times
+          if (isFaceDetected && isSegmentValidRef.current && hasEnoughTime && hasValidChunks) {
+            const blob = new Blob(chunks, { type: options?.mimeType ?? "video/webm" });
+            completedSegmentsRef.current.push(blob);
+            logService.log("info", `[SEG] ✅ Segment ${currentSegmentRef.current} saved. Session=${mySessionId}`);
+
+            if (_shouldVerifyAfterSegment(currentSegmentRef.current)) {
+              await _performVerificationForCurrentSegment();
               return;
             }
-          } else {
-            // Target reached → stop (fires onstop)
-            try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
-            if (mediaRecorderRef.current.state === "recording") {
-              mediaRecorderRef.current.stop();
-            }
+
+            _downloadAllBlobs(); // keep your behavior
+            await _onSegmentComplete();
+            return;
           }
-        }, 1000);
+
+          // Bounded retries to prevent loops
+          if (segmentRetryRef.current < MAX_SEGMENT_RETRIES) {
+            segmentRetryRef.current += 1;
+            logService.log(
+              "warn",
+              `[SEG] Incomplete/invalid segment; retry ${segmentRetryRef.current}/${MAX_SEGMENT_RETRIES}.`
+            );
+            // Small debounce to avoid tight loops
+            setTimeout(() => {
+              if (!isStale()) _startSegmentRecording(segmentSecondsRecordedRef.current);
+            }, 600);
+          } else {
+            showMessage(
+              "statusMessage",
+              "⚠️ Couldn’t complete the segment reliably. Please re-align and try again."
+            );
+            logService.log("error", "[SEG] Max retries hit; aborting this segment.");
+          }
+        };
+        rec.start();
+
+        setTimeout(() => {
+          rec.stop();
+        }, 5000);
+        // rec.onstart = () => {
+        //   if (isStale()) return;
+        //   recordingFlagRef.current = 1;
+        //   isRecordingRef.current = true;
+
+        //   const target = segmentDurationsRef.current[currentSegmentRef.current - 1];
+        //   const remaining = target - segmentSecondsRecordedRef.current;
+        //   setTimeRemaining(Math.max(remaining, 0));
+
+        //   showMessage(
+        //     "recordingMessage",
+        //     `🎬 Recording segment ${currentSegmentRef.current}... (${Math.max(remaining, 0)}s left)`
+        //   );
+        //   logService.log("info", `[SEG] Started. Session=${mySessionId}`);
+        // };
+
+        // rec.ondataavailable = (event) => {
+        //   if (isStale()) return;
+        //   if (event.data && event.data.size > 0) {
+        //     recordedChunksPerSegmentRef.current[currentSegmentRef.current] ??= [];
+        //     recordedChunksPerSegmentRef.current[currentSegmentRef.current].push(event.data);
+        //   }
+        // };
+
+        // // ✅ Minimal onstop: just build a blob from whatever we have and download it.
+        // //    No partial stashing, no verification, no retries, no flushing of refs/arrays.
+        // rec.onstop = () => {
+        //   if (isStale()) return;
+
+        //   recordingFlagRef.current = 0;
+        //   isRecordingRef.current = false;
+
+        //   const chunks = recordedChunksPerSegmentRef.current[currentSegmentRef.current] || [];
+        //   if (chunks.length === 0) {
+        //     logService.log("warn", "[SEG] No data available to download.");
+        //     return;
+        //   }
+
+        //   const blob = new Blob(chunks, { type: options?.mimeType ?? "video/webm" });
+
+        //   // Optional: keep it for later if you want, but we do NOT clear arrays.
+        //   completedSegmentsRef.current.push(blob);
+
+        //   // Generate a readable filename (no cleanup of any state)
+        //   const filename = `segment_${currentSegmentRef.current}_${new Date()
+        //     .toISOString()
+        //     .replace(/[:.]/g, "-")}.webm`;
+
+        //   const a = document.createElement("a");
+        //   a.style.display = "none";
+        //   a.href = URL.createObjectURL(blob);
+        //   a.download = filename;
+        //   document.body.appendChild(a);
+        //   a.click();
+        //   setTimeout(() => {
+        //     URL.revokeObjectURL(a.href);
+        //     document.body.removeChild(a);
+        //   }, 100);
+
+        //   showMessage("recordingMessage", `✅ Downloaded ${filename}`);
+        //   logService.log("info", `[SEG] Downloaded ${filename}`);
+        // };
+
+        // rec.start();
+
+        // // however you want to stop it (example: 5s)
+        // setTimeout(() => {
+        //   if (rec.state === "recording") rec.stop();
+        // }, 5000);
+
+        // // Session-owned timer
+        // if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current);
+        // timerIntervalRef.current = window.setInterval(async () => {
+        //   if (isStale()) {
+        //     try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
+        //     return;
+        //   }
+
+        //   if (!isRecordingRef.current || !mediaRecorderRef.current) {
+        //     try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
+        //     return;
+        //   }
+
+        //   // Pause/resume based on face
+        //   if (!isFaceDetected) {
+        //     if (mediaRecorderRef.current.state === "recording") {
+        //       mediaRecorderRef.current.pause();
+        //       showMessage("recordingMessage", "⏸️ Paused (face not detected)");
+        //     }
+        //     return;
+        //   } else if (mediaRecorderRef.current.state === "paused") {
+        //     mediaRecorderRef.current.resume();
+        //     showMessage("recordingMessage", "▶️ Resumed");
+        //   }
+
+        //   // Time accounting & different-face check
+        //   const target = segmentDurationsRef.current[currentSegmentRef.current - 1];
+        //   if (segmentSecondsRecordedRef.current < target) {
+        //     segmentSecondsRecordedRef.current += 1;
+        //     setTimeRemaining(Math.max(target - segmentSecondsRecordedRef.current, 0));
+
+        //     if (await _checkDifferentFace()) {
+        //       isSegmentValidRef.current = false;
+        //       showMessage(
+        //         "verificationMessage",
+        //         "❌ Different face detected for several seconds! Restarting from scratch..."
+        //       );
+        //       try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
+        //       _resetAll();
+        //       _restartCurrentSegmentDueToFaceLoss();
+        //       if (mediaRecorderRef.current?.state !== "inactive") mediaRecorderRef.current?.stop();
+        //       return;
+        //     }
+        //   } else {
+        //     // Target reached → stop (fires onstop)
+        //     try { if (timerIntervalRef.current) window.clearInterval(timerIntervalRef.current); } catch { }
+        //     if (mediaRecorderRef.current.state === "recording") {
+        //       mediaRecorderRef.current.stop();
+        //     }
+        //   }
+        // }, 1000);
 
         // Finally, start recording (async)
         // rec.start();
@@ -2476,6 +2479,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
     },
     [_checkDifferentFace, showMessage, logService, _performVerificationForCurrentSegment, _onSegmentComplete, _resetAll, _restartCurrentSegmentDueToFaceLoss, _shouldVerifyAfterSegment, _downloadAllBlobs]
   );
+
 
 
   // 5) Wire the refs once (after all four functions exist)
