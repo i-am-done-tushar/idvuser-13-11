@@ -1,672 +1,488 @@
-import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  validatePassword,
-  isPasswordValid,
-  passwordsMatch,
-} from "@/lib/password-validation";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
-  // Try to get user profile from sessionStorage if available
-  const stored = (() => {
-    try {
-      const raw = sessionStorage.getItem("idv_user_profile");
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
-  })();
+  const navigate = useNavigate();
+  const [activeNav, setActiveNav] = useState("");
 
-  const user = stored || {
-    fullName: "Sahil Angad",
-    email: "sahil@example.com",
-    employeeId: "EMP-0001",
-    department: "Engineering",
-    role: "Administrator",
-  };
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // MFA state
-  const storedMfa = (() => {
-    try {
-      const raw = sessionStorage.getItem("idv_mfa_settings");
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
-  })();
-
-  const [mfa, setMfa] = useState<any>(
-    storedMfa || {
-      enabled: false,
-      method: null,
-      value: null,
-      enforced: !!(stored && (stored as any).mfaEnforced),
+  const navItems: Array<{
+    id: string;
+    label: string;
+    icon: (isActive: boolean) => JSX.Element;
+    onClick?: () => void;
+  }> = [
+    {
+      id: "home",
+      label: "Home",
+      icon: (isActive: boolean) => (
+        <svg
+          className="w-5 h-5"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10.8186 2.30492C10.5258 2.07721 10.3794 1.96335 10.2178 1.91959C10.0752 1.88097 9.92484 1.88097 9.78221 1.91959C9.62057 1.96335 9.47418 2.07721 9.18141 2.30492L3.52949 6.70086C3.15168 6.99471 2.96278 7.14163 2.82669 7.32563C2.70614 7.48862 2.61633 7.67224 2.56169 7.86746C2.5 8.08785 2.5 8.32717 2.5 8.8058V14.8349C2.5 15.7683 2.5 16.235 2.68166 16.5916C2.84144 16.9052 3.09641 17.1601 3.41002 17.3199C3.76654 17.5016 4.23325 17.5016 5.16667 17.5016H6.83333C7.06669 17.5016 7.18337 17.5016 7.2725 17.4562C7.3509 17.4162 7.41464 17.3525 7.45459 17.2741C7.5 17.1849 7.5 17.0683 7.5 16.8349V11.3349C7.5 10.8682 7.5 10.6348 7.59083 10.4566C7.67072 10.2998 7.79821 10.1723 7.95501 10.0924C8.13327 10.0016 8.36662 10.0016 8.83333 10.0016H11.1667C11.6334 10.0016 11.8667 10.0016 12.045 10.0924C12.2018 10.1723 12.3293 10.2998 12.4092 10.4566C12.5 10.6348 12.5 10.8682 12.5 11.3349V16.8349C12.5 17.0683 12.5 17.1849 12.5454 17.2741C12.5854 17.3525 12.6491 17.4162 12.7275 17.4562C12.8166 17.5016 12.9333 17.5016 13.1667 17.5016H14.8333C15.7668 17.5016 16.2335 17.5016 16.59 17.3199C16.9036 17.1601 17.1586 16.9052 17.3183 16.5916C17.5 16.235 17.5 15.7683 17.5 14.8349V8.8058C17.5 8.32717 17.5 8.08785 17.4383 7.86746C17.3837 7.67224 17.2939 7.48862 17.1733 7.32563C17.0372 7.14163 16.8483 6.99471 16.4705 6.70086L10.8186 2.30492Z"
+            stroke={isActive ? "#0073EA" : "#676879"}
+            strokeWidth="1.36364"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+      onClick: () => navigate("/dashboard"),
     },
-  );
+    {
+      id: "ongoing",
+      label: "Ongoing Verification",
+      icon: (isActive: boolean) => (
+        <svg
+          className="w-5 h-5"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M18.9167 9.58333L17.2504 11.25L15.5833 9.58333M17.4543 10.8333C17.4845 10.5597 17.5 10.2817 17.5 10C17.5 5.85787 14.1422 2.5 10 2.5C5.85787 2.5 2.5 5.85787 2.5 10C2.5 14.1422 5.85787 17.5 10 17.5C12.3561 17.5 14.4583 16.4136 15.8333 14.7144M10 5.83333V10L12.5 11.6667"
+            stroke={isActive ? "#0073EA" : "#676879"}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+      onClick: () => navigate("/ongoing-verification"),
+    },
+    {
+      id: "expired",
+      label: "Expired Verification",
+      icon: (isActive: boolean) => (
+        <svg
+          className="w-5 h-5"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g clipPath="url(#clip0_11004_6928)">
+            <path
+              d="M12.5052 7.50521L7.50521 12.5052M7.50521 7.50521L12.5052 12.5052M18.3385 10.0052C18.3385 14.6075 14.6075 18.3385 10.0052 18.3385C5.40283 18.3385 1.67188 14.6075 1.67188 10.0052C1.67188 5.40283 5.40283 1.67188 10.0052 1.67188C14.6075 1.67188 18.3385 5.40283 18.3385 10.0052Z"
+              stroke={isActive ? "#0073EA" : "#676879"}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
+          <defs>
+            <clipPath id="clip0_11004_6928">
+              <rect width="20" height="20" fill="white" />
+            </clipPath>
+          </defs>
+        </svg>
+      ),
+      onClick: () => navigate("/expired-verification"),
+    },
+    {
+      id: "verified",
+      label: "Verified Credentials",
+      icon: (isActive: boolean) => (
+        <svg
+          className="w-5 h-5"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M7.5 9.16667L10 11.6667L18.3333 3.33333M13.3333 2.5H6.5C5.09987 2.5 4.3998 2.5 3.86503 2.77248C3.39462 3.01217 3.01217 3.39462 2.77248 3.86503C2.5 4.3998 2.5 5.09987 2.5 6.5V13.5C2.5 14.9002 2.5 15.6002 2.77248 16.135C3.01217 16.6054 3.39462 16.9878 3.86503 17.2275C4.3998 17.5 5.09987 17.5 6.5 17.5H13.5C14.9002 17.5 15.6002 17.5 16.135 17.2275C16.6054 16.9878 16.9878 16.6054 17.2275 16.135C17.5 15.6002 17.5 14.9002 17.5 13.5V10"
+            stroke={isActive ? "#0073EA" : "#676879"}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+      onClick: () => navigate("/verified-credentials"),
+    },
+    {
+      id: "contact",
+      label: "Contact Admin",
+      icon: (isActive: boolean) => (
+        <svg
+          className="w-5 h-5"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M16.6693 17.5C16.6693 16.337 16.6693 15.7556 16.5258 15.2824C16.2026 14.2171 15.3689 13.3833 14.3035 13.0602C13.8304 12.9167 13.2489 12.9167 12.0859 12.9167H7.91927C6.7563 12.9167 6.17481 12.9167 5.70165 13.0602C4.63631 13.3833 3.80264 14.2171 3.47947 15.2824C3.33594 15.7556 3.33594 16.337 3.33594 17.5M13.7526 6.25C13.7526 8.32107 12.0737 10 10.0026 10C7.93154 10 6.2526 8.32107 6.2526 6.25C6.2526 4.17893 7.93154 2.5 10.0026 2.5C12.0737 2.5 13.7526 4.17893 13.7526 6.25Z"
+            stroke={isActive ? "#0073EA" : "#676879"}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+      onClick: () => navigate("/contact-admin"),
+    },
+  ];
 
-  const [mfaSetupOpen, setMfaSetupOpen] = useState(false);
-  const [mfaManageOpen, setMfaManageOpen] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<"email" | "phone">(
-    "email",
-  );
-  const [mfaContactValue, setMfaContactValue] = useState<string>(
-    (stored && (stored as any).email) || "",
-  );
-  const [verificationSent, setVerificationSent] = useState(false);
-  const [sentCodeExpiresAt, setSentCodeExpiresAt] = useState<number | null>(
-    null,
-  );
-  const [enteredCode, setEnteredCode] = useState("");
-  const [verificationStatus, setVerificationStatus] = useState<string | null>(
-    null,
-  );
-  const [confirmDisableOpen, setConfirmDisableOpen] = useState(false);
-  const [confirmCode, setConfirmCode] = useState("");
-
-  const toast = useToast();
-
-  const validation = validatePassword(newPassword);
-  const doesMatch = passwordsMatch(newPassword, confirmPassword);
-
-  const handleChangePassword = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-
-    if (!currentPassword) {
-      toast.toast({
-        title: "Current Password Required",
-        description: "Please enter your current password.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!isPasswordValid(newPassword)) {
-      toast.toast({
-        title: "Weak Password",
-        description: "New password does not meet the password policy.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!doesMatch) {
-      toast.toast({
-        title: "Password Mismatch",
-        description: "New password and confirmation do not match.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // NOTE: No backend available in this demo. In production call your change-password API here.
-      await new Promise((res) => setTimeout(res, 1000));
-
-      // Success
-      toast.toast({
-        title: "Success",
-        description: "Password updated successfully.",
-        duration: 3000,
-      });
-      setIsDialogOpen(false);
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (err) {
-      console.error(err);
-      toast.toast({
-        title: "Password change unsuccessful.",
-        description:
-          "Ensure the current password is correct and meets policy requirements.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Persist MFA settings
-  useEffect(() => {
-    try {
-      sessionStorage.setItem("idv_mfa_settings", JSON.stringify(mfa));
-    } catch (e) {
-      // ignore
-    }
-  }, [mfa]);
-
-  const sendVerificationCode = async (
-    method: "email" | "phone",
-    value: string,
-  ) => {
-    setVerificationStatus(null);
-    setVerificationSent(false);
-    try {
-      await new Promise((r) => setTimeout(r, 700));
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
-      const expiresAt = Date.now() + 3 * 60 * 1000;
-      const payload = { code, expiresAt, method, value };
-      sessionStorage.setItem("idv_mfa_verification", JSON.stringify(payload));
-      setSentCodeExpiresAt(expiresAt);
-      setVerificationSent(true);
-      toast.toast({
-        title: "Verification code sent",
-        description: `A verification code was sent to your ${method === "email" ? "email" : "phone"}.`,
-      });
-    } catch (err) {
-      console.error(err);
-      setVerificationStatus("network");
-      toast.toast({
-        title: "Network Error",
-        description:
-          "We couldn't send the verification code. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const verifyCode = (code: string) => {
-    try {
-      const raw = sessionStorage.getItem("idv_mfa_verification");
-      if (!raw) return { ok: false, reason: "no_code" };
-      const payload = JSON.parse(raw);
-      if (Date.now() > payload.expiresAt)
-        return { ok: false, reason: "expired" };
-      if (payload.code !== code) return { ok: false, reason: "incorrect" };
-      return { ok: true, payload };
-    } catch (e) {
-      return { ok: false, reason: "error" };
-    }
-  };
-
-  const handleStartMfaSetup = () => {
-    setSelectedMethod("email");
-    setMfaContactValue((stored && (stored as any).email) || "");
-    setVerificationSent(false);
-    setEnteredCode("");
-    setVerificationStatus(null);
-    setMfaSetupOpen(true);
-  };
-
-  const handleSendCodeForSetup = async () => {
-    if (!mfaContactValue) {
-      toast.toast({
-        title: "Contact required",
-        description: "Please provide an email or phone number.",
-        variant: "destructive",
-      });
-      return;
-    }
-    await sendVerificationCode(selectedMethod, mfaContactValue);
-  };
-
-  const handleVerifyAndEnable = () => {
-    const res = verifyCode(enteredCode.trim());
-    if (!res.ok) {
-      if (res.reason === "expired") {
-        setVerificationStatus("expired");
-        toast.toast({
-          title: "Code expired",
-          description: "Code expired. Please request a new code.",
-          variant: "destructive",
-        });
-        return;
-      }
-      setVerificationStatus("incorrect");
-      toast.toast({
-        title: "Incorrect code",
-        description: "Incorrect code. Please try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setMfa({
-      enabled: true,
-      method: selectedMethod,
-      value: mfaContactValue,
-      enforced: false,
-    });
-    setMfaSetupOpen(false);
-    setVerificationSent(false);
-    setEnteredCode("");
-    toast.toast({
-      title: "MFA configured",
-      description: "MFA successfully configured for your account.",
-    });
-  };
-
-  const handleSendConfirmCode = async () => {
-    if (!mfa.method || !mfa.value) {
-      toast.toast({
-        title: "No MFA method",
-        description: "No MFA method configured.",
-        variant: "destructive",
-      });
-      return;
-    }
-    await sendVerificationCode(mfa.method, mfa.value);
-  };
-
-  const handleConfirmDisable = () => {
-    const res = verifyCode(confirmCode.trim());
-    if (!res.ok) {
-      if (res.reason === "expired") {
-        toast.toast({
-          title: "Code expired",
-          description: "Code expired. Please request a new code.",
-          variant: "destructive",
-        });
-        return;
-      }
-      toast.toast({
-        title: "Incorrect code",
-        description: "Incorrect code. Please try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setMfa({ enabled: false, method: null, value: null, enforced: false });
-    setConfirmDisableOpen(false);
-    setMfaManageOpen(false);
-    toast.toast({
-      title: "MFA disabled",
-      description:
-        "MFA has been disabled. You can re-enable it anytime to enhance your account security.",
-    });
-  };
-
-  const handleChangeMfaMethod = () => {
-    setMfaManageOpen(false);
-    setSelectedMethod(mfa.method === "email" ? "phone" : "email");
-    setMfaContactValue(mfa.value || (stored && (stored as any).email) || "");
-    setVerificationSent(false);
-    setEnteredCode("");
-    setMfaSetupOpen(true);
-  };
+  const sessions = [
+    {
+      device: "Chrome on Windows",
+      ipAddress: "192.168.1.105",
+      logInTime: "2025-08-24 @ 5:45 PM",
+      lastActivity: "Just Now",
+      status: "This Device",
+      isCurrentDevice: true,
+    },
+    {
+      device: "Chrome on Android",
+      ipAddress: "192.168.1.87",
+      logInTime: "2025-08-21 @ 9:12 AM",
+      lastActivity: "15 Hours Ago",
+      status: "Active",
+      isCurrentDevice: false,
+    },
+    {
+      device: "Firefox on MacOS",
+      ipAddress: "10.0.0.42",
+      logInTime: "2025-08-19 @ 11:30 PM",
+      lastActivity: "1 Day Ago",
+      status: "Active",
+      isCurrentDevice: false,
+    },
+    {
+      device: "Safari on iPhone",
+      ipAddress: "192.168.1.92",
+      logInTime: "2025-08-15 @ 2:05 PM",
+      lastActivity: "3 Days Ago",
+      status: "Active",
+      isCurrentDevice: false,
+    },
+  ];
 
   return (
-    <div className="w-full min-h-screen bg-page-background p-6 lg:p-8">
-      <div className="max-w-3xl mx-auto bg-white border border-border rounded-lg shadow-sm p-6">
-        <h1 className="text-text-primary font-roboto text-[22px] font-bold mb-4">
-          Profile
-        </h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-text-muted">Full Name</label>
-            <div className="text-text-primary font-medium">{user.fullName}</div>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-text-muted">Email Address</label>
-            <div className="text-text-primary font-medium">{user.email}</div>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-text-muted">Employee ID</label>
-            <div className="text-text-primary font-medium">
-              {user.employeeId}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-text-muted">Department / Role</label>
-            <div className="text-text-primary font-medium">
-              {user.department} / {user.role}
-            </div>
-          </div>
+    <div className="flex flex-col w-full h-screen bg-white">
+      <div className="flex w-full h-11 px-3 lg:px-4 justify-between items-center border-b border-[#DEDEDD] bg-white">
+        <img
+          src="https://api.builder.io/api/v1/image/assets/TEMP/4566b1e4f2b69299156b1f1c61472e06e0ad9666?width=180"
+          alt="Logo"
+          className="w-[90px] h-7 object-contain"
+        />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate("/profile")}
+            className="flex w-8 h-8 p-2 justify-center items-center gap-2 rounded-full bg-[#F65F7C]"
+          >
+            <span className="text-white font-roboto text-xs font-medium leading-[10px]">
+              OS
+            </span>
+          </button>
         </div>
+      </div>
 
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="outline" onClick={() => setIsDialogOpen(true)}>
-            Change Password
-          </Button>
-        </div>
-
-        {/* MFA Section */}
-        <div className="border-t pt-6 mb-6">
-          <h2 className="text-text-primary font-roboto text-[16px] font-semibold mb-2">
-            MFA Configuration
-          </h2>
-
-          {mfa.enforced ? (
-            <div className="text-text-primary">
-              MFA Enabled by Administrator
-            </div>
-          ) : mfa.enabled ? (
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-text-muted">Status</div>
-                <div className="text-text-primary font-medium">
-                  MFA enabled via {mfa.method === "email" ? "Email" : "Phone"}
-                </div>
-              </div>
-              <div>
-                <Button
-                  variant="outline"
-                  onClick={() => setMfaManageOpen(true)}
-                >
-                  Change or Disable MFA
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <div className="text-sm text-text-muted">Status</div>
-                <div className="text-text-primary font-medium">
-                  MFA is not enabled for your account.
-                </div>
-              </div>
-              <div>
-                <Button onClick={handleStartMfaSetup}>Enable MFA</Button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <Dialog
-          open={isDialogOpen}
-          onOpenChange={(open) => setIsDialogOpen(open)}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Change Password</DialogTitle>
-            </DialogHeader>
-
-            <form onSubmit={handleChangePassword} className="mt-4 space-y-4">
-              <div>
-                <label className="text-sm text-text-muted">
-                  Current Password
-                </label>
-                <Input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm text-text-muted">New Password</label>
-                <Input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="New password"
-                />
-                <div className="mt-2 space-y-1">
-                  <div
-                    className={`text-sm ${validation.requirements.minLength ? "text-green-600" : "text-red-600"}`}
+      <div className="flex h-full bg-white overflow-hidden">
+        <div className="flex w-[248px] px-2 py-2 flex-col items-start gap-1 border-r border-[#D0D4E4] bg-white overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = activeNav === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveNav(item.id);
+                  item.onClick?.();
+                }}
+                className={`flex h-[38px] items-center gap-2 self-stretch rounded ${
+                  isActive ? "bg-[#E6F1FD] pl-1 pr-2.25" : "pl-3 pr-2.25"
+                }`}
+              >
+                {isActive && (
+                  <svg
+                    className="w-0.5 h-[28.5px]"
+                    width="2"
+                    height="31"
+                    viewBox="0 0 2 31"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    Minimum 8 characters
-                  </div>
-                  <div
-                    className={`text-sm ${validation.requirements.hasUppercase ? "text-green-600" : "text-red-600"}`}
-                  >
-                    Includes uppercase letter
-                  </div>
-                  <div
-                    className={`text-sm ${validation.requirements.hasNumber ? "text-green-600" : "text-red-600"}`}
-                  >
-                    Includes number
-                  </div>
-                  <div
-                    className={`text-sm ${validation.requirements.hasSpecialChar ? "text-green-600" : "text-red-600"}`}
-                  >
-                    Includes special character
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm text-text-muted">
-                  Confirm New Password
-                </label>
-                <Input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
-                />
-                {!doesMatch && confirmPassword.length > 0 && (
-                  <p className="text-sm text-red-600 mt-1">
-                    Passwords do not match.
-                  </p>
+                    <path
+                      d="M1 1V29.5"
+                      stroke="#0073EA"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 )}
-              </div>
-
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => setIsDialogOpen(false)}
+                {item.icon(isActive)}
+                <span
+                  className={`font-roboto text-[13px] font-medium leading-normal ${
+                    isActive ? "text-[#172B4D]" : "text-[#505258]"
+                  }`}
                 >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Updating..." : "Update Password"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-        {/* MFA Setup Dialog */}
-        <Dialog
-          open={mfaSetupOpen}
-          onOpenChange={(open) => setMfaSetupOpen(open)}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Configure MFA</DialogTitle>
-            </DialogHeader>
-
-            <div className="mt-4 space-y-4">
-              <div>
-                <div className="text-sm text-text-muted mb-2">
-                  Select verification method
+        <div className="flex flex-1 flex-col items-start bg-white overflow-y-auto">
+          <div className="flex w-full h-14 flex-col items-start border-b border-[#DEDEDD]">
+            <div className="flex h-14 flex-col items-start self-stretch">
+              <div className="flex px-4 py-2 items-center gap-2 flex-1 self-stretch">
+                <div className="flex items-start gap-2">
+                  <h1 className="text-[#172B4D] font-roboto text-xl font-bold leading-[30px]">
+                    Profile
+                  </h1>
                 </div>
-                <div className="flex gap-4 items-center">
-                  <label
-                    className={`p-3 border rounded cursor-pointer ${selectedMethod === "email" ? "border-primary bg-primary/5" : "border-border"}`}
-                  >
-                    <input
-                      type="radio"
-                      name="mfa"
-                      checked={selectedMethod === "email"}
-                      onChange={() => {
-                        setSelectedMethod("email");
-                        setMfaContactValue(
-                          (stored && (stored as any).email) || "",
-                        );
-                      }}
-                      className="mr-2"
-                    />{" "}
-                    Email
-                  </label>
+              </div>
+            </div>
+          </div>
 
-                  <label
-                    className={`p-3 border rounded cursor-pointer ${selectedMethod === "phone" ? "border-primary bg-primary/5" : "border-border"}`}
-                  >
-                    <input
-                      type="radio"
-                      name="mfa"
-                      checked={selectedMethod === "phone"}
-                      onChange={() => {
-                        setSelectedMethod("phone");
-                        setMfaContactValue("");
-                      }}
-                      className="mr-2"
-                    />{" "}
-                    Phone (SMS)
+          <div className="flex flex-col items-start gap-2 self-stretch p-4">
+            <div className="flex flex-col items-start gap-2 self-stretch rounded border border-[#DEDEDD]">
+              <div className="flex px-4 py-3 items-center gap-2.5 self-stretch">
+                <h2 className="text-[#172B4D] font-roboto text-base font-bold leading-6">
+                  User Information
+                </h2>
+              </div>
+              <div className="w-full h-px bg-[#DEDEDD]"></div>
+              <div className="flex px-4 py-3 items-start gap-2.5 self-stretch">
+                <p className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                  Fetched from Lorem Ipsum
+                </p>
+              </div>
+              <div className="w-full h-px bg-[#DEDEDD]"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-3 w-full">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#172B4D] font-roboto text-[13px] font-bold leading-5">
+                    Full Name
                   </label>
+                  <div className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                    Opinder Singh
+                  </div>
                 </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#172B4D] font-roboto text-[13px] font-bold leading-5">
+                    Employee ID
+                  </label>
+                  <div className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                    EMP-2345
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#172B4D] font-roboto text-[13px] font-bold leading-5">
+                    Email Address
+                  </label>
+                  <div className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                    Opinder.singh@company.com
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[#172B4D] font-roboto text-[13px] font-bold leading-5">
+                    Department / Role
+                  </label>
+                  <div className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                    Information Technology - Senior Software Engineer
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                <p className="text-sm text-text-muted mt-2">
-                  {selectedMethod === "email"
-                    ? "You will receive a verification code on your registered email each time you log in."
-                    : "You will receive a one-time password (OTP) via SMS for each login attempt."}
+            <div className="flex h-16 flex-col justify-center items-start gap-2 self-stretch rounded border border-[#DEDEDD]">
+              <div className="flex px-4 py-3 justify-between items-center self-stretch">
+                <div className="flex flex-col items-start gap-1">
+                  <h2 className="text-[#172B4D] font-roboto text-base font-bold leading-6">
+                    Change Password
+                  </h2>
+                  <p className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                    Update your password to keep your account secure
+                  </p>
+                </div>
+                <button className="flex h-8 px-3 py-2 justify-center items-center gap-2 rounded bg-[#0073EA]">
+                  <span className="text-white font-roboto text-[13px] font-medium leading-4">
+                    Change Password
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex h-16 flex-col justify-center items-start gap-2 self-stretch rounded border border-[#DEDEDD]">
+              <div className="flex px-4 py-3 justify-between items-center self-stretch">
+                <div className="flex flex-col items-start gap-1">
+                  <h2 className="text-[#172B4D] font-roboto text-base font-bold leading-6">
+                    MFA Configuration
+                  </h2>
+                  <p className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                    Multi-factor authentication adds an extra layer of security
+                    to your account
+                  </p>
+                </div>
+                <button className="flex h-8 px-3 py-2 justify-center items-center gap-2 rounded bg-[#0073EA]">
+                  <span className="text-white font-roboto text-[13px] font-medium leading-4">
+                    Enable MFA
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center items-start gap-2 self-stretch rounded border border-[#DEDEDD]">
+              <div className="flex px-4 py-3 items-start gap-2.5 self-stretch">
+                <div className="flex flex-col items-start gap-1 flex-1">
+                  <h2 className="text-[#172B4D] font-roboto text-base font-bold leading-6">
+                    Session & Security
+                  </h2>
+                  <p className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
+                    Multi-factor authentication adds an extra layer of security
+                    to your account
+                  </p>
+                </div>
+                <button className="flex h-8 px-3 py-2 justify-center items-center gap-2 rounded">
+                  <svg
+                    className="w-4 h-4"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10.6693 7.33464L13.3359 7.33464M13.3359 7.33464L16.0026 7.33464M13.3359 7.33464L13.3359 4.66797M13.3359 7.33464L13.3359 10.0013M5.33594 14.668L5.33594 13.3346C5.33594 12.5992 5.33594 12.2315 5.21046 11.9499C5.09888 11.7016 4.92011 11.4896 4.69464 11.3366C4.43905 11.1634 4.10225 11.1086 3.42865 11.0013C2.31094 10.8301 1.33594 9.8551 1.33594 8.66797C1.33594 7.38126 2.38294 6.33464 3.66927 6.33464C5.18927 6.33464 5.33594 5.46797 5.33594 4.66797L5.33594 1.33464M5.33594 1.33464L2.66927 1.33464M5.33594 1.33464L8.0026 1.33464"
+                      stroke="#0073EA"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span className="text-[#0073EA] font-roboto text-[13px] font-medium leading-4">
+                    Refresh
+                  </span>
+                </button>
+              </div>
+              <div className="w-full h-px bg-[#DEDEDD]"></div>
+              <div className="flex px-4 py-2 items-start gap-2.5 self-stretch">
+                <h3 className="text-[#172B4D] font-roboto text-sm font-semibold leading-5">
+                  Active Sessions
+                </h3>
+              </div>
+              <div className="flex px-4 items-start gap-2.5 self-stretch">
+                <p className="text-[#505258] font-roboto text-xs font-normal leading-[18px]">
+                  Let users upload existing documents directly from their
+                  device.
                 </p>
               </div>
 
-              <div>
-                <label className="text-sm text-text-muted">
-                  {selectedMethod === "email"
-                    ? "Email Address"
-                    : "Phone Number"}
-                </label>
-                <Input
-                  value={mfaContactValue}
-                  onChange={(e) => setMfaContactValue(e.target.value)}
-                  placeholder={
-                    selectedMethod === "email"
-                      ? (stored && (stored as any).email) || "you@domain.com"
-                      : "+91xxxxxxxxxx"
-                  }
-                />
+              <div className="overflow-x-auto w-full">
+                <table className="w-full">
+                  <thead className="bg-[#F7F8F9]">
+                    <tr>
+                      <th className="px-4 py-2 text-left">
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 rounded border-[#DEDEDD]"
+                          />
+                          <span className="text-[#172B4D] font-roboto text-xs font-semibold leading-[18px]">
+                            Device
+                          </span>
+                        </div>
+                      </th>
+                      <th className="px-4 py-2 text-left">
+                        <span className="text-[#172B4D] font-roboto text-xs font-semibold leading-[18px]">
+                          IP Address
+                        </span>
+                      </th>
+                      <th className="px-4 py-2 text-left">
+                        <span className="text-[#172B4D] font-roboto text-xs font-semibold leading-[18px]">
+                          Log In Time
+                        </span>
+                      </th>
+                      <th className="px-4 py-2 text-left">
+                        <span className="text-[#172B4D] font-roboto text-xs font-semibold leading-[18px]">
+                          Last Activity
+                        </span>
+                      </th>
+                      <th className="px-4 py-2 text-left">
+                        <span className="text-[#172B4D] font-roboto text-xs font-semibold leading-[18px]">
+                          Status
+                        </span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sessions.map((session, index) => (
+                      <tr key={index} className="border-t border-[#DEDEDD]">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              className="w-4 h-4 rounded border-[#DEDEDD]"
+                            />
+                            <span className="text-[#505258] font-roboto text-xs font-normal leading-[18px]">
+                              {session.device}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-[#505258] font-roboto text-xs font-normal leading-[18px]">
+                            {session.ipAddress}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-[#505258] font-roboto text-xs font-normal leading-[18px]">
+                            {session.logInTime}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-[#505258] font-roboto text-xs font-normal leading-[18px]">
+                            {session.lastActivity}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
+                              session.isCurrentDevice
+                                ? "bg-[#E6F4EA] text-[#1E7E34]"
+                                : "bg-[#E6F1FD] text-[#0073EA]"
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                session.isCurrentDevice
+                                  ? "bg-[#1E7E34]"
+                                  : "bg-[#0073EA]"
+                              }`}
+                            ></span>
+                            <span className="font-roboto text-xs font-medium leading-[18px]">
+                              {session.status}
+                            </span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={handleSendCodeForSetup}>
-                  Send Code
-                </Button>
-                {verificationSent && (
-                  <div className="text-sm text-text-muted">
-                    Code sent. Expires in 3 minutes.
-                  </div>
-                )}
+              <div className="flex px-4 py-3 items-start gap-2.5 self-stretch">
+                <button className="flex h-8 px-3 py-2 justify-center items-center gap-2 rounded bg-[#D83A52]">
+                  <span className="text-white font-roboto text-[13px] font-medium leading-4">
+                    Logout from All Sessions
+                  </span>
+                </button>
               </div>
-
-              {verificationSent && (
-                <div>
-                  <label className="text-sm text-text-muted">
-                    Enter verification code
-                  </label>
-                  <Input
-                    value={enteredCode}
-                    onChange={(e) => setEnteredCode(e.target.value)}
-                    placeholder="6-digit code"
-                  />
-                  <div className="flex justify-end gap-2 mt-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setVerificationSent(false);
-                        setEnteredCode("");
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleVerifyAndEnable}>
-                      Verify & Enable
-                    </Button>
-                  </div>
-                </div>
-              )}
             </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* MFA Manage Dialog */}
-        <Dialog
-          open={mfaManageOpen}
-          onOpenChange={(open) => setMfaManageOpen(open)}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Manage MFA</DialogTitle>
-            </DialogHeader>
-
-            <div className="mt-4 space-y-4">
-              <div>
-                <div className="text-sm text-text-muted">Current method</div>
-                <div className="text-text-primary font-medium">
-                  {mfa.method === "email" ? "Email" : "Phone"}{" "}
-                  {mfa.value ? `(${mfa.value})` : ""}
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleChangeMfaMethod}>
-                  Change MFA Method
-                </Button>
-                <Button
-                  onClick={() => {
-                    setConfirmDisableOpen(true);
-                    handleSendConfirmCode();
-                  }}
-                >
-                  Disable MFA
-                </Button>
-              </div>
-
-              {confirmDisableOpen && (
-                <div className="mt-4 border p-4 rounded">
-                  <div className="text-sm text-text-muted mb-2">
-                    Disabling MFA will reduce your account security. Are you
-                    sure you want to continue?
-                  </div>
-                  <div className="text-sm text-text-muted mb-2">
-                    A confirmation code will be sent to your configured method.
-                    Enter it below to confirm.
-                  </div>
-
-                  <div className="mb-2">
-                    <Button variant="outline" onClick={handleSendConfirmCode}>
-                      Send Confirmation Code
-                    </Button>
-                    <div className="text-sm text-text-muted mt-2">
-                      {verificationSent
-                        ? "Code sent. Expires in 3 minutes."
-                        : ""}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm text-text-muted">
-                      Enter confirmation code
-                    </label>
-                    <Input
-                      value={confirmCode}
-                      onChange={(e) => setConfirmCode(e.target.value)}
-                      placeholder="6-digit code"
-                    />
-                  </div>
-
-                  <div className="flex justify-end gap-2 mt-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => setConfirmDisableOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleConfirmDisable}>
-                      Confirm Disable
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+          </div>
+        </div>
       </div>
     </div>
   );
