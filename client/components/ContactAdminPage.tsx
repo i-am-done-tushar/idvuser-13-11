@@ -566,7 +566,7 @@ export function ContactAdminPage() {
 
                       <button
                         type="button"
-                        onClick={() => insertInlineCode()}
+                        onClick={() => insertInlineCodeWithUpdate()}
                         className="p-1 rounded hover:bg-gray-100"
                       >
                         <svg
