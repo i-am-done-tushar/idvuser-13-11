@@ -513,7 +513,7 @@ export function ContactAdminPage() {
                       <button
                         type="button"
                         onClick={() => execWithUpdate("italic")}
-                        className="p-1 rounded hover:bg-gray-100 italic"
+                        className={`p-1 rounded hover:bg-gray-100 italic ${isItalic ? "bg-[#E6F1FD]" : ""}`}
                       >
                         <svg
                           className="w-4 h-4"
