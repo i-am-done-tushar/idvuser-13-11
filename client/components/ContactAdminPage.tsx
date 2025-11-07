@@ -548,7 +548,7 @@ export function ContactAdminPage() {
 
                       <button
                         type="button"
-                        onClick={() => exec("strikeThrough")}
+                        onClick={() => execWithUpdate("strikeThrough")}
                         className="p-1 rounded hover:bg-gray-100 line-through"
                       >
                         <svg
