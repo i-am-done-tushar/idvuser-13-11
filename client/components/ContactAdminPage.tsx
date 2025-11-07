@@ -364,13 +364,13 @@ export function ContactAdminPage() {
                   <div className="w-full rounded border border-[#C3C6D4] bg-white overflow-hidden">
                     {/* Toolbar */}
                     <div className="flex items-center gap-2 px-2 py-1 border-b border-[#C3C6D4] bg-white">
-                      <button type="button" className="p-1 rounded hover:bg-gray-100">
+                      <button type="button" onClick={() => exec('undo')} className="p-1 rounded hover:bg-gray-100">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12.5 6.25H4.88438L7.12625 4.00875L6.25 3.125L2.5 6.875L6.25 10.625L7.12625 9.74062L4.88625 7.5H12.5C13.4946 7.5 14.4484 7.89509 15.1517 8.59835C15.8549 9.30161 16.25 10.2554 16.25 11.25C16.25 12.2446 15.8549 13.1984 15.1517 13.9017C14.4484 14.6049 13.4946 15 12.5 15H7.5V16.25H12.5C13.8261 16.25 15.0979 15.7232 16.0355 14.7855C16.9732 13.8479 17.5 12.5761 17.5 11.25C17.5 9.92392 16.9732 8.65215 16.0355 7.71447C15.0979 6.77678 13.8261 6.25 12.5 6.25Z" fill="#212529" />
                         </svg>
                       </button>
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100">
+                      <button type="button" onClick={() => exec('redo')} className="p-1 rounded hover:bg-gray-100">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M7.5 6.25H15.1156L12.8737 4.00875L13.75 3.125L17.5 6.875L13.75 10.625L12.8737 9.74062L15.1137 7.5H7.5C6.50544 7.5 5.55161 7.89509 4.84835 8.59835C4.14509 9.30161 3.75 10.2554 3.75 11.25C3.75 12.2446 4.14509 13.1984 4.84835 13.9017C5.55161 14.6049 6.50544 15 7.5 15H12.5V16.25H7.5C6.17392 16.25 4.90215 15.7232 3.96447 14.7855C3.02678 13.8479 2.5 12.5761 2.5 11.25C2.5 9.92392 3.02678 8.65215 3.96447 7.71447C4.90215 6.77678 6.17392 6.25 7.5 6.25Z" fill="#212529" />
                         </svg>
@@ -382,56 +382,72 @@ export function ContactAdminPage() {
 
                       <div className="w-px h-6 bg-[#E9ECEF] mx-1" />
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100">
+                      <button type="button" onClick={() => exec('justifyLeft')} className="p-1 rounded hover:bg-gray-100">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M7.5 3.75H16.25V5H7.5V3.75ZM7.5 7.5H13.75V8.75H7.5V7.5ZM7.5 11.25H16.25V12.5H7.5V11.25ZM7.5 15H13.75V16.25H7.5V15ZM3.75 2.5H5V17.5H3.75V2.5Z" fill="#212529" />
                         </svg>
                       </button>
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100">
+                      <input ref={colorRef} type="color" className="hidden" onChange={(e) => exec('foreColor', e.target.value)} />
+                      <button type="button" onClick={() => colorRef.current?.click()} className="p-1 rounded hover:bg-gray-100">
                         <div className="w-4 h-4 rounded-sm bg-[#212529]" />
                       </button>
 
                       <div className="ml-2 w-px h-6 bg-[#E9ECEF] mr-1" />
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100 font-bold">
+                      <button type="button" onClick={() => exec('bold')} className="p-1 rounded hover:bg-gray-100 font-bold">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M11.4062 15.625H5.625V4.375H10.9375C11.5639 4.37504 12.1771 4.55435 12.7048 4.89174C13.2325 5.22914 13.6526 5.71052 13.9155 6.27903C14.1784 6.84754 14.2731 7.47942 14.1884 8.10001C14.1037 8.72061 13.8431 9.30399 13.4375 9.78125C13.9673 10.205 14.3528 10.7825 14.5408 11.4344C14.7289 12.0862 14.7102 12.7803 14.4875 13.4211C14.2647 14.0619 13.8488 14.6179 13.297 15.0126C12.7452 15.4073 12.0847 15.6213 11.4062 15.625Z" fill="#212529" />
                         </svg>
                       </button>
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100 italic">
+                      <button type="button" onClick={() => exec('italic')} className="p-1 rounded hover:bg-gray-100 italic">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M15.625 5.625V4.375H7.5V5.625H10.7125L7.98125 14.375H4.375V15.625H12.5V14.375H9.2875L12.0187 5.625H15.625Z" fill="#212529" />
                         </svg>
                       </button>
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100">
+                      <button type="button" onClick={() => exec('underline')} className="p-1 rounded hover:bg-gray-100">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M2.5 16.25H17.5V17.5H2.5V16.25ZM10 14.375C8.83968 14.375 7.72688 13.9141 6.90641 13.0936C6.08594 12.2731 5.625 11.1603 5.625 10V3.125H6.875V10C6.875 10.8288 7.20424 11.6237 7.79029 12.2097C8.37634 12.7958 9.1712 13.125 10 13.125C10.8288 13.125 11.6237 12.7958 12.2097 12.2097C12.7958 11.6237 13.125 10.8288 13.125 10V3.125H14.375V10C14.375 11.1603 13.9141 12.2731 13.0936 13.0936C12.2731 13.9141 11.1603 14.375 10 14.375Z" fill="#212529" />
                         </svg>
                       </button>
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100 line-through">
+                      <button type="button" onClick={() => exec('strikeThrough')} className="p-1 rounded hover:bg-gray-100 line-through">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M17.5 9.37538H11.2225C10.945 9.30076 10.6662 9.23096 10.3863 9.16601C8.63125 8.75101 7.63875 8.44726 7.63875 7.02663C7.6245 6.78139 7.66081 6.53584 7.74542 6.30522C7.83004 6.0746 7.96115 5.86384 8.13062 5.68601C8.6615 5.24944 9.32644 5.00889 10.0137 5.00476C11.7825 4.96101 12.5981 5.56101 13.265 6.47351L14.2744 5.73601C13.8019 5.05748 13.1578 4.51654 12.4078 4.16845C11.6578 3.82036 10.8288 3.6776 10.0056 3.75476C8.99439 3.76121 8.01887 4.12947 7.25563 4.79288C6.96634 5.08632 6.74024 5.4359 6.59125 5.82008C6.44227 6.20426 6.37356 6.61488 6.38937 7.02663C6.36197 7.47718 6.4466 7.92751 6.63572 8.33737C6.82483 8.74723 7.11254 9.10385 7.47312 9.37538H2.5V10.6254H11.0325C12.2619 10.9816 12.9969 11.4454 13.0156 12.7241C13.0359 12.9973 12.9985 13.2717 12.9056 13.5294C12.8128 13.7871 12.6667 14.0223 12.4769 14.2198C11.8155 14.7411 10.9938 15.017 10.1519 15.0004C9.52345 14.9822 8.90738 14.8213 8.35029 14.5299C7.7932 14.2385 7.30966 13.8243 6.93625 13.3185L5.97812 14.121C6.46358 14.768 7.08994 15.2959 7.80972 15.6648C8.52951 16.0338 9.32384 16.234 10.1325 16.2504H10.195C11.3492 16.2636 12.4695 15.86 13.35 15.1135C13.6625 14.7984 13.9054 14.4213 14.0632 14.0065C14.2209 13.5917 14.2898 13.1485 14.2656 12.7054C14.289 11.9474 14.0332 11.2072 13.5469 10.6254H17.5V9.37538Z" fill="#212529" />
                         </svg>
                       </button>
 
-                      <button type="button" className="p-1 rounded hover:bg-gray-100">
+                      <button type="button" onClick={() => insertInlineCode()} className="p-1 rounded hover:bg-gray-100">
                         <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M19.375 10L15 14.375L14.1187 13.4938L17.6063 10L14.1187 6.50625L15 5.625L19.375 10ZM0.625 10L5 5.625L5.88125 6.50625L2.39375 10L5.88125 13.4938L5 14.375L0.625 10Z" fill="#212529" />
                         </svg>
                       </button>
+
                     </div>
 
-                    <textarea
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Describe your question or concern in detail...."
-                      className="w-full min-h-[202px] p-3 text-[#676879] font-roboto text-[13px] font-normal leading-5 outline-none resize-none"
-                      required
-                    />
+                    <div className="relative w-full">
+                      <div
+                        ref={editorRef}
+                        contentEditable
+                        suppressContentEditableWarning
+                        onInput={() => {
+                          const html = editorRef.current?.innerHTML || "";
+                          const text = editorRef.current?.innerText || "";
+                          setMessage(html);
+                          setPlainText(text);
+                        }}
+                        className="w-full min-h-[202px] p-3 text-[#676879] font-roboto text-[13px] font-normal leading-5 outline-none resize-none"
+                        aria-multiline
+                      />
+
+                      {!plainText && (
+                        <div className="pointer-events-none absolute top-3 left-3 text-[#9aa0a6]">
+                          Describe your question or concern in detail....
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
