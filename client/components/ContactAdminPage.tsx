@@ -480,7 +480,7 @@ export function ContactAdminPage() {
                         ref={colorRef}
                         type="color"
                         className="hidden"
-                        onChange={(e) => exec("foreColor", e.target.value)}
+                        onChange={(e) => execWithUpdate("foreColor", e.target.value)}
                       />
                       <button
                         type="button"
