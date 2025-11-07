@@ -211,19 +211,21 @@ export function ContactAdminPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subject.trim() || !message.trim()) return;
-    
+    if (!subject.trim() || !plainText.trim()) return;
+
     setSubmitting(true);
     try {
       await new Promise((res) => setTimeout(res, 600));
-      
+
       toast({
         title: "Message sent successfully",
         description: "Admin will respond shortly.",
       });
-      
+
       setSubject("");
       setMessage("");
+      setPlainText("");
+      if (editorRef.current) editorRef.current.innerHTML = "";
       setFile(null);
     } catch (err) {
       toast({
