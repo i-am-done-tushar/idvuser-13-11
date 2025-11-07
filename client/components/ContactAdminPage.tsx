@@ -485,9 +485,9 @@ export function ContactAdminPage() {
                       <button
                         type="button"
                         onClick={() => colorRef.current?.click()}
-                        className="p-1 rounded hover:bg-gray-100"
+                        className={`p-1 rounded hover:bg-gray-100 ${currentColor ? "bg-[#E6F1FD]" : ""}`}
                       >
-                        <div className="w-4 h-4 rounded-sm bg-[#212529]" />
+                        <div className="w-4 h-4 rounded-sm" style={{ background: currentColor || '#212529' }} />
                       </button>
 
                       <div className="ml-2 w-px h-6 bg-[#E9ECEF] mr-1" />
