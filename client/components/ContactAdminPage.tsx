@@ -416,7 +416,7 @@ export function ContactAdminPage() {
                     <div className="flex items-center gap-2 px-2 py-1 border-b border-[#C3C6D4] bg-white">
                       <button
                         type="button"
-                        onClick={() => exec("undo")}
+                        onClick={() => execWithUpdate("undo")}
                         className="p-1 rounded hover:bg-gray-100"
                       >
                         <svg
