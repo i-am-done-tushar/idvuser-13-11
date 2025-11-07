@@ -512,7 +512,7 @@ export function ContactAdminPage() {
 
                       <button
                         type="button"
-                        onClick={() => exec("italic")}
+                        onClick={() => execWithUpdate("italic")}
                         className="p-1 rounded hover:bg-gray-100 italic"
                       >
                         <svg
