@@ -549,7 +549,7 @@ export function ContactAdminPage() {
                       <button
                         type="button"
                         onClick={() => execWithUpdate("strikeThrough")}
-                        className="p-1 rounded hover:bg-gray-100 line-through"
+                        className={`p-1 rounded hover:bg-gray-100 line-through ${isStrike ? "bg-[#E6F1FD]" : ""}`}
                       >
                         <svg
                           className="w-4 h-4"
