@@ -499,6 +499,208 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
+        <DialogContent className="max-w-[420px] p-0 gap-0 rounded-lg overflow-hidden">
+          <div className="flex h-[52px] px-5 py-2.5 justify-between items-center border-b border-[#D0D4E4] bg-white">
+            <h2 className="text-[#172B4D] font-roboto text-lg font-bold leading-[26px]">
+              Change Password
+            </h2>
+            <DialogClose className="flex w-7 h-7 p-2 flex-col justify-center items-center rounded-full bg-white hover:bg-gray-100">
+              <svg
+                className="w-4 h-4"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 4L4 12M4 4L12 12"
+                  stroke="#676879"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </DialogClose>
+          </div>
+
+          <div className="flex px-5 py-5 flex-col items-start bg-white">
+            <div className="flex flex-col items-start self-stretch gap-0">
+              <div className="flex flex-col items-start self-stretch">
+                <label className="flex pb-2 items-start gap-2 self-stretch">
+                  <span className="flex h-2.5 flex-col justify-center flex-1 text-[#172B4D] font-roboto text-[13px] font-medium leading-normal">
+                    Current Password
+                  </span>
+                </label>
+                <div className="flex h-8 px-2.5 py-[15px] justify-between items-center self-stretch rounded border border-[#C3C6D4] bg-white">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter Password"
+                    className="flex-1 text-[#676879] font-roboto text-xs font-normal leading-[22px] outline-none bg-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="flex justify-end items-center"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.61341 8.47807C1.52263 8.33427 1.47723 8.2624 1.45181 8.15154C1.43273 8.06827 1.43273 7.93694 1.45181 7.85367C1.47723 7.7428 1.52263 7.67094 1.61341 7.52714C2.36369 6.33916 4.59694 3.33594 8.00027 3.33594C11.4036 3.33594 13.6369 6.33916 14.3871 7.52714C14.4779 7.67094 14.5233 7.7428 14.5487 7.85367C14.5678 7.93694 14.5678 8.06827 14.5487 8.15154C14.5233 8.2624 14.4779 8.33427 14.3871 8.47807C13.6369 9.66607 11.4036 12.6693 8.00027 12.6693C4.59694 12.6693 2.36369 9.66607 1.61341 8.47807Z"
+                        stroke="#676879"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M8 10C9.1046 10 10 9.1046 10 8C10 6.8954 9.1046 6 8 6C6.8954 6 6 6.8954 6 8C6 9.1046 6.8954 10 8 10Z"
+                        stroke="#676879"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div className="flex h-6 items-start gap-2 self-stretch"></div>
+              </div>
+
+              <div className="flex flex-col items-start self-stretch">
+                <label className="flex pb-2 items-start gap-2 self-stretch">
+                  <span className="flex h-2.5 flex-col justify-center flex-1 text-[#172B4D] font-roboto text-[13px] font-medium leading-normal">
+                    New Password
+                  </span>
+                </label>
+                <div className="flex h-8 px-2.5 py-[15px] justify-between items-center self-stretch rounded border border-[#C3C6D4] bg-white">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter Password"
+                    className="flex-1 text-[#676879] font-roboto text-xs font-normal leading-[22px] outline-none bg-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="flex justify-end items-center"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.61341 8.47807C1.52263 8.33427 1.47723 8.2624 1.45181 8.15154C1.43273 8.06827 1.43273 7.93694 1.45181 7.85367C1.47723 7.7428 1.52263 7.67094 1.61341 7.52714C2.36369 6.33916 4.59694 3.33594 8.00027 3.33594C11.4036 3.33594 13.6369 6.33916 14.3871 7.52714C14.4779 7.67094 14.5233 7.7428 14.5487 7.85367C14.5678 7.93694 14.5678 8.06827 14.5487 8.15154C14.5233 8.2624 14.4779 8.33427 14.3871 8.47807C13.6369 9.66607 11.4036 12.6693 8.00027 12.6693C4.59694 12.6693 2.36369 9.66607 1.61341 8.47807Z"
+                        stroke="#676879"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M8 10C9.1046 10 10 9.1046 10 8C10 6.8954 9.1046 6 8 6C6.8954 6 6 6.8954 6 8C6 9.1046 6.8954 10 8 10Z"
+                        stroke="#676879"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div className="flex h-6 items-start gap-2 self-stretch"></div>
+              </div>
+
+              <div className="flex flex-col items-start self-stretch">
+                <label className="flex pb-2 items-start gap-2 self-stretch">
+                  <span className="flex h-2.5 flex-col justify-center flex-1 text-[#172B4D] font-roboto text-[13px] font-medium leading-normal">
+                    Confirm New Password
+                  </span>
+                </label>
+                <div className="flex h-8 px-2.5 py-[15px] justify-between items-center self-stretch rounded border border-[#C3C6D4] bg-white">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Enter Password"
+                    className="flex-1 text-[#676879] font-roboto text-xs font-normal leading-[22px] outline-none bg-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                    className="flex justify-end items-center"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.61341 8.47807C1.52263 8.33427 1.47723 8.2624 1.45181 8.15154C1.43273 8.06827 1.43273 7.93694 1.45181 7.85367C1.47723 7.7428 1.52263 7.67094 1.61341 7.52714C2.36369 6.33916 4.59694 3.33594 8.00027 3.33594C11.4036 3.33594 13.6369 6.33916 14.3871 7.52714C14.4779 7.67094 14.5233 7.7428 14.5487 7.85367C14.5678 7.93694 14.5678 8.06827 14.5487 8.15154C14.5233 8.2624 14.4779 8.33427 14.3871 8.47807C13.6369 9.66607 11.4036 12.6693 8.00027 12.6693C4.59694 12.6693 2.36369 9.66607 1.61341 8.47807Z"
+                        stroke="#676879"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M8 10C9.1046 10 10 9.1046 10 8C10 6.8954 9.1046 6 8 6C6.8954 6 6 6.8954 6 8C6 9.1046 6.8954 10 8 10Z"
+                        stroke="#676879"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div className="flex h-6 items-start gap-2 self-stretch"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex h-[60px] px-5 justify-end items-center gap-2 border-t border-[#D0D4E4] bg-white">
+            <button
+              onClick={() => {
+                setIsPasswordModalOpen(false);
+                setCurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+              }}
+              className="flex h-[38px] px-4 py-2.25 justify-center items-center gap-1 rounded bg-white"
+            >
+              <span className="text-[#505258] font-roboto text-[13px] font-medium leading-normal">
+                Cancel
+              </span>
+            </button>
+            <button
+              onClick={() => {
+                console.log("Update password logic here");
+                setIsPasswordModalOpen(false);
+              }}
+              className="flex h-[38px] px-4 py-2.25 justify-center items-center gap-0.5 rounded border border-[#0073EA] bg-[#0073EA]"
+            >
+              <span className="text-white font-roboto text-[13px] font-medium leading-normal">
+                Update Password
+              </span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
