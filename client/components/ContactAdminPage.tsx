@@ -460,7 +460,7 @@ export function ContactAdminPage() {
 
                       <button
                         type="button"
-                        onClick={() => exec("justifyLeft")}
+                        onClick={() => execWithUpdate("justifyLeft")}
                         className="p-1 rounded hover:bg-gray-100"
                       >
                         <svg
