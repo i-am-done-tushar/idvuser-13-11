@@ -495,7 +495,7 @@ export function ContactAdminPage() {
                       <button
                         type="button"
                         onClick={() => execWithUpdate("bold")}
-                        className="p-1 rounded hover:bg-gray-100 font-bold"
+                        className={`p-1 rounded hover:bg-gray-100 font-bold ${isBold ? "bg-[#E6F1FD]" : ""}`}
                       >
                         <svg
                           className="w-4 h-4"
