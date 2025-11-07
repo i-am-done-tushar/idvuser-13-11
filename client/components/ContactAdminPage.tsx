@@ -530,7 +530,7 @@ export function ContactAdminPage() {
 
                       <button
                         type="button"
-                        onClick={() => exec("underline")}
+                        onClick={() => execWithUpdate("underline")}
                         className="p-1 rounded hover:bg-gray-100"
                       >
                         <svg
