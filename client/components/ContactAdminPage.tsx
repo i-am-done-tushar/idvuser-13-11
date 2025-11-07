@@ -57,6 +57,52 @@ export function ContactAdminPage() {
     editorRef.current?.focus();
   };
 
+  // toolbar active states
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrike, setIsStrike] = useState(false);
+  const [isJustifyLeft, setIsJustifyLeft] = useState(false);
+  const [currentColor, setCurrentColor] = useState<string | null>(null);
+
+  const updateToolbarState = () => {
+    if (!editorRef.current) return;
+    const sel = window.getSelection();
+    if (!sel || !sel.anchorNode || !editorRef.current.contains(sel.anchorNode)) {
+      setIsBold(false);
+      setIsItalic(false);
+      setIsUnderline(false);
+      setIsStrike(false);
+      setIsJustifyLeft(false);
+      setCurrentColor(null);
+      return;
+    }
+    try {
+      setIsBold(document.queryCommandState('bold'));
+      setIsItalic(document.queryCommandState('italic'));
+      setIsUnderline(document.queryCommandState('underline'));
+      setIsStrike(document.queryCommandState('strikeThrough'));
+      setIsJustifyLeft(document.queryCommandState('justifyLeft'));
+      const col = document.queryCommandValue('foreColor');
+      setCurrentColor(col || null);
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    document.addEventListener('selectionchange', updateToolbarState);
+    return () => document.removeEventListener('selectionchange', updateToolbarState);
+  }, []);
+
+  const execWithUpdate = (command: string, value?: string) => {
+    exec(command, value);
+    setTimeout(updateToolbarState, 0);
+  };
+
+  const insertInlineCodeWithUpdate = () => {
+    insertInlineCode();
+    setTimeout(updateToolbarState, 0);
+  };
+
   const navItems = [
     {
       id: "home",
