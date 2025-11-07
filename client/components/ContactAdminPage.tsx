@@ -593,6 +593,7 @@ export function ContactAdminPage() {
                           const text = editorRef.current?.innerText || "";
                           setMessage(html);
                           setPlainText(text);
+                          setTimeout(updateToolbarState, 0);
                         }}
                         className="w-full min-h-[202px] p-3 text-[#676879] font-roboto text-[13px] font-normal leading-5 outline-none resize-none"
                         aria-multiline
