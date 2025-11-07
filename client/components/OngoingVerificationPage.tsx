@@ -205,7 +205,7 @@ export function OngoingVerificationPage() {
           />
         </svg>
       ),
-      onClick: () => {},
+      onClick: () => navigate("/contact-admin"),
     },
   ];
 
@@ -290,12 +290,9 @@ export function OngoingVerificationPage() {
               <h2 className="text-[#172B4D] font-roboto text-base font-bold leading-[26px]">
                 Not yet started
               </h2>
-              <div className="flex items-start gap-5 self-stretch flex-wrap">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 self-stretch">
                 {notStartedVerifications.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex-1 min-w-[320px] max-w-[400px]"
-                  >
+                  <div key={item.id} className="w-full">
                     <OngoingVerificationCard
                       title={item.title}
                       documentType={item.documentType}
@@ -312,12 +309,9 @@ export function OngoingVerificationPage() {
               <h2 className="text-[#172B4D] font-roboto text-base font-bold leading-[26px]">
                 In Progress
               </h2>
-              <div className="flex items-start gap-5 self-stretch flex-wrap">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 self-stretch">
                 {inProgressVerifications.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex-1 min-w-[320px] max-w-[400px]"
-                  >
+                  <div key={item.id} className="w-full">
                     <OngoingVerificationCard
                       title={item.title}
                       documentType={item.documentType}

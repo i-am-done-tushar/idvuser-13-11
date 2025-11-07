@@ -117,9 +117,9 @@ const OngoingVerificationSection = ({ cards }: { cards: OngoingCard[] }) => {
           </span>
         </button>
       </div>
-      <div className="flex items-start gap-5 w-full">
+      <div className="grid w-full gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
-          <div key={card.id} className="flex-1">
+          <div key={card.id} className="w-full">
             <OngoingVerificationCard
               title={card.title}
               documentType={card.documentType}
@@ -147,9 +147,9 @@ const ExpiredVerificationSection = ({ cards }: { cards: ExpiredCard[] }) => {
           </span>
         </button>
       </div>
-      <div className="flex items-start gap-5 w-full">
+      <div className="grid w-full gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
-          <div key={card.id} className="flex-1">
+          <div key={card.id} className="w-full">
             <ExpiredVerificationCard
               title={card.title}
               documentType={card.documentType}
@@ -176,9 +176,9 @@ const VerifiedCredentialsSection = ({ cards }: { cards: VerifiedCard[] }) => {
           </span>
         </button>
       </div>
-      <div className="flex items-start gap-5 w-full">
+      <div className="grid w-full gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
-          <div key={card.id} className="flex-1">
+          <div key={card.id} className="w-full">
             <VerifiedCredentialCard
               title={card.title}
               documentType={card.documentType}
@@ -320,6 +320,7 @@ export function Dashboard() {
           />
         </svg>
       ),
+      onClick: () => navigate("/contact-admin"),
     },
   ];
 

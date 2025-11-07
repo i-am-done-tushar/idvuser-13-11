@@ -18,6 +18,7 @@ import { PasswordSetupPage } from "./components/PasswordSetupPage";
 import { OngoingVerificationPage } from "./components/OngoingVerificationPage";
 import { ExpiredVerificationPage } from "./components/ExpiredVerificationPage";
 import { VerifiedCredentialsPage } from "./components/VerifiedCredentialsPage";
+import { ContactAdminPage } from "./components/ContactAdminPage";
 
 //1st change
 
@@ -58,6 +59,7 @@ const App = () => (
             path="/verified-credentials"
             element={<VerifiedCredentialsPage />}
           />
+          <Route path="/contact-admin" element={<ContactAdminPage />} />
           <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
