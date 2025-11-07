@@ -15,6 +15,7 @@ export function ContactAdminPage() {
   const [dragActive, setDragActive] = useState(false);
 
   const editorRef = useRef<HTMLDivElement | null>(null);
+  const colorRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     // keep message/plainText in sync if programmatically changed
