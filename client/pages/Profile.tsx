@@ -320,7 +320,10 @@ export default function ProfilePage() {
                     Update your password to keep your account secure
                   </p>
                 </div>
-                <button className="flex h-8 px-3 py-2 justify-center items-center gap-2 rounded bg-[#0073EA]">
+                <button
+                  onClick={() => setIsPasswordModalOpen(true)}
+                  className="flex h-8 px-3 py-2 justify-center items-center gap-2 rounded bg-[#0073EA]"
+                >
                   <span className="text-white font-roboto text-[13px] font-medium leading-4">
                     Change Password
                   </span>
