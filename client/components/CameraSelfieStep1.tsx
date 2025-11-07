@@ -41,3 +41,39 @@ export type PartialSegmentBlob = {
 declare const cv: any; // If you know which APIs you use, narrow this later.
 export {};
 
+
+
+export type CameraSelfieStep1Props = {
+  /** @Input() userId */
+  userId: number;
+
+  /** @Output() stepComplete -> onStepComplete */
+  onStepComplete?: (stepNumber: number) => void;
+
+  /** Optionally inject an HTTP client & logger (otherwise we'll use fetch/console) */
+  http?: { get: (url: string, init?: RequestInit) => Promise<Response>; post: (url: string, body?: any, init?: RequestInit) => Promise<Response> };
+};
+
+// optional: shared cleanup type
+type Disposable = () => void;
+
+export default function CameraSelfieStep1(props: CameraSelfieStep1Props) {
+
+  const disposablesRef = useRef<Disposable[]>([]);
+  const registerDispose = useCallback((fn: Disposable) => {
+    disposablesRef.current.push(fn);
+  }, []);
+
+  // OnDestroy equivalent
+  useEffect(() => {
+    return () => {
+      for (const dispose of disposablesRef.current) {
+        try { dispose(); } catch { /* ignore */ }
+      }
+      disposablesRef.current = [];
+    };
+  }, [])
+
+}
+  // central place to register teardowns (ngOnDestroy equivalent)
+

@@ -44,7 +44,7 @@ class LogService {
       const line = `[${new Date().toISOString()}] [${level.toUpperCase()}] ${message}`;
       this.buffer.push(line);
       // eslint-disable-next-line no-console
-      (console as any)[level === "debug" ? "log" : level](line);
+      // (console as any)[level === "debug" ? "log" : level](line);
     }
   }
   downloadLogs() {
@@ -179,7 +179,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
   const isStartingSegmentRef = useRef<boolean>(false);
   const segmentSessionIdRef = useRef<number>(0);
   const segmentRetryRef = useRef<number>(0);
-  const MAX_SEGMENT_RETRIES = 3;
+  const MAX_SEGMENT_RETRIES = 100;
 
   const startedAtRef = useRef<number>(0);
 
@@ -423,7 +423,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
     const width = el.videoWidth;
     const height = el.videoHeight;
     // eslint-disable-next-line no-console
-    console.log(`ðŸ“· Video resolution: ${width}x${height}`);
+    //console.log(`ðŸ“· Video resolution: ${width}x${height}`);
     if (width < 400 || height < 300) {
       showMessage(
         "cameraErrorMessage",
@@ -585,7 +585,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
       const setupOverlay = () => {
         const w = videoEl.videoWidth || 640;
         const h = videoEl.videoHeight || 480;
-        console.log("Canvas dimensions (w, h):", w, h);  // Add this log
+        //console.log("Canvas dimensions (w, h):", w, h);  // Add this log
 
         overlayEl.width = w;
         overlayEl.height = h;
@@ -607,7 +607,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
         bc.height = h;
         brightnessCtxRef.current = bc.getContext("2d");
         _drawFaceGuideOverlay(currentBrightnessRef.current || 100);
-        console.log(`Overlay and brightness canvas set up with dimensions: ${w}x${h}`);
+        //console.log(`Overlay and brightness canvas set up with dimensions: ${w}x${h}`);
       };
 
       // Run setupOverlay after video metadata is loaded
@@ -617,7 +617,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
         videoEl.addEventListener("loadedmetadata", setupOverlay, { once: true });
       }
 
-      console.log("Before detection loop: isCameraOn=", isCameraOn, "video", videoElementRef.current, "stream", streamRef.current);
+      //console.log("Before detection loop: isCameraOn=", isCameraOn, "video", videoElementRef.current, "stream", streamRef.current);
       logService.log("debug", `Detection precheck: isCameraOn=${isCameraOn} videoRef=${!!videoElementRef.current}`);
 
 
@@ -680,7 +680,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
   const _validateCameraAndVideo = useCallback((_loop: () => void): boolean => {
     if (!isCameraOn || !videoElementRef.current) {
       logService.log("info", "Camera off or video element missing; stopping detection loop.");
-      console.log("Camera status:", isCameraOn, "Video ref:", videoElementRef.current);
+      // console.log("Camera status:", isCameraOn, "Video ref:", videoElementRef.current);
       return false;
     }
     return true;
@@ -781,11 +781,12 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
         const circularity = (4 * Math.PI * area) / (perimeter * perimeter);
         if (circularity >= CIRCULARITY_MIN && circularity <= CIRCULARITY_MAX) {
           // eslint-disable-next-line no-console
-          console.log(
-            `[BrightnessCheck] Contour ${i} matched: area=${area}, radius=${radius}, circularity=${circularity.toFixed(
-              2
-            )}`
-          );
+          //console.log(
+            // `[BrightnessCheck] Contour ${i} matched: area=${area}, radius=${radius}, circularity=${circularity.toFixed(
+            //   2
+            // )
+          //   }`
+          // );
           spotFound = true;
           break;
         }
@@ -938,7 +939,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
       const res = await faceapi.detectSingleFace(v, options).withFaceLandmarks();
 
       // Debug (keep if useful)
-      console.log("Detection result:", res);
+      //console.log("Detection result:", res);
 
       if (res) {
         // ✅ on success, populate the refs used by alignment/verification logic
@@ -1000,7 +1001,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
         faceInside ? "âœ… Yay! Your face is perfectly inside the oval! ðŸŽ‰" : ""
       );
 
-      console.log("Alignment:", { faceInside, sizeOK, insideOvalFrames: insideOvalFramesRef.current });
+      //console.log("Alignment:", { faceInside, sizeOK, insideOvalFrames: insideOvalFramesRef.current });
 
       return [faceInside, sizeOK];
     },
@@ -1011,7 +1012,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
     setIsFaceDetected(false);
     insideOvalFramesRef.current = 0;
 
-    console.log("Segment trigger? flag:", recordingFlagRef.current, "insideOvalFrames:", insideOvalFramesRef.current);
+    //console.log("Segment trigger? flag:", recordingFlagRef.current, "insideOvalFrames:", insideOvalFramesRef.current);
 
 
     if (isRecordingRef.current && !isVerifyingHeadTurnRef.current) _restartCurrentSegmentDueToFaceLoss();
@@ -1086,7 +1087,8 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
   }, [logService, showMessage]);
 
   const _startDetectionRAF = useCallback(() => {
-    logService.log("info", "ðŸ”„ Starting face detection loop...");
+    // logService.log("info", "ðŸ”„ Starting face detection loop...");
+    console.log("Start Detection RAF called");  
     const options = new faceapi.TinyFaceDetectorOptions();
 
     const loop = async () => {
@@ -1095,7 +1097,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
 
       frameCountRef.current++;
 
-      console.log("Inside oval frames:", insideOvalFramesRef.current, "Required frames:", requiredFramesRef.current);
+      //console.log("Inside oval frames:", insideOvalFramesRef.current, "Required frames:", requiredFramesRef.current);
 
       if (frameCountRef.current % BRIGHT_EVERY.current === 0) {
         if (await _handleBrightnessChecks(loop)) return;
@@ -1109,33 +1111,37 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
       if (lastBoxRef.current && lastLandmarksRef.current) {
         const [faceInside, sizeOK] = await _handleFaceAlignment(loop);
 
-        console.log("Face alignment check:", {
-          faceInside,
-          sizeOK,
-          insideOvalFrames: insideOvalFramesRef.current
-        });
+        //console.log("Face alignment check:", {
+        //   faceInside,
+        //   sizeOK,
+        //   insideOvalFrames: insideOvalFramesRef.current
+        // });
 
         if (insideOvalFramesRef.current >= requiredFramesRef.current) {
-          console.log("Triggering recording due to enough frames inside the oval.");
-          console.log("Current recording flag:", recordingFlagRef.current);
+          //console.log("Triggering recording due to enough frames inside the oval.");
+          //console.log("Current recording flag:", recordingFlagRef.current);
           showMessage("statusMessage", "âœ… Perfect! Stay still inside the dashed circle.");
           setIsFaceDetected(true);
+          console.log("Face alignment result:", { faceInside, sizeOK, insideOvalFrames: insideOvalFramesRef.current });
           await _checkDifferentFace();
         }
+
+          setIsFaceDetected(true);
+
 
 
         if (sizeOK && faceInside) {
           insideOvalFramesRef.current++;
           showMessage("dashedCircleAlignMessage", "");
 
-          console.log("Segment trigger? flag:", recordingFlagRef.current, "insideOvalFrames:", insideOvalFramesRef.current);
+          //console.log("Segment trigger? flag:", recordingFlagRef.current, "insideOvalFrames:", insideOvalFramesRef.current);
 
           if (insideOvalFramesRef.current >= requiredFramesRef.current) {
             showMessage("statusMessage", "âœ… Perfect! Stay still inside the dashed circle.");
             setIsFaceDetected(true);
             await _checkDifferentFace();
 
-            console.log("🎬 Trigger check", { flag: recordingFlagRef.current, isCameraOn, stream: !!streamRef.current });
+            //console.log("🎬 Trigger check", { flag: recordingFlagRef.current, isCameraOn, stream: !!streamRef.current });
 
             if (recordingFlagRef.current === 0) {
               await startRecording_FaceReference();
@@ -1237,7 +1243,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
     try {
       if (typeof cv !== "undefined") {
         (cv as any).onRuntimeInitialized = () => {
-          console.log("OpenCV.js loaded");
+          //console.log("OpenCV.js loaded");
           setCvReady(true);
         };
       }
@@ -1277,15 +1283,15 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
   //     try {
   //       // tf backend
   //       // eslint-disable-next-line no-console
-  //       console.log("Setting TensorFlow.js backend to webgl...");
+  //       //console.log("Setting TensorFlow.js backend to webgl...");
   //       await tf.setBackend("webgl");
   //       await tf.ready();
   //       // eslint-disable-next-line no-console
-  //       console.log("TensorFlow backend:", tf.getBackend());
+  //       //console.log("TensorFlow backend:", tf.getBackend());
 
   //       // load faceapi models
   //       // eslint-disable-next-line no-console
-  //       console.log("Loading face-api models...");
+  //       //console.log("Loading face-api models...");
   //       logService.log("debug", "Loading face-api models...");
   //       await Promise.all([
   //         faceapi.nets.tinyFaceDetector.loadFromUri("/assets/weights"),
@@ -1294,19 +1300,19 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
   //         faceapi.nets.faceExpressionNet.loadFromUri("/assets/weights"),
   //       ]);
   //       // eslint-disable-next-line no-console
-  //       console.log("âœ… FaceAPI models loaded");
+  //       //console.log("âœ… FaceAPI models loaded");
   //       logService.log("debug", "âœ… FaceAPI models loaded");
 
   //       // eslint-disable-next-line no-console
-  //       console.log("Loading COCO-SSD model...");
+  //       //console.log("Loading COCO-SSD model...");
   //       // const cocoModel = await cocoSsd.load();
   //       // eslint-disable-next-line no-console
-  //       console.log("âœ… COCO-SSD model loaded");
+  //       //console.log("âœ… COCO-SSD model loaded");
   //       logService.log("info", "Step 6 loaded");
   //       setLogs(logService.getLogs());
 
   //       // eslint-disable-next-line no-console
-  //       console.log("Starting camera...");
+  //       //console.log("Starting camera...");
   //       await startCamera();
   //     } catch (err: any) {
   //       // eslint-disable-next-line no-console
@@ -1491,7 +1497,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
 
   /* Angular: downloadAllBlobs -> _downloadAllBlobs */
   const _downloadAllBlobs = useCallback(() => {
-    console.log("Download blobs", completedSegmentsRef.current);
+    //console.log("Download blobs", completedSegmentsRef.current);
     if (!completedSegmentsRef.current || completedSegmentsRef.current.length === 0) {
       logService.log("error", "No recorded segments available for download.");
       return;
@@ -1553,7 +1559,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
     setStatusMessage("Downloads complete âœ…");
     _resetAllPublic();
     // eslint-disable-next-line no-console
-    console.log("âž¡ï¸ Emitting stepComplete(7)");
+    //console.log("âž¡ï¸ Emitting stepComplete(7)");
     onComplete?.(7);
   }, [logService, onComplete]);
 
@@ -1587,7 +1593,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
         setStatusMessage("Uploads complete âœ…");
         _resetAllPublic();
         // eslint-disable-next-line no-console
-        console.log("âž¡ï¸ Emitting stepComplete(7)");
+        //console.log("âž¡ï¸ Emitting stepComplete(7)");
         onComplete?.(7);
       })
       .catch((error) => {
@@ -2024,12 +2030,12 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
       }
     };
 
-    console.log(`Starting MediaRecorder for segment ${currentSegmentRef.current}`);
+    //console.log(`Starting MediaRecorder for segment ${currentSegmentRef.current}`);
     headMediaRecorderRef.current.start();
-    console.log("🎥 Recorder started with state:", headMediaRecorderRef.current.state);
+    //console.log("🎥 Recorder started with state:", headMediaRecorderRef.current.state);
 
     setTimeout(() => {
-      console.log("⏱️ Recorder state after 2s:", mediaRecorderRef.current?.state);
+      //console.log("⏱️ Recorder state after 2s:", mediaRecorderRef.current?.state);
     }, 2000);
 
     const success = await _startHeadMovementVerification(verificationDirection);
@@ -2263,6 +2269,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
             "recordingMessage",
             `🎬 Recording segment ${currentSegmentRef.current}... (${Math.max(remaining, 0)}s left)`
           );
+          console.log("Video recording started");
           logService.log("info", `[SEG] Started. Session=${mySessionId}`);
         };
 
@@ -2301,6 +2308,7 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
             }
             // Do NOT auto-restart here; the caller (_restartCurrentSegmentDueToFaceLoss) controls it.
             logService.log("info", `[SEG] Stopped for restart. Session=${mySessionId}`);
+            console.log("video recording stopped for restart due to face loss");
             return;
           }
 
@@ -2311,10 +2319,10 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
             completedSegmentsRef.current.push(blob);
             logService.log("info", `[SEG] ✅ Segment ${currentSegmentRef.current} saved. Session=${mySessionId}`);
 
-            if (_shouldVerifyAfterSegment(currentSegmentRef.current)) {
-              await _performVerificationForCurrentSegment();
-              return;
-            }
+            // if (_shouldVerifyAfterSegment(currentSegmentRef.current)) {
+            //   await _performVerificationForCurrentSegment();
+            //   return;
+            // }
 
             _downloadAllBlobs(); // keep your behavior
             await _onSegmentComplete();
@@ -2322,29 +2330,30 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
           }
 
           // Bounded retries to prevent loops
-          if (segmentRetryRef.current < MAX_SEGMENT_RETRIES) {
-            segmentRetryRef.current += 1;
-            logService.log(
-              "warn",
-              `[SEG] Incomplete/invalid segment; retry ${segmentRetryRef.current}/${MAX_SEGMENT_RETRIES}.`
-            );
-            // Small debounce to avoid tight loops
-            setTimeout(() => {
-              if (!isStale()) _startSegmentRecording(segmentSecondsRecordedRef.current);
-            }, 600);
-          } else {
-            showMessage(
-              "statusMessage",
-              "⚠️ Couldn’t complete the segment reliably. Please re-align and try again."
-            );
-            logService.log("error", "[SEG] Max retries hit; aborting this segment.");
-          }
+          // if (segmentRetryRef.current < MAX_SEGMENT_RETRIES) {
+          //   segmentRetryRef.current += 1;
+          //   logService.log(
+          //     "warn",
+          //     `[SEG] Incomplete/invalid segment; retry ${segmentRetryRef.current}/${MAX_SEGMENT_RETRIES}.`
+          //   );
+          //   // Small debounce to avoid tight loops
+          //   setTimeout(() => {
+          //     if (!isStale()) _startSegmentRecording(segmentSecondsRecordedRef.current);
+          //   }, 600);
+          // } else {
+          //   showMessage(
+          //     "statusMessage",
+          //     "⚠️ Couldn’t complete the segment reliably. Please re-align and try again."
+          //   );
+          //   logService.log("error", "[SEG] Max retries hit; aborting this segment.");
+          // }
+          
         };
         rec.start();
 
-        setTimeout(() => {
-          rec.stop();
-        }, 5000);
+        // setTimeout(() => {
+        //   rec.stop();
+        // }, 5000);
         // rec.onstart = () => {
         //   if (isStale()) return;
         //   recordingFlagRef.current = 1;
@@ -2632,9 +2641,9 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
 
   /* Angular: generateSegmentDurations */
   const _generateSegmentDurations = () => {
-    const firstVal = Math.floor(Math.random() * 2) + 2; // 2 or 3
-    const secondVal = Math.floor(Math.random() * 3) + 2; // 2..4
-    const lastVal = Math.max(totalDurationRef.current - (firstVal + secondVal), 1);
+    const firstVal = 5
+    const secondVal = 5
+    const lastVal =5;
     segmentDurationsRef.current = [firstVal, secondVal, lastVal];
   };
 
@@ -2645,8 +2654,8 @@ export default function CameraSelfieStep({ userId, onComplete }: CameraSelfieSte
     if (!ctx || !canvas) return;
 
     // Check if the context is initialized and stroke style is set
-    console.log("Drawing oval with context:", ctx);
-    console.log("Current strokeStyle:", ctx.strokeStyle); // Log the strokeStyle  
+    //console.log("Drawing oval with context:", ctx);
+    //console.log("Current strokeStyle:", ctx.strokeStyle); // Log the strokeStyle  
     const w = canvas.width;
     const h = canvas.height;
 
