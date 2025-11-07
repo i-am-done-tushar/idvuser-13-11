@@ -461,7 +461,7 @@ export function ContactAdminPage() {
                       <button
                         type="button"
                         onClick={() => execWithUpdate("justifyLeft")}
-                        className="p-1 rounded hover:bg-gray-100"
+                        className={`p-1 rounded hover:bg-gray-100 ${isJustifyLeft ? "bg-[#E6F1FD]" : ""}`}
                       >
                         <svg
                           className="w-4 h-4"
