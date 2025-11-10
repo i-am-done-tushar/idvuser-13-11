@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 interface DocumentDetailsModalProps {
@@ -68,9 +69,9 @@ export function DocumentDetailsModal({ trigger, data }: DocumentDetailsModalProp
       <DialogContent className="max-w-[960px] max-h-[90vh] overflow-y-auto p-0 gap-0">
         <div className="flex flex-col gap-5 pb-5">
           <div className="flex h-[52px] px-5 py-2.5 justify-between items-center border-b border-[#D0D4E4] bg-white rounded-t-lg sticky top-0 z-10">
-            <h2 className="text-[#323238] font-figtree text-lg font-bold leading-[26px]">
+            <DialogTitle className="text-[#323238] font-figtree text-lg font-bold leading-[26px]">
               Arcon Document Submission
-            </h2>
+            </DialogTitle>
           </div>
 
           <div className="flex flex-col gap-2 px-5">
