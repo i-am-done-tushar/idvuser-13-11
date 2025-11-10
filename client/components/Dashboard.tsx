@@ -400,11 +400,11 @@ export function Dashboard() {
         </div>
 
         <div className="flex flex-1 flex-col items-start bg-white overflow-y-auto">
-          <div className="flex w-full items-center gap-2.5 rounded-b-2xl bg-black relative overflow-hidden h-[138px]">
+          <div className="flex w-full items-center gap-2.5 rounded-b-2xl relative overflow-hidden h-[138px]" style={{ background: 'linear-gradient(135deg, #003d82 0%, #1e5ba8 50%, #0073EA 100%)' }}>
             <img
               src="https://api.builder.io/api/v1/image/assets/TEMP/38b9840b8e157e2e4686f0512b46f97b9e7cb4c5?width=2700"
               alt=""
-              className="absolute w-full h-full object-cover"
+              className="absolute w-full h-full object-cover opacity-30"
             />
             <div className="flex px-4 flex-col justify-center items-start gap-0.5 flex-1 relative z-10">
               <h1 className="text-white font-roboto text-2xl font-semibold leading-[30px]">
