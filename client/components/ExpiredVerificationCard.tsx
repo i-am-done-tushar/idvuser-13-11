@@ -26,7 +26,7 @@ export function ExpiredVerificationCard({
     <div className="flex flex-col items-start gap-2 rounded border border-[#DEDEDD] bg-white">
       <div className="flex px-3 py-2 flex-col justify-center items-start self-stretch gap-2">
         <div className="flex h-7 justify-between items-center self-stretch">
-          <h3 className="flex-1 text-[#172B4D] text-center font-roboto text-sm font-bold leading-normal truncate">
+          <h3 className="flex-1 text-[#172B4D] text-left font-roboto text-sm font-bold leading-normal truncate">
             {title}
           </h3>
           <StatusBadge />

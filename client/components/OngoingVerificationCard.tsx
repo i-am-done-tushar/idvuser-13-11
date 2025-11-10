@@ -83,7 +83,7 @@ export function OngoingVerificationCard({
     >
       <div className="flex px-3 py-2 flex-col justify-center items-start self-stretch rounded-tr rounded-br border-t border-r border-b border-[#DEDEDD] bg-white">
         <div className="flex h-7 justify-between items-center self-stretch">
-          <h3 className="flex-1 text-[#402C1B] text-center font-roboto text-sm font-bold leading-normal truncate">
+          <h3 className="flex-1 text-[#402C1B] text-left font-roboto text-sm font-bold leading-normal truncate">
             {title}
           </h3>
           <StatusBadge status={status} />
