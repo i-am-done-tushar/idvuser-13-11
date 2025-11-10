@@ -11,7 +11,10 @@ interface RevokeConsentDialogProps {
   onConfirm?: () => void;
 }
 
-export function RevokeConsentDialog({ trigger, onConfirm }: RevokeConsentDialogProps) {
+export function RevokeConsentDialog({
+  trigger,
+  onConfirm,
+}: RevokeConsentDialogProps) {
   const [open, setOpen] = useState(false);
 
   const handleConfirm = () => {
@@ -49,7 +52,8 @@ export function RevokeConsentDialog({ trigger, onConfirm }: RevokeConsentDialogP
                 Revoke Consent
               </DialogTitle>
               <p className="text-[#505258] font-roboto text-[13px] font-normal leading-5">
-                Revoking will stop verification and delete your shared data. Continue?
+                Revoking will stop verification and delete your shared data.
+                Continue?
               </p>
             </div>
 

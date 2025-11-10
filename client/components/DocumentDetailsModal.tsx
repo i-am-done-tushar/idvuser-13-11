@@ -32,7 +32,10 @@ interface DocumentDetailsModalProps {
   };
 }
 
-export function DocumentDetailsModal({ trigger, data }: DocumentDetailsModalProps) {
+export function DocumentDetailsModal({
+  trigger,
+  data,
+}: DocumentDetailsModalProps) {
   const personalInfo = data?.personalInfo || {
     firstName: "Opinder",
     lastName: "Singh",
@@ -49,13 +52,15 @@ export function DocumentDetailsModal({ trigger, data }: DocumentDetailsModalProp
 
   const documents = data?.documents || [
     {
-      image: "https://api.builder.io/api/v1/image/assets/TEMP/c38cf62b3314c2aa7de5c89dfdfb5b200b0d4976?width=65",
+      image:
+        "https://api.builder.io/api/v1/image/assets/TEMP/c38cf62b3314c2aa7de5c89dfdfb5b200b0d4976?width=65",
       name: "Filename.jpeg1",
       type: "JPEG",
       size: "Size 2.5 MB",
     },
     {
-      image: "https://api.builder.io/api/v1/image/assets/TEMP/c38cf62b3314c2aa7de5c89dfdfb5b200b0d4976?width=65",
+      image:
+        "https://api.builder.io/api/v1/image/assets/TEMP/c38cf62b3314c2aa7de5c89dfdfb5b200b0d4976?width=65",
       name: "Filename.2png",
       type: "PNG",
       size: "Size 1.4 MB",
@@ -275,8 +280,8 @@ export function DocumentDetailsModal({ trigger, data }: DocumentDetailsModalProp
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg bg-[#F6F7FB] p-3">
               <p className="text-[#323238] font-roboto text-sm font-normal flex-1">
-                You've shared your details for identity verification. Do you wish to
-                revoke your consent?
+                You've shared your details for identity verification. Do you
+                wish to revoke your consent?
               </p>
               <RevokeConsentDialog
                 trigger={
