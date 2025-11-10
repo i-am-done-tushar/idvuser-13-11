@@ -6,6 +6,16 @@ export function ContactAdminPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeNav, setActiveNav] = useState("contact");
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname || "";
+    if (path.startsWith("/ongoing")) setActiveNav("ongoing");
+    else if (path.startsWith("/expired")) setActiveNav("expired");
+    else if (path.startsWith("/verified")) setActiveNav("verified");
+    else if (path.startsWith("/contact")) setActiveNav("contact");
+    else setActiveNav("home");
+  }, [location.pathname]);
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState(""); // html
   const [plainText, setPlainText] = useState("");
