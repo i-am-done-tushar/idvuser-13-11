@@ -400,22 +400,20 @@ export function Dashboard() {
         </div>
 
         <div className="flex flex-1 flex-col items-start bg-white overflow-y-auto">
-          <div
-            className="flex w-full items-center gap-2.5 rounded-b-2xl relative overflow-hidden"
-            style={{
-              height: "138px",
-              minHeight: "138px",
-              backgroundColor: "#003d82",
-              backgroundImage:
-                "linear-gradient(135deg, rgba(0,61,130,0.95) 0%, rgba(30,91,168,0.95) 50%, rgba(0,115,234,0.95) 100%), url('https://api.builder.io/api/v1/image/assets/TEMP/38b9840b8e157e2e4686f0512b46f97b9e7cb4c5?width=2700')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              zIndex: 10,
-              position: "relative",
-            }}
-          >
-            <div className="flex px-4 flex-col justify-center items-start gap-0.5 flex-1 relative z-20">
+          <div className="flex w-full items-center gap-2.5 rounded-b-2xl relative overflow-hidden h-[138px] bg-gradient-to-br from-[#003d82] via-[#1e5ba8] to-[#0073EA]">
+            <img
+              src="https://api.builder.io/api/v1/image/assets/TEMP/38b9840b8e157e2e4686f0512b46f97b9e7cb4c5?width=2700"
+              alt=""
+              className="absolute pointer-events-none"
+              style={{
+                width: "1350px",
+                height: "224.865px",
+                left: "-135px",
+                top: "-43.437px",
+                opacity: 0.3,
+              }}
+            />
+            <div className="flex px-4 flex-col justify-center items-start gap-0.5 flex-1 relative z-10">
               <h1 className="text-white font-roboto text-2xl font-semibold leading-[30px]">
                 Welcome, Opinder Singh !
               </h1>
