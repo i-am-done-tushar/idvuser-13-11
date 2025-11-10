@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { OngoingVerificationCard } from "./OngoingVerificationCard";
 import { ExpiredVerificationCard } from "./ExpiredVerificationCard";
 import { VerifiedCredentialCard } from "./VerifiedCredentialCard";
