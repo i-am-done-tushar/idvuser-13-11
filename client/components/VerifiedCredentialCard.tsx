@@ -1,3 +1,5 @@
+import { DocumentDetailsModal } from "./DocumentDetailsModal";
+
 interface VerifiedCredentialCardProps {
   title: string;
   documentType: string;
@@ -54,25 +56,29 @@ export function VerifiedCredentialCard({
             </span>
           </div>
         </div>
-        <button className="flex items-center gap-0.5 text-[#0073EA] font-roboto text-xs font-normal leading-5">
-          View Details
-          <svg
-            className="w-3 h-3"
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M2.5 6H9.5M9.5 6L6.5 3M9.5 6L6.5 9"
-              stroke="#0073EA"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+        <DocumentDetailsModal
+          trigger={
+            <button className="flex items-center gap-0.5 text-[#0073EA] font-roboto text-xs font-normal leading-5 hover:underline">
+              View Details
+              <svg
+                className="w-3 h-3"
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.5 6H9.5M9.5 6L6.5 3M9.5 6L6.5 9"
+                  stroke="#0073EA"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          }
+        />
       </div>
     </div>
   );
