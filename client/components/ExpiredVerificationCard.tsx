@@ -31,9 +31,9 @@ export function ExpiredVerificationCard({
           </h3>
           <StatusBadge />
         </div>
-        <div className="flex items-center justify-center gap-2 self-stretch">
+        <div className="flex items-start justify-start gap-2 self-stretch">
           <span className="text-[#505258] font-roboto text-xs font-normal leading-5">
-            You have successfully submitted the {documentType}
+            You have successfully submitted the Employee ID Card
           </span>
         </div>
         <div className="flex justify-between items-start self-stretch">
