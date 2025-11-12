@@ -33,7 +33,12 @@ interface DesktopDynamicSectionProps {
     country: string;
     selectedDocument: string;
     uploadedDocuments: string[];
-    uploadedFiles: Array<{id: string, name: string, size: string, type: string}>;
+    uploadedFiles: Array<{
+      id: string;
+      name: string;
+      size: string;
+      type: string;
+    }>;
     documentUploadIds: Record<string, { front?: number; back?: number }>;
     documentsDetails: Array<{
       documentName: string;
@@ -112,7 +117,9 @@ export function DesktopDynamicSection({
       <div className="flex pl-7 justify-center items-center gap-2.5 self-stretch">
         <div className="flex-1 text-text-primary font-roboto text-[13px] font-normal leading-5">
           {!isExpanded && isFilled ? (
-            <span className="text-green-600 font-medium">This section has been filled</span>
+            <span className="text-green-600 font-medium">
+              This section has been filled
+            </span>
           ) : (
             section.description ||
             `Complete the ${section.name.toLowerCase()} section.`
@@ -143,7 +150,8 @@ export function DesktopDynamicSection({
         if (!formData || !setFormData) return null;
 
         // read legacy mapping
-        const legacyPI = section.fieldMappings?.[0]?.structure?.personalInfo ?? {};
+        const legacyPI =
+          section.fieldMappings?.[0]?.structure?.personalInfo ?? {};
 
         // enrich fieldConfig: ensure camelCase requiredToggles is present
         const fieldConfig = {
@@ -156,7 +164,7 @@ export function DesktopDynamicSection({
             <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-border">
               {renderSectionHeader()}
               {isExpanded && (
-                <div 
+                <div
                   className="flex py-5 px-[34px] flex-col items-start self-stretch border-t border-border bg-background"
                   onClick={() => onSectionFocus?.(sectionIndex)}
                   onFocus={() => onSectionFocus?.(sectionIndex)}
@@ -209,7 +217,7 @@ export function DesktopDynamicSection({
             <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-[#DEDEDD] bg-white">
               {renderSectionHeader()}
               {isExpanded && (
-                <div 
+                <div
                   className="flex py-4 px-[34px] flex-col items-start self-stretch border-t border-[#DEDEDD] bg-white"
                   onClick={() => onSectionFocus?.(sectionIndex)}
                   onFocus={() => onSectionFocus?.(sectionIndex)}
@@ -217,10 +225,16 @@ export function DesktopDynamicSection({
                   {/* summary chips so the new fields are visible */}
                   <div className="text-xs text-muted-foreground flex flex-wrap gap-2 mb-3">
                     <span className="px-2 py-1 rounded-full border bg-white">
-                      Upload: {documentConfig.allowUploadFromDevice ? "Device ✓" : "Device ✗"}
+                      Upload:{" "}
+                      {documentConfig.allowUploadFromDevice
+                        ? "Device ✓"
+                        : "Device ✗"}
                     </span>
                     <span className="px-2 py-1 rounded-full border bg-white">
-                      Capture: {documentConfig.allowCaptureWebcam ? "Webcam ✓" : "Webcam ✗"}
+                      Capture:{" "}
+                      {documentConfig.allowCaptureWebcam
+                        ? "Webcam ✓"
+                        : "Webcam ✗"}
                     </span>
                     <span className="px-2 py-1 rounded-full border bg-white">
                       Handling: {documentConfig.documentHandling || "—"}
@@ -232,7 +246,10 @@ export function DesktopDynamicSection({
                     )}
                     {!!documentConfig.allowedFileTypes.length && (
                       <span className="px-2 py-1 rounded-full border bg-white">
-                        File types: {documentConfig.allowedFileTypes.join(", ").toUpperCase()}
+                        File types:{" "}
+                        {documentConfig.allowedFileTypes
+                          .join(", ")
+                          .toUpperCase()}
                       </span>
                     )}
                   </div>
@@ -290,7 +307,12 @@ export function DesktopDynamicSection({
                         Face match ≥ {bioCfg.faceMatchThreshold}%
                       </span>
                       <span className="px-2 py-1 rounded-full border bg-white">
-                        On low score: {bioCfg.askUserRetry ? "Ask to retry" : bioCfg.blockAfterRetries ? "Block after retries" : "—"}
+                        On low score:{" "}
+                        {bioCfg.askUserRetry
+                          ? "Ask to retry"
+                          : bioCfg.blockAfterRetries
+                            ? "Block after retries"
+                            : "—"}
                       </span>
                       {bioCfg.dataRetention && (
                         <span className="px-2 py-1 rounded-full border bg-white">
@@ -300,12 +322,79 @@ export function DesktopDynamicSection({
                     </div>
                   </div>
 
-                  <div className="flex p-3 flex-col justify-center items-center self-stretch bg-background">
-                    <div className="flex w-full flex-col items-center gap-2">
-                      <CameraSelfieStep
-                        onStepComplete={onSelfieComplete || (() => {})}
-                        userId={submissionId}
-                      />
+                  <div className="flex p-4 flex-col justify-center items-center self-stretch bg-background">
+                    <div className="flex w-full items-center gap-6">
+                      {/* Left Box - Camera Selfie */}
+                      <div className="flex-1 flex flex-col">
+                        <div className="flex h-[380px] flex-col items-center gap-2 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white pt-4">
+                          <CameraSelfieStep
+                            onStepComplete={onSelfieComplete || (() => {})}
+                            userId={submissionId}
+                          />
+                        </div>
+                        <div className="flex w-full px-4 py-2 items-center justify-end gap-2 rounded-b border-t-0 border-[1.5px] border-dashed border-[#C3C6D4] bg-[#F6F7FB]"></div>
+                      </div>
+
+                      {/* Separator with "or" */}
+                      <div className="flex flex-col items-center justify-center gap-1 h-[428px]">
+                        <div className="h-[160px] w-px bg-[#D0D4E4]"></div>
+                        <div className="text-[#676879] font-roboto text-[13px] font-normal">
+                          or
+                        </div>
+                        <div className="h-[160px] w-px bg-[#D0D4E4]"></div>
+                      </div>
+
+                      {/* Right Box - QR Code */}
+                      <div className="flex-1 flex flex-col">
+                        <div className="flex h-[380px] flex-col items-center justify-center gap-4 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white">
+                          <img
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=https://id.xyz/verify"
+                            alt="QR Code"
+                            className="w-32 h-32"
+                          />
+                          <div className="flex flex-col items-center gap-3 max-w-[214px]">
+                            <p className="text-[#676879] text-center font-roboto text-[13px] font-normal leading-5">
+                              Continue on another device by scanning the QR code
+                              or opening{" "}
+                              <a
+                                href="https://id.xyz/verify"
+                                className="text-[#0073EA]"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                https://id.xyz/verify
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex w-full px-4 py-2 items-center gap-2 rounded-b border-t-0 border-[1.5px] border-dashed border-[#C3C6D4] bg-[#F6F7FB]">
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g clipPath="url(#clip0_info)">
+                              <path
+                                d="M10.0013 13.3307V9.9974M10.0013 6.66406H10.0096M18.3346 9.9974C18.3346 14.5997 14.6036 18.3307 10.0013 18.3307C5.39893 18.3307 1.66797 14.5997 1.66797 9.9974C1.66797 5.39502 5.39893 1.66406 10.0013 1.66406C14.6036 1.66406 18.3346 5.39502 18.3346 9.9974Z"
+                                stroke="#0073EA"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </g>
+                            <defs>
+                              <clipPath id="clip0_info">
+                                <rect width="20" height="20" fill="white" />
+                              </clipPath>
+                            </defs>
+                          </svg>
+                          <span className="text-[#0073EA] font-roboto text-[12px] font-normal leading-5">
+                            How does this work?
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -321,7 +410,7 @@ export function DesktopDynamicSection({
             <div className="flex py-0 px-0.5 flex-col items-start self-stretch rounded border border-border">
               {renderSectionHeader()}
               {isExpanded && (
-                <div 
+                <div
                   className="flex p-4 flex-col items-start self-stretch border-t border-border bg-background"
                   onClick={() => onSectionFocus?.(sectionIndex)}
                   onFocus={() => onSectionFocus?.(sectionIndex)}
