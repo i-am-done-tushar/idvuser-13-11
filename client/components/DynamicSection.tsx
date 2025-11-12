@@ -214,7 +214,7 @@ export function DynamicSection({
 
             <div className="flex p-3 flex-col justify-center items-center self-stretch bg-background">
               <div className="flex w-full flex-col items-center gap-2">
-                <CameraSelfieStep onComplete={onSelfieComplete || (() => {})} userId={submissionId} />
+                <CameraSelfieStep onStepComplete={onSelfieComplete || (() => {})} userId={submissionId} />
               </div>
             </div>
           </>
