@@ -4,6 +4,8 @@ import { IdentityDocumentForm } from "./IdentityDocumentForm";
 import CameraSelfieStep from "./CameraSelfieStep";
 import { LockedStepComponent } from "./LockedStepComponent";
 import { FormData } from "@shared/templates";
+import { BiometricCaptureUI } from "./BiometricCaptureUI";
+import { useState } from "react";
 
 interface DesktopDynamicSectionProps {
   section: TemplateVersionSection;
@@ -86,6 +88,12 @@ export function DesktopDynamicSection({
   biometricFormState,
   setBiometricFormState,
 }: DesktopDynamicSectionProps) {
+  const [isBiometricScanStarted, setIsBiometricScanStarted] = useState(false);
+
+  const handleScanFace = () => {
+    setIsBiometricScanStarted(true);
+  };
+
   const renderSectionHeader = () => (
     <div className="flex p-4 flex-col justify-center items-center gap-2 self-stretch bg-background">
       <div className="flex pb-1 items-center gap-2 self-stretch">
@@ -326,13 +334,21 @@ export function DesktopDynamicSection({
                     <div className="flex w-full items-center gap-6">
                       {/* Left Box - Camera Selfie */}
                       <div className="flex-1 flex flex-col">
-                        <div className="flex h-[380px] flex-col items-center gap-2 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white pt-4">
-                          <CameraSelfieStep
-                            onStepComplete={onSelfieComplete || (() => {})}
-                            userId={submissionId}
-                          />
+                        <div className="flex h-[380px] flex-col items-center gap-2 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white">
+                          {!isBiometricScanStarted ? (
+                            <BiometricCaptureUI onScanFace={handleScanFace} />
+                          ) : (
+                            <div className="pt-4 w-full h-full">
+                              <CameraSelfieStep
+                                onStepComplete={onSelfieComplete || (() => {})}
+                                userId={submissionId}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <div className="flex w-full px-4 py-2 items-center justify-end gap-2 rounded-b border-t-0 border-[1.5px] border-dashed border-[#C3C6D4] bg-[#F6F7FB]"></div>
+                        {isBiometricScanStarted && (
+                          <div className="flex w-full px-4 py-2 items-center justify-end gap-2 rounded-b border-t-0 border-[1.5px] border-dashed border-[#C3C6D4] bg-[#F6F7FB]"></div>
+                        )}
                       </div>
 
                       {/* Separator with "or" */}
