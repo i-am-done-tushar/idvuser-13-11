@@ -45,16 +45,16 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
             <div className="flex w-[460px] h-[460px] pt-10 flex-col justify-between items-center flex-shrink-0 rounded-lg bg-white">
               <style>
                 {`
-                  @keyframes headBob {
+                  @keyframes headTilt {
                     0%, 100% {
-                      transform: translateY(0px);
+                      transform: rotate(0deg);
                     }
                     50% {
-                      transform: translateY(-15px);
+                      transform: rotate(-8deg);
                     }
                   }
                   .animated-head {
-                    animation: headBob 2s ease-in-out infinite;
+                    animation: headTilt 2s ease-in-out infinite;
                     transform-origin: center;
                   }
                 `}
