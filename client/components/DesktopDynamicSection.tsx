@@ -4,6 +4,8 @@ import { IdentityDocumentForm } from "./IdentityDocumentForm";
 import CameraSelfieStep from "./CameraSelfieStep";
 import { LockedStepComponent } from "./LockedStepComponent";
 import { FormData } from "@shared/templates";
+import { BiometricCaptureUI } from "./BiometricCaptureUI";
+import { useState } from "react";
 
 interface DesktopDynamicSectionProps {
   section: TemplateVersionSection;
