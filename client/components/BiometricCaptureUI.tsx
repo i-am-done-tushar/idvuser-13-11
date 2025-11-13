@@ -54,7 +54,7 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
                     }
                   }
                   .animated-head {
-                    animation: headTilt 2s steps(2) infinite;
+                    animation: headTilt 2s ease-in-out infinite;
                     transform-origin: center;
                   }
                 `}
