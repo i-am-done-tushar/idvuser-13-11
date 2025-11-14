@@ -149,10 +149,6 @@ export default function CameraCapture({
 
   const [HeadTurnRecordingDone, setHeadTurnRecordingDone] = useState(false);
 
-  //Progress Tracking State (outer circle green percentage):
-  // 5 stages total: segment 1 (20%), head 1 (40%), segment 2 (60%), head 2 (80%), segment 3 (100%)
-  const [overallProgressPercentage, setOverallProgressPercentage] = useState(0);
-
   //-----------------------------useRef-------------------------------------
   //DOM Element References:
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -715,20 +711,6 @@ export default function CameraCapture({
         ctx.setLineDash([]);
       }
 
-      // Step 5: Overall progress arc (green arc on outer circle based on overall completion percentage)
-      // 5 stages: segment 1 (20%), head 1 (40%), segment 2 (60%), head 2 (80%), segment 3 (100%)
-      if (overallProgressPercentage > 0) {
-        const startAngle = -Math.PI / 2; // Start from top
-        const progressRatio = overallProgressPercentage / 100;
-        const endAngle = startAngle + 2 * Math.PI * progressRatio;
-        ctx.beginPath();
-        ctx.arc(cx, cy, biggerRadius, startAngle, endAngle);
-        ctx.strokeStyle = "#16a34a"; // Green color
-        ctx.lineWidth = 5;
-        ctx.setLineDash([]);
-        ctx.stroke();
-      }
-
       // Instruction text (moved slightly higher for visibility)
       ctx.font = "18px Arial";
       ctx.fillStyle = "#ffffffff";
@@ -739,7 +721,7 @@ export default function CameraCapture({
         cy + biggerRadius + 20,
       );
 
-      // Step 6: Recording progress arc (green arc on inner alignment circle)
+      // Step 5: Recording progress arc (green arc on inner alignment circle)
       if (isRecording) {
         recordedFrameCountRef.current++;
         const startAngle = -Math.PI / 2;
@@ -761,7 +743,7 @@ export default function CameraCapture({
         h: outerRadius * 2,
       };
     },
-    [isRecording, isFaceDetected, overallProgressPercentage],
+    [isRecording, isFaceDetected],
   );
 
   const isVideoBlank = useCallback((): boolean => {
@@ -1394,7 +1376,7 @@ export default function CameraCapture({
         const message =
           direction === "forward"
             ? `Recording face — keep looking STRAIGHT into the camera...`
-            : `Recording head movement (${direction.toUpperCase()}) �� keep your face in this direction...`;
+            : `Recording head movement (${direction.toUpperCase()}) — keep your face in this direction...`;
         setVerificationMessage(message);
         showMessage("headTurnAttemptStatus", message);
 
@@ -1464,9 +1446,6 @@ export default function CameraCapture({
     processingSegmentCompletionRef.current = false;
     isVerifyingHeadTurnRef.current = false;
     recordingFlagRef.current = 0;
-
-    // Reset progress percentage
-    setOverallProgressPercentage(0);
   }, []);
 
   const performVerificationForCurrentSegment: () => Promise<void> =
@@ -1692,15 +1671,6 @@ export default function CameraCapture({
         verificationSuccessForSegmentRef.current[segment] = true;
         // ✅ Also mark 'done' in ref so shouldVerifyAfterSegment returns false next time
         verificationDoneForSegmentRef.current[segment] = true;
-
-        // Update progress based on completed verification
-        // Verifications: 1 (40%), 2 (80%), 3 (already at 100% from segment 3 completion)
-        if (segment === 1) {
-          setOverallProgressPercentage(40);
-        } else if (segment === 2) {
-          setOverallProgressPercentage(80);
-        }
-
         console.log(
           "info",
           `[HeadVerification] ✅ SUCCESS for segment ${segment}. verificationDoneForSegmentRef is now:`,
@@ -2435,17 +2405,6 @@ export default function CameraCapture({
               type: options?.mimeType ?? "video/webm",
             });
             setCompletedSegments((prev) => [...prev, blob]);
-
-            // Update progress based on completed segment
-            // Segments: 1 (20%), 2 (60%), 3 (100%)
-            if (segment === 1) {
-              setOverallProgressPercentage(20);
-            } else if (segment === 2) {
-              setOverallProgressPercentage(60);
-            } else if (segment === 3) {
-              setOverallProgressPercentage(100);
-            }
-
             console.log(
               "info",
               `✅ Segment ${segment} COMPLETED and saved. Blob size: ${blob.size} bytes, Chunk count: ${chunks.length}`,
@@ -2528,7 +2487,7 @@ export default function CameraCapture({
               recorder.pause();
               // Silent pause - no UI message for background recording
               // showMessage('recordingMessage', multipleFacesDetectedRef.current
-              //   ? '��️ Paused – multiple faces detected'
+              //   ? '⏸️ Paused – multiple faces detected'
               //   : '⏸️ Paused – different face detected'
               // );
             }
@@ -3836,8 +3795,8 @@ export default function CameraCapture({
                   !isRecording &&
                   completedSegments.length < totalSegments && (
                     <p>
-                      ✔ Ready – Keep your face inside the oval (75���85%
-                      height), then hit <strong>Start</strong>.
+                      ✔ Ready – Keep your face inside the oval (75–85% height),
+                      then hit <strong>Start</strong>.
                     </p>
                   )}
               </div>
