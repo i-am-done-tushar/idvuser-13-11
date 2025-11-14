@@ -605,14 +605,6 @@ const drawFaceGuideOverlay = useCallback((brightness: number) => {
   ctx.strokeStyle = '#ffffff';
   ctx.stroke();
 
-  // Outermost boundary circle (7px solid border)
-  ctx.beginPath();
-  ctx.arc(cx, cy, boundaryRadius, 0, 2 * Math.PI);
-  ctx.setLineDash([]);
-  ctx.lineWidth = 7;
-  ctx.strokeStyle = '#ffffff';
-  ctx.stroke();
-
   // --- BLINKING ARC ---
   if (blinkingDirectionRef.current && blinkVisibleRef.current) {
     ctx.beginPath();
@@ -2817,7 +2809,7 @@ const startDetectionRAF = useCallback(() => {
                   setTimeout(async () => {
                     stopBlinking();
                     setShowHeadTurnPrompt(false);
-                    console.log('info', "🎥 Starting recording after head-turn prompt...");
+                    console.log('info', "��� Starting recording after head-turn prompt...");
                     recordingFlagRef.current = 1;
                     try {
                       await _startSegmentRecording();
@@ -3167,6 +3159,3 @@ const checkVideoResolution = useCallback(() => {
     </div>
   );
 };
-
-
-
