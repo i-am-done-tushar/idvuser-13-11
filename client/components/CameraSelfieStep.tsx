@@ -1689,6 +1689,15 @@ export default function CameraCapture({
         verificationSuccessForSegmentRef.current[segment] = true;
         // ✅ Also mark 'done' in ref so shouldVerifyAfterSegment returns false next time
         verificationDoneForSegmentRef.current[segment] = true;
+
+        // Update progress based on completed verification
+        // Verifications: 1 (40%), 2 (80%), 3 (already at 100% from segment 3 completion)
+        if (segment === 1) {
+          setOverallProgressPercentage(40);
+        } else if (segment === 2) {
+          setOverallProgressPercentage(80);
+        }
+
         console.log(
           "info",
           `[HeadVerification] ✅ SUCCESS for segment ${segment}. verificationDoneForSegmentRef is now:`,
@@ -2516,7 +2525,7 @@ export default function CameraCapture({
               recorder.pause();
               // Silent pause - no UI message for background recording
               // showMessage('recordingMessage', multipleFacesDetectedRef.current
-              //   ? '⏸️ Paused – multiple faces detected'
+              //   ? '��️ Paused – multiple faces detected'
               //   : '⏸️ Paused – different face detected'
               // );
             }
