@@ -149,6 +149,10 @@ export default function CameraCapture({
 
   const [HeadTurnRecordingDone, setHeadTurnRecordingDone] = useState(false);
 
+  //Progress Tracking State (outer circle green percentage):
+  // 5 stages total: segment 1 (20%), head 1 (40%), segment 2 (60%), head 2 (80%), segment 3 (100%)
+  const [overallProgressPercentage, setOverallProgressPercentage] = useState(0);
+
   //-----------------------------useRef-------------------------------------
   //DOM Element References:
   const videoRef = useRef<HTMLVideoElement>(null);
