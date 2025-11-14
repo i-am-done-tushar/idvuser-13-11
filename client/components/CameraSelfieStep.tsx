@@ -1394,7 +1394,7 @@ export default function CameraCapture({
         const message =
           direction === "forward"
             ? `Recording face — keep looking STRAIGHT into the camera...`
-            : `Recording head movement (${direction.toUpperCase()}) — keep your face in this direction...`;
+            : `Recording head movement (${direction.toUpperCase()}) �� keep your face in this direction...`;
         setVerificationMessage(message);
         showMessage("headTurnAttemptStatus", message);
 
@@ -1464,6 +1464,9 @@ export default function CameraCapture({
     processingSegmentCompletionRef.current = false;
     isVerifyingHeadTurnRef.current = false;
     recordingFlagRef.current = 0;
+
+    // Reset progress percentage
+    setOverallProgressPercentage(0);
   }, []);
 
   const performVerificationForCurrentSegment: () => Promise<void> =
