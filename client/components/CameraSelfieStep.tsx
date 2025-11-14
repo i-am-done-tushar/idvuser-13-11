@@ -650,7 +650,13 @@ export default function CameraCapture({
         // Draw white arc for remaining progress (if not 100%)
         if (overallProgressPercentage < 100) {
           ctx.beginPath();
-          ctx.arc(cx, cy, biggerRadius, progressEndAngle, startAngle + 2 * Math.PI);
+          ctx.arc(
+            cx,
+            cy,
+            biggerRadius,
+            progressEndAngle,
+            startAngle + 2 * Math.PI,
+          );
           ctx.strokeStyle = "#ffffff"; // White for remaining
           ctx.stroke();
         }
