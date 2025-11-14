@@ -761,7 +761,7 @@ export default function CameraCapture({
         h: outerRadius * 2,
       };
     },
-    [isRecording, isFaceDetected],
+    [isRecording, isFaceDetected, overallProgressPercentage],
   );
 
   const isVideoBlank = useCallback((): boolean => {
