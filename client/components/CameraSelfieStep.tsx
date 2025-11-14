@@ -614,6 +614,14 @@ const drawFaceGuideOverlay = useCallback((brightness: number) => {
   ctx.strokeStyle = '#ffffff';
   ctx.stroke();
 
+  // Extra outer boundary circle (7px solid border)
+  ctx.beginPath();
+  ctx.arc(cx, cy, extraBoundaryRadius, 0, 2 * Math.PI);
+  ctx.setLineDash([]);
+  ctx.lineWidth = 7;
+  ctx.strokeStyle = '#ffffff';
+  ctx.stroke();
+
   // --- BLINKING ARC ---
   if (blinkingDirectionRef.current && blinkVisibleRef.current) {
     ctx.beginPath();
@@ -764,7 +772,7 @@ const checkDifferentFace = useCallback(async (): Promise<boolean> => {
       if (distance > 0.6) {
         faceMismatchCounterRef.current++;
         console.log('warn', `[FaceCheck] Mismatch counter incremented: ${faceMismatchCounterRef.current}`);
-        showMessage('verificationMessage','⚠️ Possible different face detected…');
+        showMessage('verificationMessage','⚠️ Possible different face detected��');
 
         if (faceMismatchCounterRef.current >= faceMismatchThreshold) {
           console.log('error', `[FaceCheck] ❌ Different face confirmed (${faceMismatchCounterRef.current} checks)`);
