@@ -666,7 +666,7 @@ const drawFaceGuideOverlay = useCallback((brightness: number) => {
   ctx.font = '18px Arial';
   ctx.fillStyle = '#ffffffff';
   ctx.textAlign = 'center';
-  ctx.fillText('Align your face within the white circles', cx, cy + boundaryRadius + 20);
+  ctx.fillText('Align your face within the white circles', cx, cy + biggerRadius + 20);
 
   // Step 5: Recording progress arc (green arc on inner alignment circle)
   if (isRecording) {
