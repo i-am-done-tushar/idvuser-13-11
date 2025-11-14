@@ -631,44 +631,24 @@ export default function CameraCapture({
       // Reset compositing to normal
       ctx.globalCompositeOperation = "source-over";
 
-      // Step 3: Draw outer circle with progress indicator
-      ctx.setLineDash([]);
-      ctx.lineWidth = 5;
-
-      const startAngle = -Math.PI / 2; // Start from top
-
-      // Draw green progress arc if progress exists
-      if (overallProgressPercentage > 0) {
-        const progressRatio = overallProgressPercentage / 100;
-        const progressEndAngle = startAngle + 2 * Math.PI * progressRatio;
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, biggerRadius, startAngle, progressEndAngle);
-        ctx.strokeStyle = "#16a34a"; // Green for completed progress
-        ctx.stroke();
-
-        // Draw white arc for remaining progress (if not 100%)
-        if (overallProgressPercentage < 100) {
-          ctx.beginPath();
-          ctx.arc(
-            cx,
-            cy,
-            biggerRadius,
-            progressEndAngle,
-            startAngle + 2 * Math.PI,
-          );
-          ctx.strokeStyle = "#ffffff"; // White for remaining
-          ctx.stroke();
-        }
-      } else {
-        // No progress yet - draw full white circle
-        ctx.beginPath();
-        ctx.arc(cx, cy, biggerRadius, 0, 2 * Math.PI);
-        ctx.strokeStyle = "#ffffff";
-        ctx.stroke();
+      // Step 3: Determine outer circle stroke color based on recording and timer
+      let outerStrokeColor = "#ffffff"; // default white
+      if (
+        isRecording &&
+        ((timeRemainingRef.current < 6 && timeRemainingRef.current > 0) ||
+          isFaceDetected)
+      ) {
+        outerStrokeColor = "#16a34a"; // green while recording and timer counting down
       }
 
-      // Step 4: Draw outlines for innerRadius circle (dashed alignment guide)
+      // Step 4: Draw outlines for biggerRadius and outerRadius circles
+      // Outer bigger circle (solid)
+      ctx.beginPath();
+      ctx.arc(cx, cy, biggerRadius, 0, 2 * Math.PI);
+      ctx.setLineDash([]);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = outerStrokeColor; // use dynamic stroke color here!
+      ctx.stroke();
 
       // Inner alignment circle (white dashed)
       ctx.beginPath();
@@ -735,7 +715,21 @@ export default function CameraCapture({
         ctx.setLineDash([]);
       }
 
-      // Step 5: Instruction text (moved slightly higher for visibility)
+      // Step 5: Overall progress arc (green arc on outer circle based on overall completion percentage)
+      // 5 stages: segment 1 (20%), head 1 (40%), segment 2 (60%), head 2 (80%), segment 3 (100%)
+      if (overallProgressPercentage > 0) {
+        const startAngle = -Math.PI / 2; // Start from top
+        const progressRatio = overallProgressPercentage / 100;
+        const endAngle = startAngle + 2 * Math.PI * progressRatio;
+        ctx.beginPath();
+        ctx.arc(cx, cy, biggerRadius, startAngle, endAngle);
+        ctx.strokeStyle = "#16a34a"; // Green color
+        ctx.lineWidth = 5;
+        ctx.setLineDash([]);
+        ctx.stroke();
+      }
+
+      // Instruction text (moved slightly higher for visibility)
       ctx.font = "18px Arial";
       ctx.fillStyle = "#ffffffff";
       ctx.textAlign = "center";
@@ -3160,7 +3154,6 @@ export default function CameraCapture({
       isVerifyingHeadTurn,
       showMessage,
       isVideoBlurred,
-      overallProgressPercentage,
     ],
   );
 
