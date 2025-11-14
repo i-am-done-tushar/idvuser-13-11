@@ -715,6 +715,20 @@ export default function CameraCapture({
         ctx.setLineDash([]);
       }
 
+      // Step 5: Overall progress arc (green arc on outer circle based on overall completion percentage)
+      // 5 stages: segment 1 (20%), head 1 (40%), segment 2 (60%), head 2 (80%), segment 3 (100%)
+      if (overallProgressPercentage > 0) {
+        const startAngle = -Math.PI / 2; // Start from top
+        const progressRatio = overallProgressPercentage / 100;
+        const endAngle = startAngle + 2 * Math.PI * progressRatio;
+        ctx.beginPath();
+        ctx.arc(cx, cy, biggerRadius, startAngle, endAngle);
+        ctx.strokeStyle = "#16a34a"; // Green color
+        ctx.lineWidth = 5;
+        ctx.setLineDash([]);
+        ctx.stroke();
+      }
+
       // Instruction text (moved slightly higher for visibility)
       ctx.font = "18px Arial";
       ctx.fillStyle = "#ffffffff";
@@ -725,7 +739,7 @@ export default function CameraCapture({
         cy + biggerRadius + 20,
       );
 
-      // Step 5: Recording progress arc (green arc on inner alignment circle)
+      // Step 6: Recording progress arc (green arc on inner alignment circle)
       if (isRecording) {
         recordedFrameCountRef.current++;
         const startAngle = -Math.PI / 2;
