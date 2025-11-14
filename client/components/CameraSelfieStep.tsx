@@ -3836,8 +3836,8 @@ export default function CameraCapture({
                   !isRecording &&
                   completedSegments.length < totalSegments && (
                     <p>
-                      ✔ Ready – Keep your face inside the oval (75���85% height),
-                      then hit <strong>Start</strong>.
+                      ✔ Ready – Keep your face inside the oval (75���85%
+                      height), then hit <strong>Start</strong>.
                     </p>
                   )}
               </div>
