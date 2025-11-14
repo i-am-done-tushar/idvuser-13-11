@@ -338,11 +338,11 @@ export function CameraDialog({
               <div className="text-white text-center max-w-sm">
                 <div className="text-xl mb-4">📷 Camera Unavailable</div>
                 <div className="text-sm opacity-90 mb-4">
-                  {window.location.protocol !== "https:" 
+                  {window.location.protocol !== "https:"
                     ? "Camera access requires HTTPS. Please use a secure connection or try uploading a file instead."
                     : "Unable to access camera. Please check permissions or try uploading a file instead."
                   }
-                </div>  
+                </div>
               </div>
             ) : (
               <div className="relative">
@@ -350,7 +350,7 @@ export function CameraDialog({
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  className="max-w-full max-h-full rounded-lg"
+                  className="max-w-full max-h-[380px] rounded-lg"
                 />
                 <div className="absolute inset-0 border-2 border-white/50 rounded-lg pointer-events-none" />
               </div>
