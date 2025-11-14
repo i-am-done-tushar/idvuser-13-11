@@ -2671,7 +2671,7 @@ export default function CameraCapture({
       stoppingForRestartRef.current = true;
       showMessage(
         "verificationMessage",
-        "⚠️ Recording reset due to face loss. Continuing from current progress...",
+        "���️ Recording reset due to face loss. Continuing from current progress...",
       );
       console.log(
         "warn",
@@ -3154,6 +3154,7 @@ export default function CameraCapture({
       isVerifyingHeadTurn,
       showMessage,
       isVideoBlurred,
+      overallProgressPercentage,
     ],
   );
 
