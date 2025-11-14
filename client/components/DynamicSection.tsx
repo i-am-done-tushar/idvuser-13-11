@@ -245,9 +245,9 @@ export function DynamicSection({
               <BiometricCaptureUI onScanFace={handleScanFace} />
             ) : (
               <div className="flex p-4 flex-col justify-center items-center self-stretch bg-background">
-                <div className="flex w-full items-center gap-6">
+                <div className="flex w-full flex-col lg:flex-row items-stretch lg:items-center gap-6">
                   {/* Left Box - Camera Selfie */}
-                  <div className="flex-1 flex flex-col">
+                  <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex h-[380px] flex-col items-center gap-2 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white pt-4">
                       <CameraSelfieStep
                         onStepComplete={onSelfieComplete || (() => {})}
@@ -257,8 +257,8 @@ export function DynamicSection({
                     <div className="flex w-full px-4 py-2 items-center justify-end gap-2 rounded-b border-t-0 border-[1.5px] border-dashed border-[#C3C6D4] bg-[#F6F7FB]"></div>
                   </div>
 
-                  {/* Separator with "or" */}
-                  <div className="flex flex-col items-center justify-center gap-1 h-[428px]">
+                  {/* Separator with "or" - Hidden on mobile, visible on lg screens */}
+                  <div className="hidden lg:flex flex-col items-center justify-center gap-1 h-[428px]">
                     <div className="h-[160px] w-px bg-[#D0D4E4]"></div>
                     <div className="text-[#676879] font-roboto text-[13px] font-normal">
                       or
@@ -266,8 +266,17 @@ export function DynamicSection({
                     <div className="h-[160px] w-px bg-[#D0D4E4]"></div>
                   </div>
 
+                  {/* Horizontal separator for mobile - Visible below lg */}
+                  <div className="flex lg:hidden w-full items-center justify-center gap-3 py-2">
+                    <div className="flex-1 h-px bg-[#D0D4E4]"></div>
+                    <div className="text-[#676879] font-roboto text-[13px] font-normal">
+                      or
+                    </div>
+                    <div className="flex-1 h-px bg-[#D0D4E4]"></div>
+                  </div>
+
                   {/* Right Box - QR Code */}
-                  <div className="flex-1 flex flex-col">
+                  <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex h-[380px] flex-col items-center justify-center gap-4 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white">
                       <img
                         src="https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=https://id.xyz/verify"
