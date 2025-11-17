@@ -23,6 +23,7 @@ interface DynamicSectionProps {
   onSendPhoneOTP?: () => void;
   onIdentityDocumentComplete?: () => void;
   onSelfieComplete?: () => void;
+  onSelfieSegmentsDownloaded?: () => void;
   submissionId?: number | null;
   // QR Code and session props
   shortCode?: string;
