@@ -40,7 +40,7 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
 
         {/* Main Content Area */}
         <div className="flex w-full flex-col justify-center items-center border-t border-[#DEDEDD] bg-white p-4">
-          <div className="flex w-full h-[500px] flex-col xl:flex-row justify-center items-stretch gap-0 p-2">
+          <div className="flex w-full min-h-[450px] flex-col xl:flex-row justify-center items-stretch gap-0">
             {/* Left Side - Illustration */}
             <div className="flex flex-1 flex-col justify-between items-center rounded-lg bg-white">
               <style>
