@@ -2069,7 +2069,8 @@ export default function CameraCapture({
     stopCamera();
 
     console.log("✅ Session fully completed. Camera stopped.");
-    // Don't call onStepComplete yet - wait for user to click submit
+    // Notify parent that selfie segments are downloaded (enables submit button)
+    onSegmentsDownloaded?.();
   }, [
     completedSegments,
     partialSegmentBlobsPerSegment,
@@ -3634,7 +3635,7 @@ export default function CameraCapture({
 
         if (settings.frameRate && settings.frameRate < 15) {
           setCameraErrorMessage(
-            "⚠️ Low frame rate. Detection quality may be affected.",
+            "��️ Low frame rate. Detection quality may be affected.",
           );
           // logService.log('warn', 'Low frame rate detected.');
         }
