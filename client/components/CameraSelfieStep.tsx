@@ -29,6 +29,7 @@ declare var cv: any; // OpenCV.js
 type CameraCaptureProps = {
   userId: number; // required input
   onStepComplete?: (step: number) => void; // output as callback
+  onSegmentsDownloaded?: () => void; // called when segments are downloaded (before user clicks submit)
 };
 
 // function Step6({ userId, onStepComplete }: Step6Props) {
@@ -3518,7 +3519,7 @@ export default function CameraCapture({
                   } catch (err) {
                     console.log(
                       "error",
-                      `�� Error starting segment recording: ${err}`,
+                      `❌ Error starting segment recording: ${err}`,
                     );
                     recordingFlagRef.current = 0;
                   } finally {
@@ -3707,7 +3708,7 @@ export default function CameraCapture({
           ? "❌ Camera permission denied. Please allow access and refresh."
           : name === "NotFoundError"
             ? "⚠️ No camera found on this device."
-            : "��️ Failed to access the camera. Try again.";
+            : "⚠️ Failed to access the camera. Try again.";
 
       setCameraErrorMessage(msg);
       // logService.log('error', `Camera initialization failed: ${err?.message || err}`);
