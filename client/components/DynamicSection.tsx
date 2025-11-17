@@ -288,7 +288,9 @@ export function DynamicSection({
                         <div className="flex h-[428px] flex-col items-center gap-2 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white pt-4">
                           <CameraSelfieStep
                             onStepComplete={onSelfieComplete || (() => {})}
-                            onSegmentsDownloaded={onSelfieSegmentsDownloaded || (() => {})}
+                            onSegmentsDownloaded={
+                              onSelfieSegmentsDownloaded || (() => {})
+                            }
                             userId={submissionId}
                           />
                         </div>

@@ -25,7 +25,7 @@ import { truncate } from "fs";
 const API_BASE = "https://idvapi-test.arconnet.com:1019";
 // const API_BASE = "http://10.10.2.133:8080";
 
-  // import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+// import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 
 // 🚀 DEVELOPMENT FLAG - Set to false to enable OTP verification
 const BYPASS_OTP_FOR_DEVELOPMENT = true;
@@ -61,16 +61,21 @@ export function IdentityVerificationPage({
   const [isIdentityDocumentCompleted, setIsIdentityDocumentCompleted] =
     useState(false);
   const [hasShownStep2Toast, setHasShownStep2Toast] = useState(false);
-  const [hasShownWelcomeBackToast, setHasShownWelcomeBackToast] = useState(false);
+  const [hasShownWelcomeBackToast, setHasShownWelcomeBackToast] =
+    useState(false);
   const [isSelfieCompleted, setIsSelfieCompleted] = useState(false);
 
   const [showConsentDialog, setShowConsentDialog] = useState(true);
   const [hasConsented, setHasConsented] = useState(false);
   const [showHowItWorksDialog, setShowHowItWorksDialog] = useState(false);
   // Track which sections are expanded (can have multiple expanded at once)
-  const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({ 1: true });
+  const [expandedSections, setExpandedSections] = useState<
+    Record<number, boolean>
+  >({ 1: true });
   // Track completed state for each section
-  const [completedSections, setCompletedSections] = useState<Record<number, boolean>>({});
+  const [completedSections, setCompletedSections] = useState<
+    Record<number, boolean>
+  >({});
   // Track the currently active/focused section for auto-save
   const [activeSectionIndex, setActiveSectionIndex] = useState<number>(1);
 
@@ -112,7 +117,12 @@ export function IdentityVerificationPage({
     country: "",
     selectedDocument: "",
     uploadedDocuments: [] as string[], // List of document names uploaded (e.g., ["Passport", "Driver's License"])
-    uploadedFiles: [] as Array<{id: string, name: string, size: string, type: string}>,
+    uploadedFiles: [] as Array<{
+      id: string;
+      name: string;
+      size: string;
+      type: string;
+    }>,
     documentUploadIds: {} as Record<string, { front?: number; back?: number }>, // Maps document name to file IDs
     // New: Detailed document tracking for backend storage
     documentsDetails: [] as Array<{
@@ -127,13 +137,16 @@ export function IdentityVerificationPage({
 
   // Wrap setDocumentFormState to add logging
   const setDocumentFormStateWithLogging = (newState: any) => {
-    console.log('🔧 Parent setDocumentFormState called with:', newState);
-    console.log('🔧 Previous documentFormState:', documentFormState);
+    console.log("🔧 Parent setDocumentFormState called with:", newState);
+    console.log("🔧 Previous documentFormState:", documentFormState);
     setDocumentFormState(newState);
-    console.log('🔧 After setState, new documentFormState should be:', newState);
+    console.log(
+      "🔧 After setState, new documentFormState should be:",
+      newState,
+    );
   };
 
-  // Biometric form state - lift up to preserve across section toggles  
+  // Biometric form state - lift up to preserve across section toggles
   const [biometricFormState, setBiometricFormState] = useState({
     capturedImage: null as string | null,
     isImageCaptured: false,
@@ -158,7 +171,7 @@ export function IdentityVerificationPage({
   // ---- create UserTemplateSubmission early to get submissionId ----
   const createUserTemplateSubmission = async () => {
     if (!templateVersion || !userId || submissionId) return; // Don't create if already exists
-    
+
     try {
       // First, check if a UserTemplateSubmission already exists
       const checkResponse = await fetch(
@@ -173,18 +186,23 @@ export function IdentityVerificationPage({
 
       if (checkResponse.ok) {
         const checkData = await checkResponse.json();
-        
+
         // If existing submission found, use its ID
         if (checkData.items && checkData.items.length > 0) {
           const existingSubmission = checkData.items[0]; // Use the first (most recent) submission
           setSubmissionId(existingSubmission.id);
-          console.log("Found existing UserTemplateSubmission with ID:", existingSubmission.id);
+          console.log(
+            "Found existing UserTemplateSubmission with ID:",
+            existingSubmission.id,
+          );
           return; // Exit early, don't create a new one
         }
       }
 
       // If no existing submission found, create a new one
-      console.log("No existing submission found, creating new UserTemplateSubmission...");
+      console.log(
+        "No existing submission found, creating new UserTemplateSubmission...",
+      );
       const submissionResponse = await fetch(
         `${API_BASE}/api/UserTemplateSubmissions`,
         {
@@ -206,12 +224,16 @@ export function IdentityVerificationPage({
 
       const submissionData = await submissionResponse.json();
       setSubmissionId(submissionData.id);
-      console.log("Created new UserTemplateSubmission with ID:", submissionData.id);
+      console.log(
+        "Created new UserTemplateSubmission with ID:",
+        submissionData.id,
+      );
     } catch (error) {
       console.error("Error with UserTemplateSubmission:", error);
       toast({
         title: "Initialization Error",
-        description: "Failed to initialize form submission. Please refresh and try again.",
+        description:
+          "Failed to initialize form submission. Please refresh and try again.",
         variant: "destructive",
       });
     }
@@ -264,7 +286,10 @@ export function IdentityVerificationPage({
 
     const fetchSubmissionValues = async () => {
       try {
-        console.log("Fetching submission values for submissionId:", submissionId);
+        console.log(
+          "Fetching submission values for submissionId:",
+          submissionId,
+        );
         const response = await fetch(
           `${API_BASE}/api/UserTemplateSubmissionValues/submissions/${submissionId}/values`,
           {
@@ -285,7 +310,7 @@ export function IdentityVerificationPage({
 
         // Track which sections are completed based on API response
         const completedSectionIds = new Set<number>();
-        
+
         // Parse and populate each section's data
         submissionValues.forEach((submission: any) => {
           const section = templateVersion.sections.find(
@@ -315,9 +340,11 @@ export function IdentityVerificationPage({
                 address: parsedValue.address || prev.address,
                 city: parsedValue.city || prev.city,
                 postalCode: parsedValue.postalCode || prev.postalCode,
-                permanentAddress: parsedValue.permanentAddress || prev.permanentAddress,
+                permanentAddress:
+                  parsedValue.permanentAddress || prev.permanentAddress,
                 permanentCity: parsedValue.permanentCity || prev.permanentCity,
-                permanentPostalCode: parsedValue.permanentPostalCode || prev.permanentPostalCode,
+                permanentPostalCode:
+                  parsedValue.permanentPostalCode || prev.permanentPostalCode,
               }));
               console.log("✅ Populated personal information from submission");
             }
@@ -326,25 +353,28 @@ export function IdentityVerificationPage({
             if (section.sectionType === "documents" && parsedValue) {
               // New structure: { country, documents: [...] }
               const documentsArray = parsedValue.documents || [];
-              
+
               // Extract document names and rebuild documentUploadIds for UI compatibility
               const uploadedDocIds: string[] = [];
-              const rebuiltDocumentUploadIds: Record<string, { front?: number; back?: number }> = {};
-              
+              const rebuiltDocumentUploadIds: Record<
+                string,
+                { front?: number; back?: number }
+              > = {};
+
               documentsArray.forEach((doc: any) => {
                 const docName = doc.documentName;
-                
+
                 // Convert document name to docId format (lowercase with underscores)
                 const docId = docName.toLowerCase().replace(/\s+/g, "_");
                 uploadedDocIds.push(docId);
-                
+
                 // Rebuild documentUploadIds map for file downloads
                 rebuiltDocumentUploadIds[docId] = {
                   front: doc.frontFileId,
                   ...(doc.backFileId && { back: doc.backFileId }),
                 };
               });
-              
+
               setDocumentFormState((prev) => ({
                 ...prev,
                 country: parsedValue.country || prev.country,
@@ -355,18 +385,26 @@ export function IdentityVerificationPage({
                 // Restore detailed document information from the new structure
                 documentsDetails: documentsArray,
               }));
-              
+
               // Mark document section as completed if any documents exist
               if (documentsArray.length > 0) {
                 setIsIdentityDocumentCompleted(true);
               }
-              
+
               console.log("✅ Populated document information from submission");
               console.log("📄 Restored country:", parsedValue.country);
-              console.log("📄 Restored uploadedDocuments (docIds):", uploadedDocIds);
-              console.log("📄 Restored documentUploadIds:", rebuiltDocumentUploadIds);
+              console.log(
+                "📄 Restored uploadedDocuments (docIds):",
+                uploadedDocIds,
+              );
+              console.log(
+                "📄 Restored documentUploadIds:",
+                rebuiltDocumentUploadIds,
+              );
               console.log("📄 Restored documentsDetails:", documentsArray);
-              console.log(`📊 Total documents uploaded: ${documentsArray.length}`);
+              console.log(
+                `📊 Total documents uploaded: ${documentsArray.length}`,
+              );
             }
 
             // Populate biometric section
@@ -374,9 +412,10 @@ export function IdentityVerificationPage({
               setBiometricFormState((prev) => ({
                 ...prev,
                 capturedImage: parsedValue.capturedImage || prev.capturedImage,
-                isImageCaptured: parsedValue.isImageCaptured || prev.isImageCaptured,
+                isImageCaptured:
+                  parsedValue.isImageCaptured || prev.isImageCaptured,
               }));
-              
+
               // Mark biometric section as completed
               if (parsedValue.isImageCaptured) {
                 setIsSelfieCompleted(true);
@@ -384,7 +423,11 @@ export function IdentityVerificationPage({
               console.log("✅ Populated biometric information from submission");
             }
           } catch (parseError) {
-            console.error("Error parsing fieldValue for section:", section.sectionType, parseError);
+            console.error(
+              "Error parsing fieldValue for section:",
+              section.sectionType,
+              parseError,
+            );
           }
         });
 
@@ -392,28 +435,34 @@ export function IdentityVerificationPage({
         const sections = templateVersion.sections
           .filter((s) => s.isActive)
           .sort((a, b) => a.orderIndex - b.orderIndex);
-        
+
         const newCompletedSections: Record<number, boolean> = {};
-        
+
         sections.forEach((section, index) => {
           const sectionIndex = index + 1; // 1-based indexing
-          
+
           // Check if this section's ID exists in the API response
           if (completedSectionIds.has(section.id)) {
             newCompletedSections[sectionIndex] = true;
-            console.log(`✅ Section ${sectionIndex} (${section.name}) marked as completed`);
+            console.log(
+              `✅ Section ${sectionIndex} (${section.name}) marked as completed`,
+            );
           } else {
-            console.log(`⏳ Section ${sectionIndex} (${section.name}) not yet completed`);
+            console.log(
+              `⏳ Section ${sectionIndex} (${section.name}) not yet completed`,
+            );
           }
         });
-        
+
         // Set all completed sections at once
         setCompletedSections(newCompletedSections);
-        
+
         // Log summary
-        const completedCount = Object.values(newCompletedSections).filter(Boolean).length;
-        console.log(`📊 Summary: ${completedCount}/${sections.length} sections completed`);
-        
+        const completedCount =
+          Object.values(newCompletedSections).filter(Boolean).length;
+        console.log(
+          `📊 Summary: ${completedCount}/${sections.length} sections completed`,
+        );
       } catch (error) {
         console.error("Error fetching submission values:", error);
       }
@@ -426,19 +475,20 @@ export function IdentityVerificationPage({
   useEffect(() => {
     if (!templateVersion || Object.keys(completedSections).length === 0) return;
     if (hasShownWelcomeBackToast) return; // Prevent showing multiple times
-    
+
     // Only run once when completedSections is first populated
-    const hasAnyCompletedSections = Object.values(completedSections).some(Boolean);
+    const hasAnyCompletedSections =
+      Object.values(completedSections).some(Boolean);
     if (!hasAnyCompletedSections) return;
-    
+
     const sections = templateVersion.sections
       .filter((s) => s.isActive)
       .sort((a, b) => a.orderIndex - b.orderIndex);
-    
+
     const completedSectionNames: string[] = [];
     let firstIncompleteSection: number | null = null;
     const sectionsToExpand: Record<number, boolean> = {};
-    
+
     sections.forEach((section, index) => {
       const sectionIndex = index + 1;
       if (completedSections[sectionIndex]) {
@@ -452,36 +502,38 @@ export function IdentityVerificationPage({
         sectionsToExpand[sectionIndex] = true;
       }
     });
-    
+
     if (completedSectionNames.length > 0) {
       const completedCount = completedSectionNames.length;
       const totalCount = sections.length;
-      
+
       // Navigate to the first incomplete section (or last section if all complete)
       const targetSection = firstIncompleteSection || sections.length;
-      
-      console.log(`🎯 Navigating to section ${targetSection} (first incomplete section)`);
+
+      console.log(
+        `🎯 Navigating to section ${targetSection} (first incomplete section)`,
+      );
       setCurrentStep(targetSection);
       // Expand all completed sections plus the first incomplete one
       setExpandedSections(sectionsToExpand);
-      
+
       // Show a single summary toast
       setTimeout(() => {
-        const nextSectionName = firstIncompleteSection 
-          ? sections[firstIncompleteSection - 1]?.name 
+        const nextSectionName = firstIncompleteSection
+          ? sections[firstIncompleteSection - 1]?.name
           : null;
-        
+
         toast({
           title: "🎉 Welcome Back!",
-          description: `You've already completed ${completedCount}/${totalCount} section${completedCount > 1 ? 's' : ''}: ${completedSectionNames.join(', ')}${
-            nextSectionName ? `. Continue with ${nextSectionName}.` : ''
+          description: `You've already completed ${completedCount}/${totalCount} section${completedCount > 1 ? "s" : ""}: ${completedSectionNames.join(", ")}${
+            nextSectionName ? `. Continue with ${nextSectionName}.` : ""
           }`,
           duration: 6000,
         });
         setHasShownWelcomeBackToast(true); // Mark as shown
       }, 500); // Small delay to ensure page has loaded
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completedSections, templateVersion, hasShownWelcomeBackToast]); // Only run when completedSections is populated
 
@@ -495,7 +547,8 @@ export function IdentityVerificationPage({
       if (personalInfo.firstName) mappedData.firstName = formData.firstName;
       if (personalInfo.lastName) mappedData.lastName = formData.lastName;
       if (personalInfo.middleName) mappedData.middleName = formData.middleName;
-      if (personalInfo.dateOfBirth) mappedData.dateOfBirth = formData.dateOfBirth;
+      if (personalInfo.dateOfBirth)
+        mappedData.dateOfBirth = formData.dateOfBirth;
       if (personalInfo.email) mappedData.email = formData.email;
       if (personalInfo.phoneNumber) {
         mappedData.countryCode = formData.countryCode;
@@ -519,7 +572,7 @@ export function IdentityVerificationPage({
         country: documentFormState.country,
         documents: documentFormState.documentsDetails,
       };
-      
+
       fieldValue = JSON.stringify(documentData);
       console.log("📤 Posting document section data:", documentData);
     } else if (section.sectionType === "biometrics") {
@@ -538,7 +591,7 @@ export function IdentityVerificationPage({
             Accept: "*/*",
           },
           body: JSON.stringify({ fieldValue }),
-        }
+        },
       );
       console.log(`Posted section data for ${section.sectionType}`);
     } catch (err) {
@@ -552,7 +605,7 @@ export function IdentityVerificationPage({
       .filter((s) => s.isActive)
       .sort((a, b) => a.orderIndex - b.orderIndex);
     const section = sections[sectionIndex - 1];
-    
+
     if (!section) return false;
 
     if (section.sectionType === "personalInformation") {
@@ -589,12 +642,14 @@ export function IdentityVerificationPage({
     // If switching from one section to another and the previous section has data
     if (activeSectionIndex !== newSectionIndex && activeSectionIndex > 0) {
       const previousSection = sections[activeSectionIndex - 1];
-      
+
       // Auto-save the previous section if it has any data
       if (previousSection && sectionHasData(activeSectionIndex)) {
-        console.log(`Auto-saving section ${activeSectionIndex} data before switching to section ${newSectionIndex}`);
+        console.log(
+          `Auto-saving section ${activeSectionIndex} data before switching to section ${newSectionIndex}`,
+        );
         await postSectionData(previousSection);
-        
+
         // Show a subtle notification
         toast({
           title: "Progress Saved",
@@ -612,36 +667,41 @@ export function IdentityVerificationPage({
   const handleSectionComplete = async (sectionIndex: number, section: any) => {
     setCompletedSections((prev) => ({ ...prev, [sectionIndex]: true }));
     await postSectionData(section);
-    
+
     // Check if this is the last section
     const isLastSection = sectionIndex === activeSections.length;
-    
+
     // Provide specific feedback based on section type
     if (section.sectionType === "personalInformation") {
       if (isLastSection) {
-        toast({ 
-          title: "🎉 Verification Complete!", 
-          description: "All sections have been completed successfully. Your identity verification is now complete.",
+        toast({
+          title: "🎉 Verification Complete!",
+          description:
+            "All sections have been completed successfully. Your identity verification is now complete.",
           duration: 5000,
         });
       } else {
-        toast({ 
-          title: `✅ ${section.name || 'Personal Information'} Completed`, 
-          description: "Your personal information has been saved. Moving to the next section...",
+        toast({
+          title: `✅ ${section.name || "Personal Information"} Completed`,
+          description:
+            "Your personal information has been saved. Moving to the next section...",
           duration: 3000,
         });
-        
+
         // Move to next section after personal info completion
         setTimeout(() => {
           const nextSectionIndex = sectionIndex + 1;
           if (nextSectionIndex <= activeSections.length) {
             setCurrentStep(nextSectionIndex);
             // Keep previous sections expanded and expand the next section
-            setExpandedSections(prev => ({ ...prev, [nextSectionIndex]: true }));
+            setExpandedSections((prev) => ({
+              ...prev,
+              [nextSectionIndex]: true,
+            }));
             const nextSection = activeSections[nextSectionIndex - 1];
             toast({
-              title: `📋 ${nextSection?.name || 'Next Section'}`,
-              description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+              title: `📋 ${nextSection?.name || "Next Section"}`,
+              description: `Please complete the ${nextSection?.name?.toLowerCase() || "next section"}.`,
               duration: 4000,
             });
           }
@@ -649,36 +709,41 @@ export function IdentityVerificationPage({
       }
     } else {
       if (isLastSection) {
-        toast({ 
-          title: "���� Verification Complete!", 
-          description: "All sections have been completed successfully. Your identity verification is now complete.",
+        toast({
+          title: "���� Verification Complete!",
+          description:
+            "All sections have been completed successfully. Your identity verification is now complete.",
           duration: 5000,
         });
       } else {
-        toast({ 
-          title: `✅ ${section.name || 'Section'} Completed`, 
-          description: "This section has been successfully completed. Moving to the next section...",
+        toast({
+          title: `✅ ${section.name || "Section"} Completed`,
+          description:
+            "This section has been successfully completed. Moving to the next section...",
           duration: 3000,
         });
-        
+
         // Move to next section
         setTimeout(() => {
           const nextSectionIndex = sectionIndex + 1;
           if (nextSectionIndex <= activeSections.length) {
             setCurrentStep(nextSectionIndex);
             // Keep previous sections expanded and expand the next section
-            setExpandedSections(prev => ({ ...prev, [nextSectionIndex]: true }));
+            setExpandedSections((prev) => ({
+              ...prev,
+              [nextSectionIndex]: true,
+            }));
             const nextSection = activeSections[nextSectionIndex - 1];
             toast({
-              title: `📋 ${nextSection?.name || 'Next Section'}`,
-              description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+              title: `📋 ${nextSection?.name || "Next Section"}`,
+              description: `Please complete the ${nextSection?.name?.toLowerCase() || "next section"}.`,
               duration: 4000,
             });
           }
         }, 2000);
       }
     }
-    
+
     // Don't auto-collapse - let the step advancement logic handle UI transitions
   };
 
@@ -727,7 +792,7 @@ export function IdentityVerificationPage({
     phoneNationalNumber: string,
     versionId: number,
     channel = "whatsapp",
-    purpose = "phoneVerification"
+    purpose = "phoneVerification",
   ) {
     const token = getToken();
     const res = await fetch(`${API_BASE}/api/Otp/phone/start`, {
@@ -752,7 +817,11 @@ export function IdentityVerificationPage({
     }
 
     // { success: true, otpId: number, expiresAt: string }
-    return res.json() as Promise<{ success: boolean; otpId: number; expiresAt: string }>;
+    return res.json() as Promise<{
+      success: boolean;
+      otpId: number;
+      expiresAt: string;
+    }>;
   }
 
   async function verifyPhoneOtp(otpId: number, code: string) {
@@ -770,19 +839,23 @@ export function IdentityVerificationPage({
     // read body as text first (API may respond text/plain)
     const bodyText = await res.text().catch(() => "");
     let json: any = null;
-    try { json = bodyText ? JSON.parse(bodyText) : null; } catch {}
+    try {
+      json = bodyText ? JSON.parse(bodyText) : null;
+    } catch {}
 
     // Throw on HTTP error OR success:false
     if (!res.ok || (json && json.success === false)) {
-      const msg = (json?.message || bodyText || `Invalid OTP (HTTP ${res.status})`).toString();
+      const msg = (
+        json?.message ||
+        bodyText ||
+        `Invalid OTP (HTTP ${res.status})`
+      ).toString();
       throw new Error(msg);
     }
 
     // treat missing payload as success only if HTTP was 2xx
     return (json ?? { success: true }) as { success: boolean };
   }
-
-
 
   // ---- versionId resolver (new page only deals with TemplateVersionResponse) ----
   const getActiveVersionId = () => templateVersion?.versionId ?? null;
@@ -797,7 +870,7 @@ export function IdentityVerificationPage({
     // Required fields - always validated
     if (personalInfo.firstName) checks.push(isValidName(formData.firstName));
     if (personalInfo.lastName) checks.push(isValidName(formData.lastName));
-    
+
     // Conditionally required fields based on requiredToggles
     if (personalInfo.middleName) {
       if (requiredToggles.middleName) {
@@ -807,7 +880,7 @@ export function IdentityVerificationPage({
         checks.push(isValidName(formData.middleName));
       }
     }
-    
+
     if (personalInfo.dateOfBirth) {
       if (requiredToggles.dob) {
         checks.push(isValidDOB(formData.dateOfBirth));
@@ -815,29 +888,33 @@ export function IdentityVerificationPage({
         checks.push(isValidDOB(formData.dateOfBirth));
       }
     }
-    
+
     if (personalInfo.email) {
       checks.push(isValidEmail(formData.email));
       checks.push(BYPASS_OTP_FOR_DEVELOPMENT || isEmailVerified); // 🚀 Bypass OTP in dev
     }
-    
+
     if (personalInfo.phoneNumber) {
       if (requiredToggles.phoneNumber) {
         checks.push(!!formData.countryCode);
-        checks.push(isValidPhoneForCountry(formData.countryCode, formData.phoneNumber));
+        checks.push(
+          isValidPhoneForCountry(formData.countryCode, formData.phoneNumber),
+        );
         checks.push(BYPASS_OTP_FOR_DEVELOPMENT || isPhoneVerified); // 🚀 Bypass OTP in dev
       } else if (formData.phoneNumber) {
         // If phone is shown but not required, validate only if entered
         checks.push(!!formData.countryCode);
-        checks.push(isValidPhoneForCountry(formData.countryCode, formData.phoneNumber));
+        checks.push(
+          isValidPhoneForCountry(formData.countryCode, formData.phoneNumber),
+        );
         checks.push(BYPASS_OTP_FOR_DEVELOPMENT || isPhoneVerified);
       }
     }
-    
+
     if (personalInfo.gender && requiredToggles.gender) {
       checks.push(!!formData.gender);
     }
-    
+
     if (personalInfo.currentAddress) {
       // Check address line required toggle
       if (requiredToggles.currentAddress) {
@@ -845,14 +922,14 @@ export function IdentityVerificationPage({
       } else if (formData.address) {
         checks.push(isValidAddress(formData.address));
       }
-      
+
       // Check city required toggle
       if (requiredToggles.currentCity) {
         checks.push(!!formData.city && formData.city.trim().length >= 2);
       } else if (formData.city) {
         checks.push(formData.city.trim().length >= 2);
       }
-      
+
       // Check postal code required toggle
       if (requiredToggles.currentPostal) {
         checks.push(isValidPostalCode(formData.postalCode));
@@ -860,7 +937,7 @@ export function IdentityVerificationPage({
         checks.push(isValidPostalCode(formData.postalCode));
       }
     }
-    
+
     if (personalInfo.permanentAddress) {
       // Check permanent address line required toggle
       if (requiredToggles.permanentAddress) {
@@ -868,14 +945,16 @@ export function IdentityVerificationPage({
       } else if (formData.permanentAddress) {
         checks.push(isValidAddress(formData.permanentAddress));
       }
-      
+
       // Check permanent city required toggle
       if (requiredToggles.permanentCity) {
-        checks.push(!!formData.permanentCity && formData.permanentCity.trim().length >= 2);
+        checks.push(
+          !!formData.permanentCity && formData.permanentCity.trim().length >= 2,
+        );
       } else if (formData.permanentCity) {
         checks.push(formData.permanentCity.trim().length >= 2);
       }
-      
+
       // Check permanent postal code required toggle
       if (requiredToggles.permanentPostal) {
         checks.push(isValidPostalCode(formData.permanentPostalCode));
@@ -883,7 +962,7 @@ export function IdentityVerificationPage({
         checks.push(isValidPostalCode(formData.permanentPostalCode));
       }
     }
-    
+
     return checks.length > 0 && checks.every(Boolean);
   };
 
@@ -892,7 +971,7 @@ export function IdentityVerificationPage({
     const sections = (templateVersion?.sections || [])
       .filter((s) => s.isActive)
       .sort((a, b) => a.orderIndex - b.orderIndex);
-    
+
     // Auto-mark personal information section as completed when valid
     const ok = isStep1Complete();
     if (ok && !completedSections[1] && sections[0]) {
@@ -900,12 +979,12 @@ export function IdentityVerificationPage({
       setCompletedSections((prev) => ({ ...prev, 1: true }));
       // Post section data immediately
       postSectionData(sections[0]);
-      
+
       // Show completion toast and auto-advance to next section
       if (currentStep === 1 && !hasShownStep1Toast) {
         const nextSection = sections[1];
         const isLastSection = sections.length === 1;
-        
+
         if (isLastSection) {
           toast({
             title: "🎉 Verification Complete!",
@@ -914,19 +993,20 @@ export function IdentityVerificationPage({
           });
         } else {
           toast({
-            title: `✅ ${sections[0]?.name || 'Personal Information'} Completed`,
-            description: "Your personal information has been saved. Opening next section...",
+            title: `✅ ${sections[0]?.name || "Personal Information"} Completed`,
+            description:
+              "Your personal information has been saved. Opening next section...",
             duration: 3000,
           });
-          
+
           setHasShownStep1Toast(true);
-          
+
           // Auto-advance to next section after a short delay
           setTimeout(() => {
             setCurrentStep(2);
             // Keep previous section expanded and also expand the next section
-            setExpandedSections(prev => ({ ...prev, 2: true }));
-            
+            setExpandedSections((prev) => ({ ...prev, 2: true }));
+
             // Show next section toast
             if (nextSection) {
               toast({
@@ -969,17 +1049,21 @@ export function IdentityVerificationPage({
     const sections = (templateVersion?.sections || [])
       .filter((s) => s.isActive)
       .sort((a, b) => a.orderIndex - b.orderIndex);
-    
-    if (currentStep === 2 && isIdentityDocumentCompleted && !hasShownStep2Toast) {
+
+    if (
+      currentStep === 2 &&
+      isIdentityDocumentCompleted &&
+      !hasShownStep2Toast
+    ) {
       // Mark section 2 as completed
       if (!completedSections[2] && sections[1]) {
         setCompletedSections((prev) => ({ ...prev, 2: true }));
         postSectionData(sections[1]);
       }
-      
+
       const nextSection = sections[2];
       const isLastSection = sections.length === 2;
-      
+
       if (isLastSection) {
         toast({
           title: "�� Verification Complete!",
@@ -988,20 +1072,21 @@ export function IdentityVerificationPage({
         });
       } else {
         toast({
-          title: `✅ ${sections[1]?.name || 'Document Verification'} Completed`,
-          description: "Your documents have been uploaded. Opening next section...",
+          title: `✅ ${sections[1]?.name || "Document Verification"} Completed`,
+          description:
+            "Your documents have been uploaded. Opening next section...",
           duration: 3000,
         });
-        
+
         setHasShownStep2Toast(true);
-        
+
         // Auto-advance to next section
         setTimeout(() => {
           setCurrentStep(3);
           // Keep previous sections expanded and also expand the next section
-          setExpandedSections(prev => ({ ...prev, 3: true }));
+          setExpandedSections((prev) => ({ ...prev, 3: true }));
           setShowMobileMenu(false);
-          
+
           // Show next section toast
           if (nextSection) {
             toast({
@@ -1013,7 +1098,14 @@ export function IdentityVerificationPage({
         }, 2000);
       }
     }
-  }, [templateVersion, currentStep, isIdentityDocumentCompleted, hasShownStep2Toast, completedSections, toast]);
+  }, [
+    templateVersion,
+    currentStep,
+    isIdentityDocumentCompleted,
+    hasShownStep2Toast,
+    completedSections,
+    toast,
+  ]);
 
   // Determine current step dynamically based on section order and completion state
   useEffect(() => {
@@ -1038,7 +1130,7 @@ export function IdentityVerificationPage({
     if (nextStep !== currentStep) {
       setCurrentStep(nextStep);
       // Expand the current step section
-      setExpandedSections(prev => ({ ...prev, [nextStep]: true }));
+      setExpandedSections((prev) => ({ ...prev, [nextStep]: true }));
       setShowMobileMenu(false);
     }
   }, [
@@ -1068,7 +1160,10 @@ export function IdentityVerificationPage({
     const versionId = getActiveVersionId();
     if (BYPASS_OTP_FOR_DEVELOPMENT) {
       setIsEmailVerified(true);
-      toast({ title: "Email verified (dev bypass)", description: "OTP skipped in development." });
+      toast({
+        title: "Email verified (dev bypass)",
+        description: "OTP skipped in development.",
+      });
       return;
     }
 
@@ -1108,28 +1203,45 @@ export function IdentityVerificationPage({
     const versionId = getActiveVersionId();
 
     if (versionId == null) {
-      toast({ title: "Missing version", description: "No active template version found." });
+      toast({
+        title: "Missing version",
+        description: "No active template version found.",
+      });
       return;
     }
     if (BYPASS_OTP_FOR_DEVELOPMENT) {
       setIsPhoneVerified(true);
-      toast({ title: "Phone verified (dev bypass)", description: "OTP skipped in development." });
+      toast({
+        title: "Phone verified (dev bypass)",
+        description: "OTP skipped in development.",
+      });
       return;
     }
-
 
     const cc = (formData.countryCode || "").trim(); // keep as provided (e.g. +91 or 91)
     const nn = (formData.phoneNumber || "").replace(/\D+/g, ""); // national digits only
 
-    if (!cc || !nn || !isValidPhoneForCountry(formData.countryCode, formData.phoneNumber)) {
-      toast({ title: "Invalid phone", description: "Please enter a valid phone number first." });
+    if (
+      !cc ||
+      !nn ||
+      !isValidPhoneForCountry(formData.countryCode, formData.phoneNumber)
+    ) {
+      toast({
+        title: "Invalid phone",
+        description: "Please enter a valid phone number first.",
+      });
       return;
     }
 
     try {
       setOtpSending(true);
-      const { success, otpId, expiresAt } = await startPhoneOtp(cc, nn, versionId,
-        "whatsapp", "phoneVerification");
+      const { success, otpId, expiresAt } = await startPhoneOtp(
+        cc,
+        nn,
+        versionId,
+        "whatsapp",
+        "phoneVerification",
+      );
       if (!success) throw new Error("Failed to start phone OTP.");
 
       setPendingVerification({
@@ -1140,7 +1252,10 @@ export function IdentityVerificationPage({
       });
       setOtpType("phone");
       setShowOTPDialog(true);
-      toast({ title: "OTP sent", description: `An OTP was sent to ${cc} ${formData.phoneNumber}.` });
+      toast({
+        title: "OTP sent",
+        description: `An OTP was sent to ${cc} ${formData.phoneNumber}.`,
+      });
     } catch (err: any) {
       toast({
         title: "Failed to send OTP",
@@ -1151,7 +1266,6 @@ export function IdentityVerificationPage({
       setOtpSending(false);
     }
   };
-
 
   const handleOTPVerify = async (otp: string) => {
     // email OTP via server, phone OTP stays simulated
@@ -1180,37 +1294,51 @@ export function IdentityVerificationPage({
       } finally {
         setOtpValidating(false);
       }
-      } else {
-        // PHONE verify via backend
-        const code = String(otp || "").trim();
-        if (code.length < 4) {
-          toast({ title: "Invalid OTP", description: "Please enter a valid OTP.", variant: "destructive" });
-          return;
-        }
-        if (!pendingVerification.otpId) {
-          toast({ title: "Missing OTP", description: "No OTP session found. Please resend the code.", variant: "destructive" });
-          return;
-        }
-
-        try {
-          setOtpValidating(true);
-          const { success } = await verifyPhoneOtp(pendingVerification.otpId, code);
-          if (!success) throw new Error("Invalid or expired code.");
-
-          setIsPhoneVerified(true);
-          toast({ title: "Phone verified", description: "Your phone number was successfully verified." });
-          setShowOTPDialog(false);
-          setPendingVerification(null);
-        } catch (err: any) {
-          toast({
-            title: "Invalid OTP",
-            description: err?.message || "Please check the code and try again.",
-            variant: "destructive",
-          });
-        } finally {
-          setOtpValidating(false);
-        }
+    } else {
+      // PHONE verify via backend
+      const code = String(otp || "").trim();
+      if (code.length < 4) {
+        toast({
+          title: "Invalid OTP",
+          description: "Please enter a valid OTP.",
+          variant: "destructive",
+        });
+        return;
       }
+      if (!pendingVerification.otpId) {
+        toast({
+          title: "Missing OTP",
+          description: "No OTP session found. Please resend the code.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        setOtpValidating(true);
+        const { success } = await verifyPhoneOtp(
+          pendingVerification.otpId,
+          code,
+        );
+        if (!success) throw new Error("Invalid or expired code.");
+
+        setIsPhoneVerified(true);
+        toast({
+          title: "Phone verified",
+          description: "Your phone number was successfully verified.",
+        });
+        setShowOTPDialog(false);
+        setPendingVerification(null);
+      } catch (err: any) {
+        toast({
+          title: "Invalid OTP",
+          description: err?.message || "Please check the code and try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setOtpValidating(false);
+      }
+    }
   };
 
   const handleOTPResend = async () => {
@@ -1222,9 +1350,16 @@ export function IdentityVerificationPage({
       try {
         setOtpSending(true);
         await generateEmailOtp(email, versionId);
-        toast({ title: "OTP resent", description: `A new OTP was sent to ${email}.` });
+        toast({
+          title: "OTP resent",
+          description: `A new OTP was sent to ${email}.`,
+        });
       } catch (err: any) {
-        toast({ title: "Failed to resend", description: err?.message || "Please try again.", variant: "destructive" });
+        toast({
+          title: "Failed to resend",
+          description: err?.message || "Please try again.",
+          variant: "destructive",
+        });
       } finally {
         setOtpSending(false);
       }
@@ -1238,14 +1373,34 @@ export function IdentityVerificationPage({
 
       try {
         setOtpSending(true);
-        const { success, otpId, expiresAt } = await startPhoneOtp(cc, nn, versionId, "whatsapp", "phoneVerification");
+        const { success, otpId, expiresAt } = await startPhoneOtp(
+          cc,
+          nn,
+          versionId,
+          "whatsapp",
+          "phoneVerification",
+        );
         if (!success) throw new Error("Failed to start phone OTP.");
         setPendingVerification((pv) =>
-          pv ? { ...pv, otpId, expiresAt } : { type: "phone", recipient: `${cc} ${formData.phoneNumber}`, otpId, expiresAt }
+          pv
+            ? { ...pv, otpId, expiresAt }
+            : {
+                type: "phone",
+                recipient: `${cc} ${formData.phoneNumber}`,
+                otpId,
+                expiresAt,
+              },
         );
-        toast({ title: "OTP resent", description: `A new OTP was sent to ${cc} ${formData.phoneNumber}.` });
+        toast({
+          title: "OTP resent",
+          description: `A new OTP was sent to ${cc} ${formData.phoneNumber}.`,
+        });
       } catch (err: any) {
-        toast({ title: "Failed to resend", description: err?.message || "Please try again.", variant: "destructive" });
+        toast({
+          title: "Failed to resend",
+          description: err?.message || "Please try again.",
+          variant: "destructive",
+        });
       } finally {
         setOtpSending(false);
       }
@@ -1267,7 +1422,9 @@ export function IdentityVerificationPage({
   const handleSelfieSegmentsDownloaded = () => {
     setIsSelfieCompleted(true);
 
-    const biometricsSection = activeSections.find(s => s.sectionType === "biometrics");
+    const biometricsSection = activeSections.find(
+      (s) => s.sectionType === "biometrics",
+    );
     if (biometricsSection) {
       postSectionData(biometricsSection);
     }
@@ -1277,11 +1434,17 @@ export function IdentityVerificationPage({
     setIsSelfieCompleted(true);
 
     // Find the biometric section and its index dynamically
-    const biometricsSection = activeSections.find(s => s.sectionType === "biometrics");
-    const biometricsSectionIndex = activeSections.findIndex(s => s.sectionType === "biometrics") + 1;
+    const biometricsSection = activeSections.find(
+      (s) => s.sectionType === "biometrics",
+    );
+    const biometricsSectionIndex =
+      activeSections.findIndex((s) => s.sectionType === "biometrics") + 1;
 
     // Mark the correct section as completed
-    setCompletedSections((prev) => ({ ...prev, [biometricsSectionIndex]: true }));
+    setCompletedSections((prev) => ({
+      ...prev,
+      [biometricsSectionIndex]: true,
+    }));
 
     // Post section data immediately
     if (biometricsSection) {
@@ -1294,13 +1457,15 @@ export function IdentityVerificationPage({
     if (isLastSection) {
       toast({
         title: "🎉 Verification Complete!",
-        description: "All sections have been completed successfully. Your identity verification is now complete.",
+        description:
+          "All sections have been completed successfully. Your identity verification is now complete.",
         duration: 5000,
       });
     } else {
       toast({
-        title: `✅ ${biometricsSection?.name || 'Biometric Verification'} Completed`,
-        description: "Biometric verification completed successfully. Please continue to the next section.",
+        title: `✅ ${biometricsSection?.name || "Biometric Verification"} Completed`,
+        description:
+          "Biometric verification completed successfully. Please continue to the next section.",
         duration: 3000,
       });
 
@@ -1310,11 +1475,14 @@ export function IdentityVerificationPage({
         if (nextSectionIndex <= activeSections.length) {
           setCurrentStep(nextSectionIndex);
           // Keep previous sections expanded and expand the next section
-          setExpandedSections(prev => ({ ...prev, [nextSectionIndex]: true }));
+          setExpandedSections((prev) => ({
+            ...prev,
+            [nextSectionIndex]: true,
+          }));
           const nextSection = activeSections[nextSectionIndex - 1];
           toast({
-            title: `📋 ${nextSection?.name || 'Next Section'}`,
-            description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+            title: `📋 ${nextSection?.name || "Next Section"}`,
+            description: `Please complete the ${nextSection?.name?.toLowerCase() || "next section"}.`,
             duration: 4000,
           });
         }
@@ -1331,53 +1499,63 @@ export function IdentityVerificationPage({
 
   // Callback to auto-save document section data after each document upload
   const handleDocumentUploaded = async () => {
-    console.log('📤 Document state changed, triggering auto-save...');
-    const documentsSection = activeSections.find(s => s.sectionType === "documents");
+    console.log("📤 Document state changed, triggering auto-save...");
+    const documentsSection = activeSections.find(
+      (s) => s.sectionType === "documents",
+    );
     if (documentsSection) {
-      console.log('📋 Current documents state:', {
+      console.log("📋 Current documents state:", {
         uploadedDocuments: documentFormState.uploadedDocuments,
         documentsDetails: documentFormState.documentsDetails,
       });
       await postSectionData(documentsSection);
-      console.log('✅ Document section auto-saved successfully');
+      console.log("✅ Document section auto-saved successfully");
     }
   };
 
   const handleIdentityDocumentComplete = () => {
     setIsIdentityDocumentCompleted(true);
-    
+
     // Find the documents section and its index dynamically
-    const documentsSection = activeSections.find(s => s.sectionType === "documents");
-    const documentsSectionIndex = activeSections.findIndex(s => s.sectionType === "documents") + 1;
-    
+    const documentsSection = activeSections.find(
+      (s) => s.sectionType === "documents",
+    );
+    const documentsSectionIndex =
+      activeSections.findIndex((s) => s.sectionType === "documents") + 1;
+
     // Mark the correct section as completed
-    setCompletedSections((prev) => ({ ...prev, [documentsSectionIndex]: true }));
-    
+    setCompletedSections((prev) => ({
+      ...prev,
+      [documentsSectionIndex]: true,
+    }));
+
     // Post section data immediately
     if (documentsSection) {
       postSectionData(documentsSection);
     }
-    
+
     // Check if this is the last section
     const isLastSection = documentsSectionIndex === activeSections.length;
-    
+
     if (!hasShownStep2Toast) {
       if (isLastSection) {
         toast({
           title: "🎉 Verification Complete!",
-          description: "All sections have been completed successfully. Your identity verification is now complete.",
+          description:
+            "All sections have been completed successfully. Your identity verification is now complete.",
           duration: 5000,
         });
       } else {
         toast({
-          title: `✅ ${documentsSection?.name || 'Document Verification'} Completed`,
-          description: "Your documents have been successfully uploaded and verified. Moving to the next section...",
+          title: `✅ ${documentsSection?.name || "Document Verification"} Completed`,
+          description:
+            "Your documents have been successfully uploaded and verified. Moving to the next section...",
           duration: 3000,
         });
       }
       setHasShownStep2Toast(true);
     }
-    
+
     // Move to next step if not the last section
     if (!isLastSection) {
       setTimeout(() => {
@@ -1385,11 +1563,14 @@ export function IdentityVerificationPage({
         if (nextSectionIndex <= activeSections.length) {
           setCurrentStep(nextSectionIndex);
           // Keep previous sections expanded and expand the next section
-          setExpandedSections(prev => ({ ...prev, [nextSectionIndex]: true }));
+          setExpandedSections((prev) => ({
+            ...prev,
+            [nextSectionIndex]: true,
+          }));
           const nextSection = activeSections[nextSectionIndex - 1];
           toast({
-            title: `📋 ${nextSection?.name || 'Next Section'}`,
-            description: `Please complete the ${nextSection?.name?.toLowerCase() || 'next section'}.`,
+            title: `📋 ${nextSection?.name || "Next Section"}`,
+            description: `Please complete the ${nextSection?.name?.toLowerCase() || "next section"}.`,
             duration: 4000,
           });
         }
@@ -1527,13 +1708,13 @@ export function IdentityVerificationPage({
       });
       return;
     }
-    
+
     // Toggle the section - collapse if expanded, expand if collapsed
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [idx]: !prev[idx]
+      [idx]: !prev[idx],
     }));
-    
+
     // If collapsing a completed section, send POST
     if (expandedSections[idx] && completedSections[idx]) {
       const section = activeSections[idx - 1];
@@ -1543,7 +1724,7 @@ export function IdentityVerificationPage({
 
   useEffect(() => {
     // Ensure current step is expanded
-    setExpandedSections(prev => ({ ...prev, [currentStep]: true }));
+    setExpandedSections((prev) => ({ ...prev, [currentStep]: true }));
     if (currentStep >= 2) setShowMobileMenu(false);
   }, [currentStep]);
 
@@ -1561,16 +1742,16 @@ export function IdentityVerificationPage({
     // Required fields - always validated if shown
     if (personalInfo.firstName) checks.push(isValidName(formData.firstName));
     if (personalInfo.lastName) checks.push(isValidName(formData.lastName));
-    
+
     // Conditionally required fields based on requiredToggles
     if (personalInfo.middleName && requiredToggles.middleName) {
       checks.push(isValidName(formData.middleName));
     }
-    
+
     if (personalInfo.dateOfBirth && requiredToggles.dob) {
       checks.push(isValidDOB(formData.dateOfBirth));
     }
-    
+
     if (personalInfo.email) {
       checks.push(isValidEmail(formData.email));
       // Skip email verification for development
@@ -1578,7 +1759,7 @@ export function IdentityVerificationPage({
         checks.push(isEmailVerified);
       }
     }
-    
+
     if (personalInfo.phoneNumber && requiredToggles.phoneNumber) {
       checks.push(!!formData.countryCode);
       checks.push(
@@ -1589,11 +1770,11 @@ export function IdentityVerificationPage({
         checks.push(isPhoneVerified);
       }
     }
-    
+
     if (personalInfo.gender && requiredToggles.gender) {
       checks.push(!!formData.gender);
     }
-    
+
     if (personalInfo.currentAddress) {
       // Check address line if required
       if (requiredToggles.currentAddress) {
@@ -1608,7 +1789,7 @@ export function IdentityVerificationPage({
         checks.push(isValidPostalCode(formData.postalCode));
       }
     }
-    
+
     if (personalInfo.permanentAddress) {
       // Check permanent address line if required
       if (requiredToggles.permanentAddress) {
@@ -1616,7 +1797,9 @@ export function IdentityVerificationPage({
       }
       // Check permanent city if required
       if (requiredToggles.permanentCity) {
-        checks.push(!!formData.permanentCity && formData.permanentCity.trim().length >= 2);
+        checks.push(
+          !!formData.permanentCity && formData.permanentCity.trim().length >= 2,
+        );
       }
       // Check permanent postal code if required
       if (requiredToggles.permanentPostal) {
@@ -1656,16 +1839,24 @@ export function IdentityVerificationPage({
     if (personalInfo.lastName && !isValidName(formData.lastName)) {
       missing.push("Last Name");
     }
-    
+
     // Conditionally required fields based on requiredToggles
-    if (personalInfo.middleName && requiredToggles.middleName && !isValidName(formData.middleName)) {
+    if (
+      personalInfo.middleName &&
+      requiredToggles.middleName &&
+      !isValidName(formData.middleName)
+    ) {
       missing.push("Middle Name");
     }
-    
-    if (personalInfo.dateOfBirth && requiredToggles.dob && !isValidDOB(formData.dateOfBirth)) {
+
+    if (
+      personalInfo.dateOfBirth &&
+      requiredToggles.dob &&
+      !isValidDOB(formData.dateOfBirth)
+    ) {
       missing.push("Date of Birth");
     }
-    
+
     if (personalInfo.email) {
       if (!isValidEmail(formData.email)) {
         missing.push("Valid Email");
@@ -1673,7 +1864,7 @@ export function IdentityVerificationPage({
         missing.push("Email Verification (OTP)");
       }
     }
-    
+
     if (personalInfo.phoneNumber && requiredToggles.phoneNumber) {
       if (!formData.countryCode) {
         missing.push("Country Code");
@@ -1685,31 +1876,46 @@ export function IdentityVerificationPage({
         missing.push("Phone Verification (OTP)");
       }
     }
-    
+
     if (personalInfo.gender && requiredToggles.gender && !formData.gender) {
       missing.push("Gender");
     }
-    
+
     if (personalInfo.currentAddress) {
       if (requiredToggles.currentAddress && !isValidAddress(formData.address)) {
         missing.push("Current Address");
       }
-      if (requiredToggles.currentCity && (!formData.city || formData.city.trim().length < 2)) {
+      if (
+        requiredToggles.currentCity &&
+        (!formData.city || formData.city.trim().length < 2)
+      ) {
         missing.push("Current City");
       }
-      if (requiredToggles.currentPostal && !isValidPostalCode(formData.postalCode)) {
+      if (
+        requiredToggles.currentPostal &&
+        !isValidPostalCode(formData.postalCode)
+      ) {
         missing.push("Current Postal Code");
       }
     }
-    
+
     if (personalInfo.permanentAddress) {
-      if (requiredToggles.permanentAddress && !isValidAddress(formData.permanentAddress)) {
+      if (
+        requiredToggles.permanentAddress &&
+        !isValidAddress(formData.permanentAddress)
+      ) {
         missing.push("Permanent Address");
       }
-      if (requiredToggles.permanentCity && (!formData.permanentCity || formData.permanentCity.trim().length < 2)) {
+      if (
+        requiredToggles.permanentCity &&
+        (!formData.permanentCity || formData.permanentCity.trim().length < 2)
+      ) {
         missing.push("Permanent City");
       }
-      if (requiredToggles.permanentPostal && !isValidPostalCode(formData.permanentPostalCode)) {
+      if (
+        requiredToggles.permanentPostal &&
+        !isValidPostalCode(formData.permanentPostalCode)
+      ) {
         missing.push("Permanent Postal Code");
       }
     }
@@ -1959,9 +2165,13 @@ export function IdentityVerificationPage({
                       isPhoneVerified={isPhoneVerified}
                       onSendEmailOTP={handleSendEmailOTP}
                       onSendPhoneOTP={handleSendPhoneOTP}
-                      onIdentityDocumentComplete={handleIdentityDocumentComplete}
+                      onIdentityDocumentComplete={
+                        handleIdentityDocumentComplete
+                      }
                       onSelfieComplete={handleSelfieComplete}
-                      onSelfieSegmentsDownloaded={handleSelfieSegmentsDownloaded}
+                      onSelfieSegmentsDownloaded={
+                        handleSelfieSegmentsDownloaded
+                      }
                       submissionId={submissionId}
                       shortCode={shortCode}
                       templateVersionId={templateVersion?.versionId}
@@ -1978,7 +2188,6 @@ export function IdentityVerificationPage({
                       // personalInfoRequired={personalInfoRequired}
                       // documentsConfig={docsCfg}
                       // biometricsConfig={bioCfg}
-
                     />
                   ))}
                 </div>
