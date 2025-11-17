@@ -139,9 +139,9 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
 
             {/* Horizontal Divider - Mobile/Tablet */}
             <div className="flex xl:hidden w-full justify-center items-center gap-2 py-4">
-              <div className="w-[36px] h-px bg-[#D0D4E4]"></div>
+              <div className="flex-1 h-px bg-[#D0D4E4]"></div>
               <div className="text-[#676879] font-roboto text-[13.6px]">or</div>
-              <div className="w-[36px] h-px bg-[#D0D4E4]"></div>
+              <div className="flex-1 h-px bg-[#D0D4E4]"></div>
             </div>
 
             {/* Right Side - QR Code */}
@@ -175,34 +175,32 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
                   </div>
                 </div>
               </div>
-              <div className="flex w-full h-[50px] px-4 py-4 items-center gap-2 flex-shrink-0 rounded-b bg-[#F6F7FB]">
-                <div className="flex justify-end items-center gap-1 flex-shrink-0">
-                  <svg
-                    width="21"
-                    height="21"
-                    viewBox="0 0 21 21"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-[21px] h-[21px] flex-shrink-0"
-                  >
-                    <g clipPath="url(#clip0_7664_76472)">
-                      <path
-                        d="M10.4991 13.9988V10.4991M10.4991 6.99948H10.5079M19.2483 10.4991C19.2483 15.3311 15.3311 19.2483 10.4991 19.2483C5.66712 19.2483 1.75 15.3311 1.75 10.4991C1.75 5.66712 5.66712 1.75 10.4991 1.75C15.3311 1.75 19.2483 5.66712 19.2483 10.4991Z"
-                        stroke="#0073EA"
-                        strokeWidth="1.57484"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_7664_76472">
-                        <rect width="20.9979" height="20.9979" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                  <div className="text-[#0073EA] font-roboto text-[13px] font-normal leading-[21px]">
-                    How does this work?
-                  </div>
+              <div className="flex w-full px-4 py-4 items-center justify-end gap-2 flex-shrink-0 bg-[#F6F7FB] rounded-b-lg">
+                <svg
+                  width="21"
+                  height="21"
+                  viewBox="0 0 21 21"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-[21px] h-[21px] flex-shrink-0"
+                >
+                  <g clipPath="url(#clip0_7664_76472)">
+                    <path
+                      d="M10.4991 13.9988V10.4991M10.4991 6.99948H10.5079M19.2483 10.4991C19.2483 15.3311 15.3311 19.2483 10.4991 19.2483C5.66712 19.2483 1.75 15.3311 1.75 10.4991C1.75 5.66712 5.66712 1.75 10.4991 1.75C15.3311 1.75 19.2483 5.66712 19.2483 10.4991Z"
+                      stroke="#0073EA"
+                      strokeWidth="1.57484"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_7664_76472">
+                      <rect width="20.9979" height="20.9979" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                <div className="text-[#0073EA] font-roboto text-[13px] font-normal leading-[21px]">
+                  How does this work?
                 </div>
               </div>
             </div>
