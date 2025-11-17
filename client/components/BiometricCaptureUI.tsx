@@ -1,8 +1,9 @@
 interface BiometricCaptureUIProps {
   onScanFace: () => void;
+  isScanning?: boolean;
 }
 
-export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
+export function BiometricCaptureUI({ onScanFace, isScanning = false }: BiometricCaptureUIProps) {
   return (
     <div className="flex w-full flex-col gap-4 rounded bg-white">
       {/* Header Section */}
