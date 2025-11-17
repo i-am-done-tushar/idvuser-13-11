@@ -56,6 +56,7 @@ type CameraCaptureProps = {
 export default function CameraCapture({
   userId,
   onStepComplete,
+  onSegmentsDownloaded,
 }: CameraCaptureProps) {
   //-----------------------------useState-------------------------------------
   //UI/Display State (triggers re-renders):
