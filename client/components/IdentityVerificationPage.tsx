@@ -2053,8 +2053,11 @@ export function IdentityVerificationPage({
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleSubmit}
-                  className={`flex h-8 py-[9px] px-3 justify-center items-center gap-0.5 rounded ${
-                    isFormValid() ? "bg-primary" : "bg-primary opacity-50"
+                  disabled={!isFormValid()}
+                  className={`flex h-8 py-[9px] px-3 justify-center items-center gap-0.5 rounded transition-all ${
+                    isFormValid() 
+                      ? "bg-primary hover:bg-primary/90 cursor-pointer" 
+                      : "bg-primary opacity-50 cursor-not-allowed"
                   }`}
                 >
                   <span className="text-white font-roboto text-[13px] font-normal">
