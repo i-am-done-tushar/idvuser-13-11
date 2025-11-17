@@ -329,9 +329,9 @@ export function DesktopDynamicSection({
               </div>
             </div>
 
-            <BiometricCaptureUI onScanFace={handleScanFace} />
-
-            {isBiometricScanStarted && (
+            {!isBiometricScanStarted ? (
+              <BiometricCaptureUI onScanFace={handleScanFace} />
+            ) : (
               <div className="flex p-4 flex-col justify-center items-center self-stretch bg-background">
                 <div className="flex w-full flex-col xl:flex-row justify-center items-stretch gap-6 p-2">
                   {/* Camera Selfie Section */}
