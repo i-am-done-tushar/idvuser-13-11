@@ -165,7 +165,9 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
             {/* Vertical Divider - Desktop */}
             <div className="hidden xl:flex flex-col justify-center items-center gap-1">
               <div className="flex-1 w-px bg-[#D0D4E4]"></div>
-              <div className="text-[#676879] font-roboto text-[13.6px] px-2">or</div>
+              <div className="text-[#676879] font-roboto text-[13.6px] px-2">
+                or
+              </div>
               <div className="flex-1 w-px bg-[#D0D4E4]"></div>
             </div>
 
@@ -190,7 +192,8 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
                       <div className="flex w-full flex-col items-center">
                         <div className="w-full text-center font-roboto text-[13px] font-normal leading-[20px]">
                           <span className="text-[#676879]">
-                            Continue on another device by scanning the QR code or opening
+                            Continue on another device by scanning the QR code
+                            or opening
                           </span>
                           <span className="text-[#0073EA] break-all block">
                             https://id.xyz/verify
