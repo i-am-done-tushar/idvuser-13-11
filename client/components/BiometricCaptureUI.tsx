@@ -40,6 +40,7 @@ export function BiometricCaptureUI({ onScanFace, isScanning = false }: Biometric
         </div>
 
         {/* Main Content Area */}
+        {!isScanning && (
         <div className="flex w-full flex-col justify-center items-center border-t border-[#DEDEDD] bg-white p-4">
           <div className="flex w-full min-h-[450px] flex-col xl:flex-row justify-center items-stretch gap-0">
             {/* Left Side - Illustration */}
@@ -236,6 +237,7 @@ export function BiometricCaptureUI({ onScanFace, isScanning = false }: Biometric
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
