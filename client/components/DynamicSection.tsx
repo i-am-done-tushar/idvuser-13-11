@@ -23,6 +23,7 @@ interface DynamicSectionProps {
   onSendPhoneOTP?: () => void;
   onIdentityDocumentComplete?: () => void;
   onSelfieComplete?: () => void;
+  onSelfieSegmentsDownloaded?: () => void;
   submissionId?: number | null;
   // QR Code and session props
   shortCode?: string;
@@ -77,6 +78,7 @@ export function DynamicSection({
   onSendPhoneOTP,
   onIdentityDocumentComplete,
   onSelfieComplete,
+  onSelfieSegmentsDownloaded,
   submissionId,
   shortCode,
   templateVersionId,
@@ -286,6 +288,9 @@ export function DynamicSection({
                         <div className="flex h-[428px] flex-col items-center gap-2 rounded-t-lg border-[1.5px] border-dashed border-[#C3C6D4] bg-white pt-4">
                           <CameraSelfieStep
                             onStepComplete={onSelfieComplete || (() => {})}
+                            onSegmentsDownloaded={
+                              onSelfieSegmentsDownloaded || (() => {})
+                            }
                             userId={submissionId}
                           />
                         </div>
