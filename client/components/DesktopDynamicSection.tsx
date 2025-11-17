@@ -118,7 +118,9 @@ export function DesktopDynamicSection({
             />
           </svg>
           <div className="text-text-primary font-roboto text-base font-bold leading-3">
-            {section.sectionType === "biometrics" ? "Biometric Verification" : section.name}
+            {section.sectionType === "biometrics"
+              ? "Biometric Verification"
+              : section.name}
           </div>
         </button>
       </div>
@@ -370,8 +372,8 @@ export function DesktopDynamicSection({
                       />
                       <div className="flex flex-col items-center gap-3 max-w-[300px] px-2">
                         <p className="text-[#676879] text-center font-roboto text-[13px] font-normal leading-5">
-                          Continue on another device by scanning the QR
-                          code or opening{" "}
+                          Continue on another device by scanning the QR code or
+                          opening{" "}
                           <a
                             href="https://id.xyz/verify"
                             className="text-[#0073EA]"

@@ -347,7 +347,10 @@ export function DynamicSection({
   // For biometrics section, render directly without accordion wrapper
   if (section.sectionType === "biometrics") {
     return (
-      <div onClick={() => onSectionFocus?.(sectionIndex)} onFocus={() => onSectionFocus?.(sectionIndex)}>
+      <div
+        onClick={() => onSectionFocus?.(sectionIndex)}
+        onFocus={() => onSectionFocus?.(sectionIndex)}
+      >
         {renderSectionContent()}
       </div>
     );
