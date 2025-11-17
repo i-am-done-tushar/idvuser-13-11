@@ -2058,7 +2058,8 @@ export default function CameraCapture({
     stopCamera();
 
     console.log("✅ Session fully completed. Camera stopped.");
-    // Don't call onStepComplete yet - wait for user to click submit
+    // Call onStepComplete to notify parent that selfie capture is complete
+    onStepComplete?.(7);
   }, [
     completedSegments,
     partialSegmentBlobsPerSegment,
@@ -2522,7 +2523,7 @@ export default function CameraCapture({
               recorder.pause();
               // Silent pause - no UI message for background recording
               // showMessage('recordingMessage', multipleFacesDetectedRef.current
-              //   ? '⏸️ Paused – multiple faces detected'
+              //   ? '⏸��� Paused – multiple faces detected'
               //   : '⏸️ Paused – different face detected'
               // );
             }
