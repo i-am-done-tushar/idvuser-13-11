@@ -4,46 +4,13 @@ interface BiometricCaptureUIProps {
 
 export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
   return (
-    <div className="flex w-full flex-col gap-4 rounded bg-white">
-      {/* Header Section */}
-      <div className="flex flex-col items-start self-stretch rounded border border-[#DEDEDD]">
-        <div className="flex flex-col justify-center items-center gap-2 self-stretch bg-white px-3 py-4">
-          <div className="flex items-center gap-2 self-stretch pb-1">
-            <svg
-              width="19"
-              height="19"
-              viewBox="0 0 19 19"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-[19px] h-[19px]"
-            >
-              <path
-                d="M6.30071 9.44844H12.6001M17.3246 9.44844C17.3246 13.7972 13.7992 17.3227 9.4504 17.3227C5.10158 17.3227 1.57617 13.7972 1.57617 9.44844C1.57617 5.09963 5.10158 1.57422 9.4504 1.57422C13.7992 1.57422 17.3246 5.09963 17.3246 9.44844Z"
-                stroke="#323238"
-                strokeWidth="1.57484"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <div className="text-[#172B4D] font-roboto text-[17px] font-bold leading-[12.6px]">
-              Biometric Capture
-            </div>
-          </div>
-          <div className="flex justify-center items-center gap-2.5 self-stretch pl-[29px]">
-            <div className="flex-1 text-[#172B4D] font-roboto text-[14px] font-normal leading-[21px]">
-              Take a live selfie to confirm you are the person in the ID
-              document. Make sure you're in a well-lit area and your face is
-              clearly visible.
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex w-full flex-col justify-center items-center border-t border-[#DEDEDD] bg-white p-4">
-          <div className="flex w-full flex-col xl:flex-row justify-center items-stretch gap-6 p-2">
+    <div className="flex w-full flex-col justify-center items-center bg-white p-4">
+      {/* Main Content Area (no extra wrapper/header) */}
+  <div className="flex w-full flex-col xl:flex-row items-stretch gap-6 p-2">
             {/* Left Side - Illustration */}
-            <div className="flex flex-1 min-w-0 pt-10 flex-col justify-between items-center rounded-lg bg-white">
-              <style>
+            <div className="flex flex-1 basis-0 min-w-0 flex-col">
+              <div className="flex w-full pt-4 flex-col justify-center items-center h-[400px] self-stretch rounded-t-lg border-[1.575px] border-dashed border-[#C3C6D4] bg-white">
+                <style>
                 {`
                   @keyframes headTilt {
                     0%, 100% {
@@ -58,13 +25,13 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
                     transform-origin: center;
                   }
                 `}
-              </style>
-              <svg
-                className="flex flex-col items-center gap-3 self-stretch w-full h-auto"
-                viewBox="0 0 460 353"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                </style>
+                <svg
+                  className="flex flex-col items-center gap-3 self-stretch w-full h-auto"
+                  viewBox="0 0 460 353"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                 <g className="animated-head">
                   <path
                     d="M232.04 131.449C232.04 131.449 226.213 140.607 251.187 163.917C276.162 187.226 265.34 233.013 265.34 233.013L193.746 174.739L191.248 123.957L232.04 131.449Z"
@@ -148,24 +115,26 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
                     your head up, and then down
                   </tspan>
                 </text>
-              </svg>
-
-              {/* Button Footer */}
-              <div className="flex px-4 py-2 flex-col items-end gap-2 self-stretch rounded-b bg-[#F6F7FB]">
-                <button
-                  onClick={onScanFace}
-                  className="flex h-[34px] px-3 py-2 justify-center items-center gap-2 rounded bg-[#0073EA] text-white font-roboto text-[14px] font-medium hover:bg-[#0060C0] transition-colors"
-                >
-                  Scan Your Face
-                </button>
+                </svg>
+              </div>
+              {/* Button Footer (outside dashed box to mirror QR section) */}
+              <div className="flex w-full h-[50px] px-4 py-4 items-center justify-end gap-2 flex-shrink-0 rounded-b bg-[#F6F7FB]">
+                <div className="flex justify-end items-center gap-2">
+                  <button
+                    onClick={onScanFace}
+                    className="flex h-[34px] px-3 py-2 justify-center items-center gap-2 rounded bg-[#0073EA] text-white font-roboto text-[14px] font-medium hover:bg-[#0060C0] transition-colors"
+                  >
+                    Scan Your Face
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Vertical Divider - Desktop */}
-            <div className="hidden xl:flex flex-col justify-center items-center gap-1 h-[100px]">
-              <div className="h-[36px] w-px bg-[#D0D4E4]"></div>
+            <div className="hidden xl:flex flex-col justify-center items-center gap-1 h-[400px]">
+              <div className="flex-1 w-px bg-[#D0D4E4]"></div>
               <div className="text-[#676879] font-roboto text-[13.6px]">or</div>
-              <div className="h-[36px] w-px bg-[#D0D4E4]"></div>
+              <div className="flex-1 w-px bg-[#D0D4E4]"></div>
             </div>
 
             {/* Horizontal Divider - Mobile/Tablet */}
@@ -176,18 +145,18 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
             </div>
 
             {/* Right Side - QR Code */}
-            <div className="flex flex-1 min-w-0 flex-col justify-center items-stretch">
+            <div className="flex flex-1 basis-0 min-w-0 flex-col justify-center items-stretch">
               <div className="flex flex-col items-center gap-2 self-stretch">
-                <div className="flex pt-4 flex-col justify-center items-center h-[400px] self-stretch rounded-t-lg border-[1.575px] border-dashed border-[#C3C6D4]">
+                <div className="flex w-full pt-4 flex-col justify-center items-center h-[400px] self-stretch rounded-t-lg border-[1.575px] border-dashed border-[#C3C6D4]">
                   <div className="flex flex-col justify-center items-center gap-2 flex-1 px-4">
-                    <div className="flex flex-col xl:flex-row justify-center items-center gap-4 max-w-full">
+                    <div className="flex flex-col justify-center items-center gap-4 max-w-full">
                       <img
                         src="https://api.qrserver.com/v1/create-qr-code/?size=134x138&data=https://id.xyz/verify"
                         alt="QR Code"
                         className="w-[120px] h-[120px] sm:w-[134px] sm:h-[138px] flex-shrink-0"
                       />
                       <div className="flex flex-col justify-center items-center gap-2 max-w-full">
-                        <div className="flex max-w-[300px] xl:w-[225px] flex-col items-center gap-3 px-4">
+                        <div className="flex max-w-[300px] flex-col items-center gap-3 px-4">
                           <div className="flex w-full flex-col items-start">
                             <div className="self-stretch text-center font-roboto text-[13px] sm:text-[14px] font-normal leading-[21px]">
                               <span className="text-[#676879]">
@@ -237,8 +206,6 @@ export function BiometricCaptureUI({ onScanFace }: BiometricCaptureUIProps) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
       </div>
     </div>
   );
