@@ -2068,6 +2068,7 @@ export default function CameraCapture({
     setStatusMessage,
     _resetAll,
     stopCamera,
+    onStepComplete,
   ]);
 
   const captureLastFrame = useCallback(() => {
