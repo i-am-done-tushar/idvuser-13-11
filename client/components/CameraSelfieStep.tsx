@@ -2079,7 +2079,7 @@ export default function CameraCapture({
     setStatusMessage,
     _resetAll,
     stopCamera,
-    onStepComplete,
+    onSegmentsDownloaded,
   ]);
 
   const captureLastFrame = useCallback(() => {
@@ -3635,7 +3635,7 @@ export default function CameraCapture({
 
         if (settings.frameRate && settings.frameRate < 15) {
           setCameraErrorMessage(
-            "��️ Low frame rate. Detection quality may be affected.",
+            "⚠️ Low frame rate. Detection quality may be affected.",
           );
           // logService.log('warn', 'Low frame rate detected.');
         }
