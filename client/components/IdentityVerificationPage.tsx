@@ -982,7 +982,7 @@ export function IdentityVerificationPage({
       
       if (isLastSection) {
         toast({
-          title: "🎉 Verification Complete!",
+          title: "�� Verification Complete!",
           description: "All sections have been completed successfully.",
           duration: 5000,
         });
@@ -1922,6 +1922,7 @@ export function IdentityVerificationPage({
                     onSendPhoneOTP={handleSendPhoneOTP}
                     onIdentityDocumentComplete={handleIdentityDocumentComplete}
                     onSelfieComplete={handleSelfieComplete}
+                    onSelfieSegmentsDownloaded={handleSelfieSegmentsDownloaded}
                     submissionId={submissionId}
                     shortCode={shortCode}
                     templateVersionId={templateVersion?.versionId}
@@ -1960,6 +1961,7 @@ export function IdentityVerificationPage({
                       onSendPhoneOTP={handleSendPhoneOTP}
                       onIdentityDocumentComplete={handleIdentityDocumentComplete}
                       onSelfieComplete={handleSelfieComplete}
+                      onSelfieSegmentsDownloaded={handleSelfieSegmentsDownloaded}
                       submissionId={submissionId}
                       shortCode={shortCode}
                       templateVersionId={templateVersion?.versionId}
