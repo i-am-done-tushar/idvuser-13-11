@@ -118,7 +118,7 @@ export function DesktopDynamicSection({
             />
           </svg>
           <div className="text-text-primary font-roboto text-base font-bold leading-3">
-            {section.name}
+            {section.sectionType === "biometrics" ? "Biometric Verification" : section.name}
           </div>
         </button>
       </div>

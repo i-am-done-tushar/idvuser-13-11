@@ -83,6 +83,7 @@ export default function CameraCapture({
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [segmentSecondsRecorded, setSegmentSecondsRecorded] = useState(0);
   const [completedSegments, setCompletedSegments] = useState<Blob[]>([]);
+  const [captureProgress, setCaptureProgress] = useState(0); // 0-100% progress for outer circle
 
   //Verification State (affects UI):
   const [headTurnVerified, setHeadTurnVerified] = useState(false);
@@ -239,6 +240,7 @@ export default function CameraCapture({
   const isRecordingRef = useRef(false);
   const segmentSecondsRecordedRef = useRef(0);
   const extraSecondsRecordedRef = useRef(0);
+  const captureProgressRef = useRef(0); // progress percentage 0-100 for outer circle
   // Session lifecycle flags
   const sessionCompletedRef = useRef(false); // Set true after all segments & verifications finish
   const autoStartDisabledRef = useRef(false); // Prevent auto re-start after completion until user manually resets
@@ -627,24 +629,29 @@ export default function CameraCapture({
       // Reset compositing to normal
       ctx.globalCompositeOperation = "source-over";
 
-      // Step 3: Determine outer circle stroke color based on recording and timer
-      let outerStrokeColor = "#ffffff"; // default white
-      if (
-        isRecording &&
-        ((timeRemainingRef.current < 6 && timeRemainingRef.current > 0) ||
-          isFaceDetected)
-      ) {
-        outerStrokeColor = "#16a34a"; // green while recording and timer counting down
-      }
+      // Step 3: Base outer circle stroke color stays white always; progress is drawn separately in green
+      const outerStrokeColor = "#ffffff";
 
       // Step 4: Draw outlines for biggerRadius and outerRadius circles
-      // Outer bigger circle (solid)
+      
+      // Outer bigger circle base (white ring)
       ctx.beginPath();
       ctx.arc(cx, cy, biggerRadius, 0, 2 * Math.PI);
       ctx.setLineDash([]);
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = outerStrokeColor; // use dynamic stroke color here!
+      ctx.lineWidth = 10;
+      ctx.strokeStyle = outerStrokeColor;
       ctx.stroke();
+
+      // Progress arc (green) drawn over same ring using ref for immediate updates
+      if (captureProgressRef.current > 0) {
+        const progressAngle = (captureProgressRef.current / 100) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.arc(cx, cy, biggerRadius, -Math.PI / 2, -Math.PI / 2 + progressAngle);
+        ctx.setLineDash([]);
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = "#16a34a";
+        ctx.stroke();
+      }
 
       // Inner alignment circle (white dashed)
       ctx.beginPath();
@@ -743,8 +750,22 @@ export default function CameraCapture({
         h: outerRadius * 2,
       };
     },
-    [isRecording, isFaceDetected],
+    [isRecording, isFaceDetected, captureProgress],
   );
+
+  // Helper to update progress and force redraw immediately
+  const updateCaptureProgress = useCallback((pct: number) => {
+    const clamped = Math.max(0, Math.min(100, pct));
+    // Only update if new progress is higher (never go backwards)
+    if (clamped > captureProgressRef.current) {
+      captureProgressRef.current = clamped;
+      setCaptureProgress(clamped);
+      // Trigger an immediate redraw with current brightness
+      if (overlayRef.current) {
+        drawFaceGuideOverlay(currentBrightnessRef.current || 100);
+      }
+    }
+  }, [drawFaceGuideOverlay]);
 
   const isVideoBlank = useCallback((): boolean => {
     if (!brightnessCtxRef.current) return true;
@@ -1419,7 +1440,9 @@ export default function CameraCapture({
     setIsRecording(false);
     isRecordingRef.current = false; // ✅ Sync ref
     setCompletedSegments([]);
-    recordingFlagRef.current = 0; // Reset recording flag
+  recordingFlagRef.current = 0; // Reset recording flag
+  captureProgressRef.current = 0; // reset ref
+  setCaptureProgress(0); // Reset progress
 
     // Verification maps and counters (state and refs)
     setVerificationDoneForSegment({});
@@ -1671,6 +1694,10 @@ export default function CameraCapture({
         verificationSuccessForSegmentRef.current[segment] = true;
         // ✅ Also mark 'done' in ref so shouldVerifyAfterSegment returns false next time
         verificationDoneForSegmentRef.current[segment] = true;
+    // Update progress after head-turn success: segment 1 -> 40%, segment 2 -> 80%
+    const progressAfterHeadTurn = segment === 2 ? 80 : 40;
+    updateCaptureProgress(progressAfterHeadTurn);
+        
         console.log(
           "info",
           `[HeadVerification] ✅ SUCCESS for segment ${segment}. verificationDoneForSegmentRef is now:`,
@@ -2405,6 +2432,14 @@ export default function CameraCapture({
               type: options?.mimeType ?? "video/webm",
             });
             setCompletedSegments((prev) => [...prev, blob]);
+            
+            // Update progress on segment completion (video portions only):
+            // segment 1 video -> 20%
+            // segment 2 video -> 60%
+            // segment 3 video -> 100%
+            const segmentProgress = segment === 3 ? 100 : (segment === 2 ? 60 : 20);
+            updateCaptureProgress(segmentProgress);
+            
             console.log(
               "info",
               `✅ Segment ${segment} COMPLETED and saved. Blob size: ${blob.size} bytes, Chunk count: ${chunks.length}`,
