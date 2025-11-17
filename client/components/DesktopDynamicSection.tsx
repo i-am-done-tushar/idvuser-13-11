@@ -297,6 +297,7 @@ export function DesktopDynamicSection({
 
         return (
           <div
+            className="w-full self-stretch"
             onClick={() => onSectionFocus?.(sectionIndex)}
             onFocus={() => onSectionFocus?.(sectionIndex)}
           >

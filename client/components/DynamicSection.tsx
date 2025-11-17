@@ -348,6 +348,7 @@ export function DynamicSection({
   if (section.sectionType === "biometrics") {
     return (
       <div
+        className="w-full self-stretch"
         onClick={() => onSectionFocus?.(sectionIndex)}
         onFocus={() => onSectionFocus?.(sectionIndex)}
       >
