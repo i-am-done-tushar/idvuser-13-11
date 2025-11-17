@@ -78,6 +78,7 @@ export function DynamicSection({
   onSendPhoneOTP,
   onIdentityDocumentComplete,
   onSelfieComplete,
+  onSelfieSegmentsDownloaded,
   submissionId,
   shortCode,
   templateVersionId,
