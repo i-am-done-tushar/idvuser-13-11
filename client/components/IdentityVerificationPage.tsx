@@ -650,7 +650,7 @@ export function IdentityVerificationPage({
     } else {
       if (isLastSection) {
         toast({ 
-          title: "🎉 Verification Complete!", 
+          title: "���� Verification Complete!", 
           description: "All sections have been completed successfully. Your identity verification is now complete.",
           duration: 5000,
         });
@@ -1263,24 +1263,34 @@ export function IdentityVerificationPage({
     setShowConsentDialog(false);
   };
 
+  // Mark selfie as complete when segments are downloaded (without advancing step)
+  const handleSelfieSegmentsDownloaded = () => {
+    setIsSelfieCompleted(true);
+
+    const biometricsSection = activeSections.find(s => s.sectionType === "biometrics");
+    if (biometricsSection) {
+      postSectionData(biometricsSection);
+    }
+  };
+
   const handleSelfieComplete = () => {
     setIsSelfieCompleted(true);
-    
+
     // Find the biometric section and its index dynamically
     const biometricsSection = activeSections.find(s => s.sectionType === "biometrics");
     const biometricsSectionIndex = activeSections.findIndex(s => s.sectionType === "biometrics") + 1;
-    
+
     // Mark the correct section as completed
     setCompletedSections((prev) => ({ ...prev, [biometricsSectionIndex]: true }));
-    
+
     // Post section data immediately
     if (biometricsSection) {
       postSectionData(biometricsSection);
     }
-    
+
     // Check if this is the last section
     const isLastSection = biometricsSectionIndex === activeSections.length;
-    
+
     if (isLastSection) {
       toast({
         title: "🎉 Verification Complete!",
@@ -1293,7 +1303,7 @@ export function IdentityVerificationPage({
         description: "Biometric verification completed successfully. Please continue to the next section.",
         duration: 3000,
       });
-      
+
       // Move to next section if not the last
       setTimeout(() => {
         const nextSectionIndex = biometricsSectionIndex + 1;
@@ -1310,7 +1320,7 @@ export function IdentityVerificationPage({
         }
       }, 2000);
     }
-    
+
     // Optional: Navigate to success page after completion if it's the last section
     if (isLastSection) {
       setTimeout(() => {
